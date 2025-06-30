@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Joz's Homebrew DND Sheet</title>
+<style>
+/* === POPUP FIXES === */
+.popup {
+  pointer-events: none;
+}
+
+.popup[style*="display: block"] {
+  pointer-events: auto;
+}
+
+/* === EXISTING CSS (OPTIMIZED) === */
+:root {
+  --dark-bg: #121212;
+  --panel-bg: #1e1e1e;
+  --border: 1px solid #444;
+  --accent: gold;
+  --text-light: #f0f0f0;
+  --condition-red: #ff6b6b;
+  --condition-blue: #6b8cff;
+  --condition-green: #6bff8c;
+  --popup-bg: #2a2a2a;
+  --roulette-red: #ff6b6b;
+  --roulette-black: #2a2a2a;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--dark-bg);
+  color: var(--text-light);
+}
+
+h1, h2, h3, h4 {
+  color: var(--accent);
+  margin-top: 0;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px;
+  background: #222;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.tabs button {
+  background: var(--panel-bg);
+  color: white;
+  border: var(--border);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.tabs button.active {
+  background: var(--accent);
+  color: black;
+  font-weight: bold;
+}
+
+.page {
+  display: none;
+  padding: 1rem;
+}
+
+.page.active {
+  display: block;
+}
+
+.section {
+  background: var(--panel-bg);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 6px;
+  border: var(--border);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.resizable {
+  resize: both;
+  overflow: auto;
+  min-height: 50px;
+  min-width: 100px;
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.flex-wrap .section {
+  flex: 1 1 300px;
+}
+
+.horizontal-sections {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-direction: column;
+}
+
+.horizontal-sections .section {
+  flex: 1;
+  min-width: 300px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 8px;
+  background: #2a2a2a;
+  color: white;
+  border: 1px solid #666;
+  border-radius: 4px;
+  margin: 4px 0 10px;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+button {
+  background: var(--accent);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 4px 2px;
+  transition: all 0.2s;
+}
+
+button:hover {
+  background: #ffd700;
+  transform: translateY(-1px);
+}
+
+.top-right-reset {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: var(--panel-bg);
+  color: var(--accent);
+  border: var(--border);
+  cursor: pointer;
+  padding: 5px 10px;
+  z-index: 1000;
+}
+
+.condition {
+  background: #2a2a2a;
+  border-left: 4px solid var(--condition-red);
+  padding: 8px;
+  margin: 6px 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.condition.blue { border-color: var(--condition-blue); }
+.condition.green { border-color: var(--condition-green); }
+
+.condition-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.condition-turns {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--popup-bg);
+  padding: 20px;
+  border: var(--border);
+  border-radius: 6px;
+  z-index: 1000;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.popup-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 999;
+}
+
+.portrait-container {
+  width: 200px;
+  height: 250px;
+  border: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 10px;
+  background: #2a2a2a;
+}
+
+.portrait-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.skill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.skill-row label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.skill-row input[type="checkbox"] {
+  width: auto;
+  margin-right: 5px;
+}
+
+.skill-row input[type="text"] {
+  width: 60px;
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+th, td {
+  padding: 8px;
+  border: 1px solid #444;
+  text-align: left;
+}
+
+th {
+  background: #2a2a2a;
+}
+
+/* === UPDATED STYLES === */
+/* Basic Textarea Style (for direct editing) */
+.basic-textarea {
+  width: 100%;
+  min-height: 200px;
+  background: #2a2a2a;
+  color: white;
+  border: 1px solid #666;
+  padding: 10px;
+  box-sizing: border-box;
+  resize: vertical;
+  display: block !important;
+}
+
+.basic-textarea::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+/* Make all sections resizable */
+.section {
+  resize: both;
+  overflow: auto;
+  min-height: 150px;
+  min-width: 200px;
+}
+
+/* Adjust notes container */
+.notes-container {
+  min-height: 100px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.background-grid {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 1rem;
+}
+
+.background-textareas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.weight-display {
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: right;
+}
+
+.inventory-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.roulette-numbers {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  margin: 15px 0;
+}
+
+.roulette-number {
+  padding: 10px;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: bold;
+}
+
+.roulette-number:hover {
+  transform: scale(1.05);
+}
+
+.roulette-number.red {
+  background-color: var(--roulette-red);
+  color: white;
+}
+
+.roulette-number.black {
+  background-color: var(--roulette-black);
+  color: white;
+}
+
+.delete-container-btn {
+  background-color: #ff4444;
+  color: white;
+}
+
+.delete-container-btn.confirm {
+  background-color: #ff0000;
+  animation: pulse 0.5s infinite alternate;
+}
+
+.ability-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.ability-col {
+  flex: 1;
+}
+
+.skills-container {
+  overflow-y: auto;
+}
+
+.item-row {
+  cursor: pointer;
+}
+
+.item-row:hover {
+  background-color: #2a2a2a;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
+}
+
+@media (max-width: 768px) {
+  .background-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .background-textareas {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-wrap .section {
+    flex: 1 1 100%;
+  }
+  
+  .horizontal-sections {
+    flex-direction: column;
+  }
+  
+  .portrait-container {
+    width: 150px;
+    height: 200px;
+    margin: 0 auto;
+  }
+  
+  .roulette-numbers {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+#notesPopupTextarea {
+  display: block !important;
+  width: 100%;
+  min-height: 200px;
+  background: #2a2a2a;
+  color: white;
+  border: 1px solid #666;
+  padding: 10px;
+  box-sizing: border-box;
+}
+/* Add these to your existing CSS */
+.portrait-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+#saveDataBtn, #saveLayoutBtn {
+  background: #333;
+  color: var(--accent);
+  margin-left: 5px;
+}
+
+#saveDataBtn:hover, #saveLayoutBtn:hover {
+  background: #444;
+}
+</style>
+</head>
+<body>
+<!-- Warning Banner -->
+<div style="text-align:center; background:#222; color:#ccc; padding:8px; border-bottom: var(--border);">
+⚠️ This sheet autosaves character data to your browser. Use Export to back up your character.
+</div>
+
+<!-- Header -->
+<h1>Joz's Homebrew DND Sheet 
+  <span style="font-size:0.8rem; color:#aaa; margin-left:10px;">[Autosaves Locally]</span>
+</h1>
+
+<!-- Data Controls -->
+<div style="text-align:right; margin-right:1rem; margin-top:-10px;">
+  <button onclick="exportData()">📤 Export</button>
+  <label style="display:inline-block; cursor:pointer;">
+    📥 Import<input onchange="importData(event)" style="display:none;" type="file"/>
+  </label>
+  <button class="top-right-reset" onclick="resetLayout()">⟳ Reset Layout</button>
+  <button onclick="saveLayout()" style="background:#333; color:var(--accent);">💾 Save Layout</button>
+<button onclick="autosave(); alert('Character data saved!')" style="background:#333; color:var(--accent);">📥 Save Data</button>
+
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-tab="page1" onclick="switchTab(this)">Stats</button>
+  <button class="tab" data-tab="page2" onclick="switchTab(this)">Background</button>
+  <button class="tab" data-tab="page3" onclick="switchTab(this)">Spells</button>
+  <button class="tab" data-tab="page4" onclick="switchTab(this)">Inventory</button>
+  <button class="tab" data-tab="page5" onclick="switchTab(this)">Gambling</button>
+  <button class="tab" data-tab="page6" onclick="switchTab(this)">Notes</button>
+</div>
+
+<!-- Pages -->
+<div id="pages">
+  
+  <!-- Stats Page -->
+  <div class="page active" id="page1">
+    <div class="flex-wrap">
+      
+      <!-- Ability Scores -->
+      <div class="section">
+        <h2>Ability Scores</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="ability-row">
+            <div class="ability-col">
+              <label>STR</label>
+              <input id="str" oninput="autosave()"/>
+            </div>
+            <div class="ability-col">
+              <label>STR Bonus</label>
+              <input id="str_bonus" oninput="autosave()"/>
+            </div>
+          </div>
+          <div class="ability-row">
+            <div class="ability-col">
+              <label>DEX</label>
+              <input id="dex" oninput="autosave()"/>
+            </div>
+            <div class="ability-col">
+              <label>DEX Bonus</label>
+              <input id="dex_bonus" oninput="autosave()"/>
+            </div>
+          </div>
+          <div class="ability-row">
+            <div class="ability-col">
+              <label>CON</label>
+              <input id="con" oninput="autosave()"/>
+            </div>
+            <div class="ability-col">
+              <label>CON Bonus</label>
+              <input id="con_bonus" oninput="autosave()"/>
+            </div>
+          </div>
+          <div class="ability-row">
+            <div class="ability-col">
+              <label>INT</label>
+              <input id="int" oninput="autosave()"/>
+            </div>
+            <div class="ability-col">
+              <label>INT Bonus</label>
+              <input id="int_bonus" oninput="autosave()"/>
+            </div>
+          </div>
+          <div class="ability-row">
+            <div class="ability-col">
+              <label>WIS</label>
+              <input id="wis" oninput="autosave()"/>
+            </div>
+            <div class="ability-col">
+              <label>WIS Bonus</label>
+              <input id="wis_bonus" oninput="autosave()"/>
+            </div>
+          </div>
+          <div class="ability-row">
+            <div class="ability-col">
+              <label>CHA</label>
+              <input id="cha" oninput="autosave()"/>
+            </div>
+            <div class="ability-col">
+              <label>CHA Bonus</label>
+              <input id="cha_bonus" oninput="autosave()"/>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Combat Stats -->
+        <h3 style="margin-top: 15px;">Combat Stats</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label>AC</label>
+            <input id="ac" oninput="autosave()"/>
+            <label>Initiative</label>
+            <input id="initiative" oninput="autosave()"/>
+          </div>
+          <div>
+            <label>Speed</label>
+            <input id="speed" oninput="autosave()"/>
+            <label>Prof. Bonus</label>
+            <input id="prof_bonus" oninput="autosave()"/>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Skills -->
+      <div class="section">
+        <h2>Skills</h2>
+        <div class="skills-container">
+          <div class="skill-row">
+            <input id="prof_acrobatics" oninput="autosave()" type="checkbox"/>
+            <label for="prof_acrobatics">Acrobatics (Dex)</label>
+            <input id="bonus_acrobatics" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_animal_handling" oninput="autosave()" type="checkbox"/>
+            <label for="prof_animal_handling">Animal Handling (Wis)</label>
+            <input id="bonus_animal_handling" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_arcana" oninput="autosave()" type="checkbox"/>
+            <label for="prof_arcana">Arcana (Int)</label>
+            <input id="bonus_arcana" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_athletics" oninput="autosave()" type="checkbox"/>
+            <label for="prof_athletics">Athletics (Str)</label>
+            <input id="bonus_athletics" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_deception" oninput="autosave()" type="checkbox"/>
+            <label for="prof_deception">Deception (Cha)</label>
+            <input id="bonus_deception" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_history" oninput="autosave()" type="checkbox"/>
+            <label for="prof_history">History (Int)</label>
+            <input id="bonus_history" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_insight" oninput="autosave()" type="checkbox"/>
+            <label for="prof_insight">Insight (Wis)</label>
+            <input id="bonus_insight" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_intimidation" oninput="autosave()" type="checkbox"/>
+            <label for="prof_intimidation">Intimidation (Cha)</label>
+            <input id="bonus_intimidation" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_investigation" oninput="autosave()" type="checkbox"/>
+            <label for="prof_investigation">Investigation (Int)</label>
+            <input id="bonus_investigation" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_medicine" oninput="autosave()" type="checkbox"/>
+            <label for="prof_medicine">Medicine (Wis)</label>
+            <input id="bonus_medicine" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_nature" oninput="autosave()" type="checkbox"/>
+            <label for="prof_nature">Nature (Int)</label>
+            <input id="bonus_nature" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_perception" oninput="autosave()" type="checkbox"/>
+            <label for="prof_perception">Perception (Wis)</label>
+            <input id="bonus_perception" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_performance" oninput="autosave()" type="checkbox"/>
+            <label for="prof_performance">Performance (Cha)</label>
+            <input id="bonus_performance" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_persuasion" oninput="autosave()" type="checkbox"/>
+            <label for="prof_persuasion">Persuasion (Cha)</label>
+            <input id="bonus_persuasion" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_religion" oninput="autosave()" type="checkbox"/>
+            <label for="prof_religion">Religion (Int)</label>
+            <input id="bonus_religion" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_sleight_of_hand" oninput="autosave()" type="checkbox"/>
+            <label for="prof_sleight_of_hand">Sleight of Hand (Dex)</label>
+            <input id="bonus_sleight_of_hand" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_stealth" oninput="autosave()" type="checkbox"/>
+            <label for="prof_stealth">Stealth (Dex)</label>
+            <input id="bonus_stealth" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+          <div class="skill-row">
+            <input id="prof_survival" oninput="autosave()" type="checkbox"/>
+            <label for="prof_survival">Survival (Wis)</label>
+            <input id="bonus_survival" oninput="autosave()" type="text" placeholder="+0"/>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Health -->
+      <div class="section">
+        <h2>Health</h2>
+        <label>Max HP</label>
+        <input id="max_hp" oninput="autosave()" type="number"/>
+        <label>Current HP</label>
+        <input id="curr_hp" oninput="autosave()" type="number"/>
+        
+        <div style="margin: 10px 0; display: flex; gap: 5px;">
+          <button onclick="adjustHP(1)">+1</button>
+          <button onclick="adjustHP(-1)">-1</button>
+          <button onclick="showHPPopup()">Custom Adjust</button>
+        </div>
+        
+        <p id="temp_hp_note" style="color: gold;"></p>
+        
+        <div style="display: flex; gap: 5px; margin-top: 10px;">
+          <button onclick="shortRest()">Short Rest</button>
+          <button onclick="longRest()">Long Rest</button>
+        </div>
+        
+        <!-- Death Saves -->
+        <h3 style="margin-top: 15px;">Death Saves</h3>
+        <div style="display: flex; justify-content: space-between;">
+          <div>
+            <label>Success</label>
+            <div style="display: flex; gap: 5px;">
+              <input type="checkbox" id="death_save_success_1" oninput="autosave()"/>
+              <input type="checkbox" id="death_save_success_2" oninput="autosave()"/>
+              <input type="checkbox" id="death_save_success_3" oninput="autosave()"/>
+            </div>
+          </div>
+          <div>
+            <label>Failure</label>
+            <div style="display: flex; gap: 5px;">
+              <input type="checkbox" id="death_save_failure_1" oninput="autosave()"/>
+              <input type="checkbox" id="death_save_failure_2" oninput="autosave()"/>
+              <input type="checkbox" id="death_save_failure_3" oninput="autosave()"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Conditions -->
+      <div class="section">
+        <h2>Conditions 
+          <button onclick="showConditionPopup()" style="float: right; padding: 2px 6px; font-size: 0.8rem;">+ Add</button>
+        </h2>
+        <div id="conditions_container">
+          <!-- Conditions will be added here dynamically -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- Weapons and Equipment at bottom -->
+    <div class="horizontal-sections">
+      <!-- Weapons -->
+      <div class="section">
+        <h2>Weapons 
+          <button onclick="showWeaponsPopup()" style="float: right; padding: 2px 6px; font-size: 0.8rem;">✎ Edit</button>
+        </h2>
+        <div id="weapons_preview">
+          <!-- Weapons preview will be shown here -->
+        </div>
+      </div>
+      
+      <!-- Updated Actions & Features Section -->
+      <div class="section">
+        <h2>Actions & Features</h2>
+        <textarea id="actions_features" class="basic-textarea" 
+                  oninput="autosave()" placeholder="Enter your actions and features here..."></textarea>
+      </div>
+      
+      <!-- Equipment -->
+      <div class="section">
+        <h2>Equipment 
+          <button onclick="showEquipmentPopup()" style="float: right; padding: 2px 6px; font-size: 0.8rem;">✎ Edit</button>
+        </h2>
+        <div id="equipment_preview">
+          <!-- Equipment preview will be shown here -->
+        </div>
+      </div>
+    </div>
+    
+    <!-- Quick Notes -->
+    <div class="section">
+      <h2>Quick Notes</h2>
+      <textarea id="stats_quick_notes" class="basic-textarea" 
+                oninput="autosave()" placeholder="Jot down quick notes here..."></textarea>
+    </div>
+  </div>
+  
+  <!-- Background Page -->
+  <div class="page" id="page2">
+    <div class="background-grid">
+<div class="section resizable">
+  <h2>Portrait</h2>
+  <div class="portrait-container" id="portraitPreview">
+    <span style="color: #666;">No image</span>
+  </div>
+  <input type="file" id="portraitUpload" accept="image/*" style="width: 100%; margin-bottom: 10px;"/>
+  <button onclick="removePortrait()" style="width: 100%;">Remove Portrait</button>
+</div>
+      <!-- Updated Background Sections with Direct Textareas -->
+      <div class="section">
+        <h2>Backstory</h2>
+        <textarea id="char_backstory" class="basic-textarea" 
+                  oninput="autosave()" placeholder="Enter your character's backstory here..."></textarea>
+      </div>
+    </div>
+    
+    <div class="background-textareas">
+      <div class="section">
+        <h3>Personality Traits</h3>
+        <textarea id="personality_traits" class="basic-textarea" 
+                  oninput="autosave()" placeholder="Describe your character's personality traits..."></textarea>
+      </div>
+      
+      <div class="section">
+        <h3>Ideals</h3>
+        <textarea id="traits_ideals" class="basic-textarea" 
+                  oninput="autosave()" placeholder="What ideals drive your character?"></textarea>
+      </div>
+      
+      <div class="section">
+        <h3>Bonds</h3>
+        <textarea id="traits_bonds" class="basic-textarea" 
+                  oninput="autosave()" placeholder="What bonds tie your character to people, places, or events?"></textarea>
+      </div>
+      
+      <div class="section">
+        <h3>Flaws</h3>
+        <textarea id="traits_flaws" class="basic-textarea" 
+                  oninput="autosave()" placeholder="What flaws or weaknesses does your character have?"></textarea>
+      </div>
+      
+      <div class="section">
+        <h3>Allies & Organizations</h3>
+        <textarea id="traits_allies" class="basic-textarea" 
+                  oninput="autosave()" placeholder="List your character's allies and organizations they belong to..."></textarea>
+      </div>
+      
+      <div class="section">
+        <h3>Appearance</h3>
+        <textarea id="traits_appearance" class="basic-textarea" 
+                  oninput="autosave()" placeholder="Describe your character's physical appearance..."></textarea>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Spells Page -->
+  <div class="page" id="page3">
+    <div class="section">
+      <h2>Spellbook</h2>
+      <textarea id="spell_notes" class="basic-textarea" 
+                oninput="autosave()" placeholder="Enter your spells and spellbook details here..."></textarea>
+    </div>
+  </div>
+  
+  <!-- Inventory Page -->
+  <div class="page" id="page4">
+    <!-- Equipment section first -->
+    <div class="section">
+      <h2>Equipment</h2>
+      <table id="equipment_table_inventory">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Bonus</th>
+            <th>Weight (lbs)</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Equipment will be added here -->
+        </tbody>
+      </table>
+      <button onclick="showEquipmentPopup()" style="margin-top: 10px;">+ Add Equipment</button>
+      <div class="weight-display" id="equipment_weight_total">Total: 0 lbs / 0 kg</div>
+    </div>
+    
+    <!-- Main inventory second -->
+    <div class="section">
+      <div class="inventory-controls">
+        <h2>Inventory</h2>
+        <div>
+          Gold: <input id="gold_field" oninput="autosave()" style="width:100px;" type="number" value="0"/>
+        </div>
+      </div>
+      
+      <table id="inventory_table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Description</th>
+            <th>Notes</th>
+            <th>Weight (lbs)</th>
+            <th>Weight (kg)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Inventory items will be added here -->
+        </tbody>
+      </table>
+      <button onclick="showAddItemPopup()" style="margin-top: 10px;">+ Add Item</button>
+      <div class="weight-display" id="inventory_weight_total">Total: 0 lbs / 0 kg</div>
+    </div>
+    
+    <!-- Extra containers last -->
+    <div id="extra_containers">
+      <!-- Additional containers will be added here -->
+    </div>
+    
+    <div class="section">
+      <h3>Add New Storage</h3>
+      <label>Container Name:</label>
+      <input id="container_name" type="text" placeholder="e.g. Backpack, Bag of Holding"/>
+      
+      <label>Max Weight (lbs):</label>
+      <input id="container_max_weight" type="number" placeholder="0 for unlimited"/>
+      
+      <button onclick="addExtraContainer()" style="margin-top: 10px;">+ Add Storage</button>
+    </div>
+  </div>
+  
+  <!-- Gambling Page -->
+  <div class="page" id="page5">
+    <div class="section" style="margin-bottom: 20px;">
+      <h2>🎰 Chip Exchange & Betting</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+        <div>
+          <label>💰 Inventory Gold: </label>
+          <input id="inventory_gold_display" readonly style="width: 100px;" type="number"/>
+        </div>
+        <div>
+          <label>🎟 Chips: </label>
+          <input id="chip_balance" readonly style="width: 100px;" type="number" value="0"/>
+        </div>
+        <div>
+          <label>Exchange Gold → Chips:</label>
+          <input id="deposit_amount" placeholder="e.g. 100" style="width: 100px;" type="number"/>
+          <button onclick="exchangeChips()">Exchange</button>
+        </div>
+        <div>
+          <label>Withdraw Chips → Gold:</label>
+          <button onclick="cashOutChips()">Cash Out</button>
+        </div>
+        <div>
+          <label>💸 Bet Amount:</label>
+          <input id="bet_amount" placeholder="e.g. 10" style="width: 80px;" type="number"/>
+          <button onclick="confirmBet()">Confirm Bet</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="flex-wrap">
+      <div class="section" id="blackjack">
+        <h2>♠️ Blackjack</h2>
+        <p id="bj_output">Click deal to begin.</p>
+        <button onclick="bjDeal()">Deal</button>
+        <button onclick="bjHit()">Hit</button>
+        <button onclick="bjStand()">Stand</button>
+      </div>
+      
+      <div class="section" id="roulette">
+        <h2>🎯 Roulette (1–20)</h2>
+        <p>Current Bet: <span id="current_bet_display">0</span> chips</p>
+        <button onclick="showRoulettePopup()">Place Number Bet</button>
+        <p id="roulette_output"></p>
+      </div>
+      
+      <div class="section" id="gamble_log">
+        <h2>🎖️ Gambling Log</h2>
+        <div id="log_output" style="max-height:200px; overflow:auto; background:#111; padding:0.5rem; border:1px solid #333;"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Notes Page -->
+  <div class="page" id="page6">
+    <div class="section">
+      <h2>General Notes</h2>
+      <textarea id="general_notes" class="basic-textarea" 
+                oninput="autosave()" placeholder="Enter general notes about your character or campaign..."></textarea>
+    </div>
+    
+    <div class="section">
+      <h2>Quest Log</h2>
+      <textarea id="quest_log" class="basic-textarea" 
+                oninput="autosave()" placeholder="Track your quests and objectives here..."></textarea>
+    </div>
+    
+    <div class="section">
+      <h2>NPC Notes</h2>
+      <textarea id="npc_notes" class="basic-textarea" 
+                oninput="autosave()" placeholder="Record information about NPCs you encounter..."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- Popups -->
+<div class="popup-backdrop" id="popupBackdrop"></div>
+
+<!-- HP Adjustment Popup -->
+<div class="popup" id="hpPopup">
+  <h3>Adjust HP</h3>
+  <label>Amount:</label>
+  <input type="number" id="hp_adjust_amount" value="1"/>
+  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+    <button onclick="adjustHP(1)">Add HP</button>
+    <button onclick="adjustHP(-1)">Remove HP</button>
+    <button onclick="closePopup('hpPopup')">Cancel</button>
+  </div>
+</div>
+
+<!-- Condition Popup -->
+<div class="popup" id="conditionPopup">
+  <h3>Add Condition</h3>
+  <label>Condition Name:</label>
+  <input type="text" id="condition_name" placeholder="e.g. Poisoned"/>
+  
+  <label>Duration (turns):</label>
+  <input type="number" id="condition_turns" placeholder="Leave blank for indefinite"/>
+  
+  <label>Effect:</label>
+  <textarea id="condition_effect" placeholder="Describe the effect"></textarea>
+  
+  <label>Color:</label>
+  <select id="condition_color">
+    <option value="red">Red</option>
+    <option value="blue">Blue</option>
+    <option value="green">Green</option>
+  </select>
+  
+  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+    <button onclick="addCondition()">Add Condition</button>
+    <button onclick="closePopup('conditionPopup')">Cancel</button>
+  </div>
+</div>
+
+<!-- Notes Editor Popup -->
+<div class="popup" id="notesPopup">
+  <h3 id="notesPopupTitle">Edit Notes</h3>
+  <textarea id="notesPopupTextarea" rows="12"></textarea>
+  <input type="hidden" id="notesPopupTargetId"/>
+  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+    <button onclick="saveNotes()">Save</button>
+    <button onclick="closePopup('notesPopup')">Cancel</button>
+  </div>
+</div>
+
+<!-- Add Item Popup -->
+<div class="popup" id="addItemPopup">
+  <h3>Add Inventory Item</h3>
+  <label>Item Name:</label>
+  <input type="text" id="item_name" placeholder="e.g. Health Potion"/>
+  
+  <label>Description:</label>
+  <input type="text" id="item_description" placeholder="Brief description"/>
+  
+  <label>Notes:</label>
+  <input type="text" id="item_notes" placeholder="Any special notes"/>
+  
+  <label>Weight (lbs):</label>
+  <input type="number" id="item_weight" step="0.1" placeholder="0.1"/>
+  
+  <label>Container:</label>
+  <select id="item_container">
+    <option value="main">Main Inventory</option>
+  </select>
+  
+  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+    <button onclick="addInventoryItem()">Add Item</button>
+    <button onclick="closePopup('addItemPopup')">Cancel</button>
+  </div>
+</div>
+
+<!-- Weapons Editor Popup -->
+<div class="popup" id="weaponsPopup">
+  <h3>Edit Weapons</h3>
+  <table id="weapons_table_popup" style="width: 100%;">
+    <thead>
+      <tr>
+        <th>Weapon</th>
+        <th>To Hit</th>
+        <th>Dmg</th>
+        <th>Bonus Dmg</th>
+        <th>Notes</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Weapons will be added here -->
+    </tbody>
+  </table>
+  <button onclick="addWeapon()" style="margin-top: 10px;">+ Add Weapon</button>
+  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+    <button onclick="updateWeaponsPreview(); closePopup('weaponsPopup')">Save</button>
+    <button onclick="closePopup('weaponsPopup')">Cancel</button>
+  </div>
+</div>
+
+<!-- Equipment Editor Popup -->
+<div class="popup" id="equipmentPopup">
+  <h3>Edit Equipment</h3>
+  <table id="equipment_table_popup" style="width: 100%;">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Bonus</th>
+        <th>Weight (lbs)</th>
+        <th>Notes</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Equipment will be added here -->
+    </tbody>
+  </table>
+  <button onclick="addEquipment()" style="margin-top: 10px;">+ Add Equipment</button>
+  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+    <button onclick="updateEquipmentPreviews(); closePopup('equipmentPopup')">Save</button>
+    <button onclick="closePopup('equipmentPopup')">Cancel</button>
+  </div>
+</div>
+
+<!-- Roulette Popup -->
+<div class="popup" id="roulettePopup">
+  <h3>🎯 Roulette (1-20)</h3>
+  <p>Pick a number - Red is odd, Black is even</p>
+  <p>Triple payout if correct number+color<br>1.5x for correct color only</p>
+  
+  <div class="roulette-numbers" id="rouletteNumbers">
+    <!-- Numbers will be generated here by JavaScript -->
+  </div>
+  
+  <button onclick="closePopup('roulettePopup')">Cancel</button>
+</div>
+
+<!-- Item Details Popup -->
+<div class="popup" id="itemDetailsPopup">
+  <h3 id="itemDetailsTitle">Item Details</h3>
+  <div id="itemDetailsContent"></div>
+  <div style="margin-top: 15px;">
+    <button onclick="closePopup('itemDetailsPopup')">Close</button>
+  </div>
+</div>
+
+<!-- Script Section -->
+<script>
+// ========== GLOBAL VARIABLES ==========
+let chips = 0;
+let currentBet = 0;
+let currentRouletteNumber = null;
+let weaponsData = [];
+let equipmentData = [];
+let bjDeck = [];
+let bjPlayerHand = [];
+let bjDealerHand = [];
+let bjGameActive = false;
+
+// ========== WEIGHT CALCULATION FUNCTIONS ==========
+function updateWeight() {
+  let totalWeight = 0;
+  const rows = document.querySelectorAll('#inventory_table tbody tr');
+  
+  rows.forEach(row => {
+    const weightCell = row.cells[3];
+    totalWeight += parseFloat(weightCell.textContent) || 0;
+  });
+  
+  document.getElementById('inventory_weight_total').textContent = 
+    `Total: ${totalWeight.toFixed(1)} lbs / ${(totalWeight * 0.453592).toFixed(1)} kg`;
+}
+
+function updateContainerWeight(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  let totalWeight = 0;
+  const rows = container.querySelectorAll('tbody tr');
+  
+  rows.forEach(row => {
+    const weightCell = row.cells[3];
+    totalWeight += parseFloat(weightCell.textContent) || 0;
+  });
+  
+  const weightDisplay = container.querySelector('.weight-display');
+  if (weightDisplay) {
+    weightDisplay.textContent = 
+      `Current: ${totalWeight.toFixed(1)} lbs / ${(totalWeight * 0.453592).toFixed(1)} kg`;
+  }
+}
+
+// ========== PORTRAIT FUNCTIONS ==========
+function handlePortraitUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const portraitPreview = document.getElementById('portraitPreview');
+    portraitPreview.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.style.maxWidth = '100%';
+    img.style.maxHeight = '100%';
+    portraitPreview.appendChild(img);
+    autosave();
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePortrait() {
+  const portraitPreview = document.getElementById('portraitPreview');
+  portraitPreview.innerHTML = '<span style="color: #666;">No image</span>';
+  document.getElementById('portraitUpload').value = '';
+  autosave();
+}
+
+// ========== POPUP FUNCTIONS ==========
+function showPopup(id) {
+  closeAllPopups();
+  const popup = document.getElementById(id);
+  if (popup) {
+    popup.style.display = 'block';
+    document.getElementById('popupBackdrop').style.display = 'block';
+    popup.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  }
+}
+
+function closePopup(id) {
+  const popup = document.getElementById(id);
+  if (popup) popup.style.display = 'none';
+  
+  const anyPopupOpen = document.querySelector('.popup[style*="display: block"]');
+  if (!anyPopupOpen) {
+    document.getElementById('popupBackdrop').style.display = 'none';
+  }
+}
+
+function closeAllPopups() {
+  document.querySelectorAll('.popup').forEach(popup => {
+    popup.style.display = 'none';
+  });
+  document.getElementById('popupBackdrop').style.display = 'none';
+}
+
+// Initialize backdrop click handler
+document.getElementById('popupBackdrop').addEventListener('click', closeAllPopups);
+
+// ========== TAB SYSTEM ==========
+function switchTab(button) {
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+  
+  button.classList.add('active');
+  const tabId = button.getAttribute('data-tab');
+  document.getElementById(tabId).classList.add('active');
+}
+
+// ========== HEALTH SYSTEM ==========
+function adjustHP(amount) {
+  const currHP = document.getElementById('curr_hp');
+  let newHP = parseInt(currHP.value) + amount;
+  if (isNaN(newHP)) newHP = 0;
+  currHP.value = Math.max(0, newHP);
+  autosave();
+}
+
+function showHPPopup() {
+  document.getElementById('hp_adjust_amount').value = 1;
+  showPopup('hpPopup');
+}
+
+function shortRest() {
+  alert("Short rest functionality will be added");
+}
+
+function longRest() {
+  const currHP = document.getElementById('curr_hp');
+  const maxHP = document.getElementById('max_hp');
+  currHP.value = maxHP.value;
+  
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById(`death_save_success_${i}`).checked = false;
+    document.getElementById(`death_save_failure_${i}`).checked = false;
+  }
+  
+  autosave();
+  alert("Long rest completed - HP restored, death saves reset");
+}
+
+// ========== CONDITIONS SYSTEM ==========
+function showConditionPopup() {
+  document.getElementById('condition_name').value = '';
+  document.getElementById('condition_turns').value = '';
+  document.getElementById('condition_effect').value = '';
+  document.getElementById('condition_color').value = 'red';
+  showPopup('conditionPopup');
+}
+
+function addCondition() {
+  const name = document.getElementById('condition_name').value;
+  const turns = document.getElementById('condition_turns').value;
+  const effect = document.getElementById('condition_effect').value;
+  const color = document.getElementById('condition_color').value;
+  
+  if (!name) {
+    alert("Please enter a condition name");
+    return;
+  }
+  
+  const conditionId = Date.now();
+  const conditionHTML = `
+    <div class="condition ${color}" id="condition_${conditionId}">
+      <div class="condition-header">
+        <span>${name}</span>
+        <span class="condition-turns">${turns ? turns + ' turns' : 'Indefinite'}</span>
+      </div>
+      <div>${effect}</div>
+      <button onclick="removeCondition('${conditionId}')" style="float:right; padding:2px 5px; margin-top:5px;">Remove</button>
+    </div>
+  `;
+  
+  document.getElementById('conditions_container').insertAdjacentHTML('beforeend', conditionHTML);
+  closePopup('conditionPopup');
+  autosave();
+}
+
+function removeCondition(id) {
+  document.getElementById(`condition_${id}`).remove();
+  autosave();
+}
+
+// ========== WEAPONS SYSTEM ==========
+function showWeaponsPopup() {
+  const tbody = document.getElementById('weapons_table_popup').querySelector('tbody');
+  tbody.innerHTML = '';
+  
+  weaponsData.forEach((weapon, index) => {
+    const row = tbody.insertRow();
+    row.innerHTML = `
+      <td><input type="text" value="${weapon.name || ''}" oninput="weaponsData[${index}].name = this.value"></td>
+      <td><input type="text" value="${weapon.toHit || ''}" oninput="weaponsData[${index}].toHit = this.value"></td>
+      <td><input type="text" value="${weapon.damage || ''}" oninput="weaponsData[${index}].damage = this.value"></td>
+      <td><input type="text" value="${weapon.bonusDamage || ''}" oninput="weaponsData[${index}].bonusDamage = this.value"></td>
+      <td><input type="text" value="${weapon.notes || ''}" oninput="weaponsData[${index}].notes = this.value"></td>
+      <td><button onclick="weaponsData.splice(${index}, 1); showWeaponsPopup()">Remove</button></td>
+    `;
+  });
+  
+  showPopup('weaponsPopup');
+}
+
+function addWeapon() {
+  weaponsData.push({ name: '', toHit: '', damage: '', bonusDamage: '', notes: '' });
+  showWeaponsPopup();
+}
+
+function updateWeaponsPreview() {
+  const preview = document.getElementById('weapons_preview');
+  preview.innerHTML = '';
+  
+  if (weaponsData.length === 0) {
+    preview.innerHTML = '<p>No weapons added</p>';
+    return;
+  }
+  
+  const table = document.createElement('table');
+  const header = table.createTHead();
+  const headerRow = header.insertRow();
+  headerRow.innerHTML = '<th>Weapon</th><th>To Hit</th><th>Dmg</th>';
+  
+  const body = table.createTBody();
+  weaponsData.forEach(weapon => {
+    const row = body.insertRow();
+    row.className = 'item-row';
+    row.innerHTML = `
+      <td>${weapon.name || '-'}</td>
+      <td>${weapon.toHit || '-'}</td>
+      <td>${weapon.damage || '-'}</td>
+    `;
+    row.onclick = () => showItemDetails(weapon, 'weapon');
+  });
+  
+  preview.appendChild(table);
+  autosave();
+}
+
+// ========== EQUIPMENT SYSTEM ==========
+function showEquipmentPopup() {
+  const tbody = document.getElementById('equipment_table_popup').querySelector('tbody');
+  tbody.innerHTML = '';
+  
+  equipmentData.forEach((item, index) => {
+    const row = tbody.insertRow();
+    row.innerHTML = `
+      <td><input type="text" value="${item.name || ''}" oninput="equipmentData[${index}].name = this.value"></td>
+      <td><input type="text" value="${item.type || ''}" oninput="equipmentData[${index}].type = this.value"></td>
+      <td><input type="text" value="${item.bonus || ''}" oninput="equipmentData[${index}].bonus = this.value"></td>
+      <td><input type="number" value="${item.weight || 0}" step="0.1" oninput="equipmentData[${index}].weight = parseFloat(this.value) || 0"></td>
+      <td><input type="text" value="${item.notes || ''}" oninput="equipmentData[${index}].notes = this.value"></td>
+      <td><button onclick="equipmentData.splice(${index}, 1); updateEquipmentPreviews()">Remove</button></td>
+    `;
+  });
+  
+  showPopup('equipmentPopup');
+}
+
+function addEquipment() {
+  equipmentData.push({ name: '', type: '', bonus: '', weight: 0, notes: '' });
+  showEquipmentPopup();
+}
+
+function updateEquipmentPreviews() {
+  const preview = document.getElementById('equipment_preview');
+  preview.innerHTML = '';
+  
+  if (equipmentData.length === 0) {
+    preview.innerHTML = '<p>No equipment added</p>';
+    return;
+  }
+  
+  const table = document.createElement('table');
+  const header = table.createTHead();
+  const headerRow = header.insertRow();
+  headerRow.innerHTML = '<th>Name</th><th>Type</th><th>Bonus</th>';
+  
+  const body = table.createTBody();
+  equipmentData.forEach(item => {
+    const row = body.insertRow();
+    row.className = 'item-row';
+    row.innerHTML = `
+      <td>${item.name || '-'}</td>
+      <td>${item.type || '-'}</td>
+      <td>${item.bonus || '-'}</td>
+    `;
+    row.onclick = () => showItemDetails(item, 'equipment');
+  });
+  
+  preview.appendChild(table);
+  
+  const inventoryTbody = document.getElementById('equipment_table_inventory').querySelector('tbody');
+  inventoryTbody.innerHTML = '';
+  
+  equipmentData.forEach((item, index) => {
+    const row = inventoryTbody.insertRow();
+    row.className = 'item-row';
+    row.innerHTML = `
+      <td>${item.name || ''}</td>
+      <td>${item.type || ''}</td>
+      <td>${item.bonus || ''}</td>
+      <td>${item.weight || 0}</td>
+      <td>${item.notes || ''}</td>
+      <td><button onclick="equipmentData.splice(${index}, 1); updateEquipmentPreviews(); updateEquipmentWeight()">Remove</button></td>
+    `;
+    row.onclick = () => showItemDetails(item, 'equipment');
+  });
+  
+  updateEquipmentWeight();
+  autosave();
+}
+
+function updateEquipmentWeight() {
+  let totalWeight = equipmentData.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0);
+  document.getElementById('equipment_weight_total').textContent = 
+    `Total: ${totalWeight.toFixed(1)} lbs / ${(totalWeight * 0.453592).toFixed(1)} kg`;
+}
+
+// ========== ITEM DETAILS ==========
+function showItemDetails(item, type) {
+  document.getElementById('itemDetailsTitle').textContent = item.name || 'Unnamed Item';
+  
+  let content = '';
+  if (type === 'weapon') {
+    content = `
+      <p><strong>To Hit:</strong> ${item.toHit || '-'}</p>
+      <p><strong>Damage:</strong> ${item.damage || '-'}</p>
+      <p><strong>Bonus Damage:</strong> ${item.bonusDamage || '-'}</p>
+      <p><strong>Notes:</strong> ${item.notes || '-'}</p>
+    `;
+  } else if (type === 'equipment') {
+    content = `
+      <p><strong>Type:</strong> ${item.type || '-'}</p>
+      <p><strong>Bonus:</strong> ${item.bonus || '-'}</p>
+      <p><strong>Weight:</strong> ${item.weight || 0} lbs (${(item.weight * 0.453592).toFixed(2)} kg)</p>
+      <p><strong>Notes:</strong> ${item.notes || '-'}</p>
+    `;
+  } else if (type === 'inventory') {
+    content = `
+      <p><strong>Description:</strong> ${item.description || '-'}</p>
+      <p><strong>Weight:</strong> ${item.weight || 0} lbs (${(item.weight * 0.453592).toFixed(2)} kg)</p>
+      <p><strong>Notes:</strong> ${item.notes || '-'}</p>
+    `;
+  }
+  
+  document.getElementById('itemDetailsContent').innerHTML = content;
+  showPopup('itemDetailsPopup');
+}
+
+// ========== DATA MANAGEMENT ==========
+function autosave() {
+  const data = {
+    // Page 1: Stats
+    page1: {
+      abilities: ['str','dex','con','int','wis','cha'].reduce((obj,ability) => {
+        obj[ability] = document.getElementById(ability).value;
+        obj[`${ability}_bonus`] = document.getElementById(`${ability}_bonus`).value;
+        return obj;
+      }, {}),
+      combatStats: {
+        ac: document.getElementById('ac').value,
+        initiative: document.getElementById('initiative').value,
+        speed: document.getElementById('speed').value,
+        prof_bonus: document.getElementById('prof_bonus').value
+      },
+      health: {
+        max_hp: document.getElementById('max_hp').value,
+        curr_hp: document.getElementById('curr_hp').value
+      },
+      skills: ['acrobatics','animal_handling','arcana','athletics','deception','history',
+               'insight','intimidation','investigation','medicine','nature','perception',
+               'performance','persuasion','religion','sleight_of_hand','stealth','survival']
+               .reduce((obj,skill) => {
+        obj[`prof_${skill}`] = document.getElementById(`prof_${skill}`).checked;
+        obj[`bonus_${skill}`] = document.getElementById(`bonus_${skill}`).value;
+        return obj;
+      }, {}),
+      deathSaves: {
+        success: [
+          document.getElementById('death_save_success_1').checked,
+          document.getElementById('death_save_success_2').checked,
+          document.getElementById('death_save_success_3').checked
+        ],
+        failure: [
+          document.getElementById('death_save_failure_1').checked,
+          document.getElementById('death_save_failure_2').checked,
+          document.getElementById('death_save_failure_3').checked
+        ]
+      },
+      actionsFeatures: document.getElementById('actions_features').value,
+      statsQuickNotes: document.getElementById('stats_quick_notes').value
+    },
+    
+    // Page 2: Background
+    page2: {
+      portrait: document.getElementById('portraitPreview').querySelector('img')?.src || null,
+      backstory: document.getElementById('char_backstory').value,
+      traits: {
+        personality: document.getElementById('personality_traits').value,
+        ideals: document.getElementById('traits_ideals').value,
+        bonds: document.getElementById('traits_bonds').value,
+        flaws: document.getElementById('traits_flaws').value,
+        allies: document.getElementById('traits_allies').value,
+        appearance: document.getElementById('traits_appearance').value
+      }
+    },
+    
+    // Page 3: Spells
+    page3: {
+      spellNotes: document.getElementById('spell_notes').value
+    },
+    
+    // Page 4: Inventory
+    page4: {
+      gold: document.getElementById('gold_field').value,
+      equipment: equipmentData,
+      inventory: Array.from(document.querySelectorAll('#inventory_table tbody tr')).map(row => ({
+        name: row.cells[0].textContent,
+        description: row.cells[1].textContent,
+        notes: row.cells[2].textContent,
+        weight: parseFloat(row.cells[3].textContent) || 0
+      })),
+      containers: Array.from(document.querySelectorAll('#extra_containers .section')).map(container => ({
+        name: container.querySelector('h3').textContent,
+        maxWeight: container.querySelector('div').textContent.includes('Max Weight') ? 
+                   parseInt(container.querySelector('div').textContent.match(/\d+/)[0]) : 0,
+        items: Array.from(container.querySelectorAll('tbody tr')).map(row => ({
+          name: row.cells[0].textContent,
+          description: row.cells[1].textContent,
+          notes: row.cells[2].textContent,
+          weight: parseFloat(row.cells[3].textContent) || 0
+        }))
+      }))
+    },
+    
+    // Page 5: Gambling
+    page5: {
+      chips: chips,
+      currentBet: currentBet
+    },
+    
+    // Page 6: Notes
+    page6: {
+      generalNotes: document.getElementById('general_notes').value,
+      questLog: document.getElementById('quest_log').value,
+      npcNotes: document.getElementById('npc_notes').value
+    },
+    
+    // Weapons data
+    weapons: weaponsData,
+    
+    // Conditions
+    conditions: Array.from(document.querySelectorAll('#conditions_container .condition')).map(condition => ({
+      name: condition.querySelector('.condition-header').children[0].textContent,
+      turns: condition.querySelector('.condition-header').children[1].textContent,
+      effect: condition.children[1].textContent,
+      color: condition.classList.contains('blue') ? 'blue' : 
+             condition.classList.contains('green') ? 'green' : 'red'
+    }))
+  };
+  
+  localStorage.setItem('dndCharacterData', JSON.stringify(data));
+}
+
+function loadData() {
+  const savedData = localStorage.getItem('dndCharacterData');
+  if (!savedData) return;
+  
+  const data = JSON.parse(savedData);
+  
+  // Load Page 1: Stats
+  if (data.page1) {
+    // Abilities
+    for (const ability in data.page1.abilities) {
+      const element = document.getElementById(ability);
+      if (element) element.value = data.page1.abilities[ability];
+    }
+    
+    // Combat Stats
+    if (data.page1.combatStats) {
+      document.getElementById('ac').value = data.page1.combatStats.ac || '';
+      document.getElementById('initiative').value = data.page1.combatStats.initiative || '';
+      document.getElementById('speed').value = data.page1.combatStats.speed || '';
+      document.getElementById('prof_bonus').value = data.page1.combatStats.prof_bonus || '';
+    }
+    
+    // Health
+    if (data.page1.health) {
+      document.getElementById('max_hp').value = data.page1.health.max_hp || '';
+      document.getElementById('curr_hp').value = data.page1.health.curr_hp || '';
+    }
+    
+    // Skills
+    if (data.page1.skills) {
+      for (const skill in data.page1.skills) {
+        if (skill.startsWith('prof_')) {
+          const checkbox = document.getElementById(skill);
+          if (checkbox) checkbox.checked = data.page1.skills[skill];
+        } else if (skill.startsWith('bonus_')) {
+          const input = document.getElementById(skill);
+          if (input) input.value = data.page1.skills[skill];
+        }
+      }
+    }
+    
+    // Death Saves
+    if (data.page1.deathSaves) {
+      for (let i = 0; i < 3; i++) {
+        if (data.page1.deathSaves.success[i]) {
+          document.getElementById(`death_save_success_${i+1}`).checked = true;
+        }
+        if (data.page1.deathSaves.failure[i]) {
+          document.getElementById(`death_save_failure_${i+1}`).checked = true;
+        }
+      }
+    }
+    
+    // Actions & Features
+    if (data.page1.actionsFeatures) {
+      document.getElementById('actions_features').value = data.page1.actionsFeatures;
+    }
+    
+    // Quick Notes
+    if (data.page1.statsQuickNotes) {
+      document.getElementById('stats_quick_notes').value = data.page1.statsQuickNotes;
+    }
+  }
+  
+  // Load Page 2: Background
+  if (data.page2) {
+    // Portrait
+    if (data.page2.portrait) {
+      const img = document.createElement('img');
+      img.src = data.page2.portrait;
+      img.style.maxWidth = '100%';
+      img.style.maxHeight = '100%';
+      document.getElementById('portraitPreview').innerHTML = '';
+      document.getElementById('portraitPreview').appendChild(img);
+    }
+    
+    // Backstory
+    if (data.page2.backstory) {
+      document.getElementById('char_backstory').value = data.page2.backstory;
+    }
+    
+    // Traits
+    if (data.page2.traits) {
+      document.getElementById('personality_traits').value = data.page2.traits.personality || '';
+      document.getElementById('traits_ideals').value = data.page2.traits.ideals || '';
+      document.getElementById('traits_bonds').value = data.page2.traits.bonds || '';
+      document.getElementById('traits_flaws').value = data.page2.traits.flaws || '';
+      document.getElementById('traits_allies').value = data.page2.traits.allies || '';
+      document.getElementById('traits_appearance').value = data.page2.traits.appearance || '';
+    }
+  }
+  
+  // Load Page 3: Spells
+  if (data.page3 && data.page3.spellNotes) {
+    document.getElementById('spell_notes').value = data.page3.spellNotes;
+  }
+  
+  // Load Page 4: Inventory
+  if (data.page4) {
+    // Gold
+    if (data.page4.gold) {
+      document.getElementById('gold_field').value = data.page4.gold;
+      document.getElementById('inventory_gold_display').value = data.page4.gold;
+    }
+    
+    // Equipment
+    if (data.page4.equipment) {
+      equipmentData = data.page4.equipment;
+      updateEquipmentPreviews();
+    }
+    
+    // Main Inventory
+    if (data.page4.inventory) {
+      const tbody = document.getElementById('inventory_table').querySelector('tbody');
+      tbody.innerHTML = '';
+      
+      data.page4.inventory.forEach(item => {
+        const row = tbody.insertRow();
+        row.className = 'item-row';
+        row.innerHTML = `
+          <td>${item.name || ''}</td>
+          <td>${item.description || ''}</td>
+          <td>${item.notes || ''}</td>
+          <td>${item.weight || 0}</td>
+          <td>${(item.weight * 0.453592).toFixed(2)}</td>
+          <td><button onclick="this.closest('tr').remove(); updateWeight(); autosave()">Remove</button></td>
+        `;
+        row.onclick = () => showItemDetails(item, 'inventory');
+      });
+      
+      updateWeight();
+    }
+    
+    // Containers
+    if (data.page4.containers) {
+      const extraContainers = document.getElementById('extra_containers');
+      extraContainers.innerHTML = '';
+      const containerDropdown = document.getElementById('item_container');
+      
+      while (containerDropdown.children.length > 1) {
+        containerDropdown.removeChild(containerDropdown.lastChild);
+      }
+      
+      data.page4.containers.forEach(containerData => {
+        const containerId = 'container_' + Date.now();
+        const containerHTML = `
+          <div class="section" id="${containerId}">
+            <div class="inventory-controls">
+              <h3>${containerData.name}</h3>
+              ${containerData.maxWeight > 0 ? `<div>Max Weight: ${containerData.maxWeight} lbs</div>` : ''}
+              <button class="delete-container-btn" onclick="confirmContainerDeletion('${containerId}')">Delete Container</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Description</th>
+                  <th>Notes</th>
+                  <th>Weight (lbs)</th>
+                  <th>Weight (kg)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${containerData.items.map(item => `
+                  <tr class="item-row">
+                    <td>${item.name || ''}</td>
+                    <td>${item.description || ''}</td>
+                    <td>${item.notes || ''}</td>
+                    <td>${item.weight || 0}</td>
+                    <td>${(item.weight * 0.453592).toFixed(2)}</td>
+                    <td><button onclick="this.closest('tr').remove(); updateContainerWeight('${containerId}'); autosave()">Remove</button></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            <button onclick="showAddContainerItemPopup('${containerId}')" style="margin-top: 10px;">+ Add Item</button>
+            <div class="weight-display">Current: ${containerData.items.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0).toFixed(1)} lbs / 
+              ${(containerData.items.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0) * 0.453592).toFixed(1)} kg</div>
+          </div>
+        `;
+        
+        extraContainers.insertAdjacentHTML('beforeend', containerHTML);
+        
+        containerData.items.forEach(item => {
+          const rows = document.querySelectorAll(`#${containerId} tbody tr`);
+          rows.forEach(row => {
+            if (row.cells[0].textContent === item.name) {
+              row.onclick = () => showItemDetails(item, 'inventory');
+            }
+          });
+        });
+        
+        const option = document.createElement('option');
+        option.value = containerId;
+        option.textContent = containerData.name;
+        containerDropdown.appendChild(option);
+      });
+    }
+  }
+  
+  // Load Page 5: Gambling
+  if (data.page5) {
+    if (data.page5.chips) {
+      chips = data.page5.chips;
+      document.getElementById('chip_balance').value = chips;
+    }
+    if (data.page5.currentBet) {
+      currentBet = data.page5.currentBet;
+      document.getElementById('current_bet_display').textContent = currentBet;
+    }
+  }
+  
+  // Load Page 6: Notes
+  if (data.page6) {
+    if (data.page6.generalNotes) {
+      document.getElementById('general_notes').value = data.page6.generalNotes;
+    }
+    if (data.page6.questLog) {
+      document.getElementById('quest_log').value = data.page6.questLog;
+    }
+    if (data.page6.npcNotes) {
+      document.getElementById('npc_notes').value = data.page6.npcNotes;
+    }
+  }
+  
+  // Load Weapons
+  if (data.weapons) {
+    weaponsData = data.weapons;
+    updateWeaponsPreview();
+  }
+  
+  // Load Conditions
+  if (data.conditions) {
+    const container = document.getElementById('conditions_container');
+    container.innerHTML = '';
+    
+    data.conditions.forEach(condition => {
+      const conditionId = Date.now();
+      const conditionHTML = `
+        <div class="condition ${condition.color}" id="condition_${conditionId}">
+          <div class="condition-header">
+            <span>${condition.name}</span>
+            <span class="condition-turns">${condition.turns}</span>
+          </div>
+          <div>${condition.effect}</div>
+          <button onclick="removeCondition('${conditionId}')" style="float:right; padding:2px 5px; margin-top:5px;">Remove</button>
+        </div>
+      `;
+      
+      container.insertAdjacentHTML('beforeend', conditionHTML);
+    });
+  }
+}
+
+function exportData() {
+  autosave();
+  const data = localStorage.getItem('dndCharacterData');
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'dnd_character_backup.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      localStorage.setItem('dndCharacterData', JSON.stringify(data));
+      loadData();
+      alert("Character data imported successfully!");
+    } catch (err) {
+      alert("Error importing file: " + err.message);
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function resetLayout() {
+  if (confirm("Reset all sections to their default positions and sizes? This won't erase your data.")) {
+    document.querySelectorAll('.section').forEach(el => {
+      el.style.width = '';
+      el.style.height = '';
+    });
+    autosave();
+  }
+}
+
+function saveLayout() {
+  const layout = {};
+  document.querySelectorAll('.section').forEach(el => {
+    layout[el.id] = {
+      width: el.style.width,
+      height: el.style.height
+    };
+  });
+  
+  localStorage.setItem('dndCharacterLayout', JSON.stringify(layout));
+  alert("Layout saved!");
+}
+
+function loadLayout() {
+  const savedLayout = localStorage.getItem('dndCharacterLayout');
+  if (!savedLayout) return;
+  
+  const layout = JSON.parse(savedLayout);
+  for (const id in layout) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.style.width = layout[id].width;
+      el.style.height = layout[id].height;
+    }
+  }
+}
+
+// ========== SAVE BUTTONS ==========
+function setupSaveButtons() {
+  document.getElementById('saveDataBtn').addEventListener('click', function() {
+    autosave();
+    alert('All character data saved successfully!');
+  });
+  
+  document.getElementById('saveLayoutBtn').addEventListener('click', function() {
+    saveLayout();
+  });
+}
+
+// ========== INITIALIZATION ==========
+window.onload = function() {
+  // Initialize data and layout
+  loadData();
+  loadLayout();
+  
+  // Initialize portrait functionality
+  document.getElementById('portraitUpload').addEventListener('change', handlePortraitUpload);
+  document.getElementById('portraitPreview').addEventListener('click', function() {
+    document.getElementById('portraitUpload').click();
+  });
+  
+  // Initialize weapons and equipment if empty
+  if (weaponsData.length === 0) {
+    weaponsData.push({ name: '', toHit: '', damage: '', bonusDamage: '', notes: '' });
+    updateWeaponsPreview();
+  }
+  
+  if (equipmentData.length === 0) {
+    equipmentData.push({ name: '', type: '', bonus: '', weight: 0, notes: '' });
+    updateEquipmentPreviews();
+  }
+  
+  // Initialize gold display
+  document.getElementById('inventory_gold_display').value = document.getElementById('gold_field').value || 0;
+  
+  // Update weights
+  updateWeight();
+  document.querySelectorAll('#extra_containers .section').forEach(container => {
+    updateContainerWeight(container.id);
+  });
+  
+  // Setup save buttons
+  setupSaveButtons();
+};
+</script>
+</body>
+</html>
