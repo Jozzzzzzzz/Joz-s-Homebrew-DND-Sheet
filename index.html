@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="viewport" content="width=device-width, initial-scale=0.85, maximum-scale=0.85, user-scalable=no">
 <title>Joz's Homebrew DND Sheet</title>
 <style>
 /* === POPUP FIXES === */
@@ -400,6 +400,20 @@ th {
 }
 
 @media (max-width: 768px) {
+  body {
+    transform: scale(0.85);
+    transform-origin: top left;
+    width: 117.65%; /* 100% / 0.85 */
+    overflow-x: hidden;
+  }
+}
+
+@media (max-width: 768px) {
+
+   .section div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
   .background-grid {
     grid-template-columns: 1fr;
   }
@@ -493,6 +507,32 @@ th {
   
   <!-- Stats Page -->
   <div class="page active" id="page1">
+<!-- Character Basic Info -->
+<div class="section" style="margin-bottom: 15px;">
+  <h2>Character Info</h2>
+  <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;">
+    <div>
+      <label>Name</label>
+      <input id="char_name" oninput="autosave()" placeholder="Character Name"/>
+    </div>
+    <div>
+      <label>Race</label>
+      <input id="char_race" oninput="autosave()" placeholder="Race"/>
+    </div>
+    <div>
+      <label>Class</label>
+      <input id="char_class" oninput="autosave()" placeholder="Class"/>
+    </div>
+    <div>
+      <label>Subclass</label>
+      <input id="char_subclass" oninput="autosave()" placeholder="Subclass"/>
+    </div>
+    <div>
+      <label>Level</label>
+      <input id="char_level" oninput="autosave()" type="number" min="1" placeholder="Level"/>
+    </div>
+  </div>
+</div>
     <div class="flex-wrap">
       
       <!-- Ability Scores -->
@@ -1486,6 +1526,16 @@ function showItemDetails(item, type) {
 // ========== DATA MANAGEMENT ==========
 function autosave() {
   const data = {
+
+    // char info
+characterInfo: {
+  name: document.getElementById('char_name').value,
+  race: document.getElementById('char_race').value,
+  class: document.getElementById('char_class').value,
+  subclass: document.getElementById('char_subclass').value, // NEW LINE
+  level: document.getElementById('char_level').value
+},
+
     // Page 1: Stats
     page1: {
       abilities: ['str','dex','con','int','wis','cha'].reduce((obj,ability) => {
@@ -1612,6 +1662,15 @@ function loadData() {
       if (element) element.value = data.page1.abilities[ability];
     }
     
+// Load Character Info
+if (data.characterInfo) {
+  document.getElementById('char_name').value = data.characterInfo.name || '';
+  document.getElementById('char_race').value = data.characterInfo.race || '';
+  document.getElementById('char_class').value = data.characterInfo.class || '';
+  document.getElementById('char_subclass').value = data.characterInfo.subclass || ''; // NEW LINE
+  document.getElementById('char_level').value = data.characterInfo.level || '';
+}
+  
     // Combat Stats
     if (data.page1.combatStats) {
       document.getElementById('ac').value = data.page1.combatStats.ac || '';
