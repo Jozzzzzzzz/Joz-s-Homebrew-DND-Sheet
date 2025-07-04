@@ -6,6 +6,10 @@
 <title>Joz's Homebrew DND Sheet</title>
 <style>
 
+ .section, textarea {
+    transition: none !important; /* Prevent animation interference */
+  }
+
 /* Container Styles */
 .section {
   position: relative;
@@ -592,12 +596,46 @@ th {
   to { transform: scale(1.05); }
 }
 
+/* ===== FIXED POPUP POSITIONING ===== */
+.popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--popup-bg);
+  padding: 20px;
+  border: var(--border);
+  border-radius: 6px;
+  z-index: 1000;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Mobile-specific fixes */
 @media (max-width: 768px) {
-  body {
-    transform: scale(0.85);
-    transform-origin: top left;
-    width: 117.65%; /* 100% / 0.85 */
-    overflow-x: hidden;
+  .popup {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    height: auto;
+    max-height: 85vh !important;
+    padding: 15px;
+  }
+  
+  .popup table {
+    display: block;
+    overflow-x: auto;
+    width: 100% !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .popup table td, 
+  .popup table th {
+    white-space: nowrap;
+    padding: 6px 4px;
   }
 }
 
@@ -676,8 +714,8 @@ th {
   <label style="display:inline-block; cursor:pointer;">
     📥 Import<input onchange="importData(event)" style="display:none;" type="file"/>
   </label>
-  <button class="top-right-reset" onclick="resetLayout()">⟳ Reset Layout</button>
-  <button onclick="saveLayout()" style="background:#333; color:var(--accent);">💾 Save Layout</button>
+  <button id="resetLayoutBtn">⟳ Reset Layout</button>
+  <button id="saveLayoutBtn">💾 Save Layout</button>
   <button onclick="autosave(); alert('Character data saved!')" style="background:#333; color:var(--accent);">📥 Save Data</button>
 </div>
 
@@ -2404,25 +2442,27 @@ function removePortrait() {
 
 // ========== POPUP FUNCTIONS ==========
 function showPopup(id) {
-  closeAllPopups();
   const popup = document.getElementById(id);
-  if (popup) {
-    popup.style.display = 'block';
-    document.getElementById('popupBackdrop').style.display = 'block';
-    popup.addEventListener('click', function(e) {
-      e.stopPropagation();
-    });
+  if (!popup) return;
+  
+  // Reset positioning
+  popup.style.top = '50%';
+  popup.style.left = '50%';
+  popup.style.transform = 'translate(-50%, -50%)';
+  
+  // Mobile adjustments
+  if (window.innerWidth <= 768) {
+    popup.style.width = '95vw';
+    popup.style.maxHeight = '85vh';
   }
+  
+  popup.style.display = 'block';
+  document.getElementById('popupBackdrop').style.display = 'block';
 }
 
 function closePopup(id) {
-  const popup = document.getElementById(id);
-  if (popup) popup.style.display = 'none';
-  
-  const anyPopupOpen = document.querySelector('.popup[style*="display: block"]');
-  if (!anyPopupOpen) {
-    document.getElementById('popupBackdrop').style.display = 'none';
-  }
+  document.getElementById(id).style.display = 'none';
+  document.getElementById('popupBackdrop').style.display = 'none';
 }
 
 function closeAllPopups() {
@@ -2554,85 +2594,158 @@ function resetRoundActions() {
   alert("Action counters reset for new round!");
 }
 
-// ========== LAYOUT FUNCTIONS ==========
-function saveLayout() {
-  const layout = {
-    sections: {},
-    textareas: {}
-  };
-
-  // Save container sizes
-  document.querySelectorAll('.resizable-container').forEach(section => {
-    layout.sections[section.id || `section_${Date.now()}`] = {
-      width: section.style.width || '',
-      height: section.style.height || ''
-    };
-  });
-
-  // Save textarea sizes
-  document.querySelectorAll('textarea').forEach(textarea => {
-    layout.textareas[textarea.id || `textarea_${Date.now()}`] = {
-      width: textarea.style.width || '',
-      height: textarea.style.height || ''
-    };
-  });
-
-  localStorage.setItem('dndCharacterLayout', JSON.stringify(layout));
-  alert("Layout (containers and text boxes) saved successfully!");
-}
-
-function loadLayout() {
-  const savedLayout = localStorage.getItem('dndCharacterLayout');
-  if (!savedLayout) return;
-
-  try {
-    const layout = JSON.parse(savedLayout);
-
-    // Load container sizes
-    if (layout.sections) {
-      Object.entries(layout.sections).forEach(([id, size]) => {
-        const section = document.getElementById(id) || 
-                      document.querySelector(`[id^="${id}"]`);
-        if (section) {
-          if (size.width) section.style.width = size.width;
-          if (size.height) section.style.height = size.height;
-        }
-      });
-    }
-
-    // Load textarea sizes
-    if (layout.textareas) {
-      Object.entries(layout.textareas).forEach(([id, size]) => {
-        const textarea = document.getElementById(id);
-        if (textarea) {
-          if (size.width) textarea.style.width = size.width;
-          if (size.height) textarea.style.height = size.height;
-        }
-      });
-    }
-  } catch (e) {
-    console.error("Error loading layout:", e);
+function debugLocalStorage() {
+  console.log("Checking localStorage...");
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    console.log(`${key}:`, localStorage.getItem(key));
   }
 }
 
-function resetLayout() {
-  if (confirm("Reset all sections and text boxes to default sizes? This won't erase your data.")) {
-    // Reset containers
-    document.querySelectorAll('.resizable-container').forEach(section => {
-      section.style.width = '';
-      section.style.height = '';
+// ========== LAYOUT SYSTEM ==========
+const LayoutManager = {
+  STORAGE_KEY: 'dndSheetLayout_final',
+  initialized: false,
+  
+  init() {
+    if (this.initialized) return;
+    this.initialized = true;
+    
+    window.addEventListener('load', () => {
+      console.log('LayoutManager ready');
+      this.ensureElementIds();
+      
+      // Set up save button
+      const saveBtn = document.getElementById('saveLayoutBtn');
+      if (saveBtn) {
+        saveBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.save();
+        });
+      }
+      
+      // Set up reset button
+      const resetBtn = document.getElementById('resetLayoutBtn');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.reset();
+        });
+      }
+      
+      this.load();
+    });
+  },
+  
+  ensureElementIds() {
+    document.querySelectorAll('.section:not([id])').forEach((el, i) => {
+      el.id = `section-${i+1}`;
     });
     
-    // Reset textareas
-    document.querySelectorAll('textarea').forEach(textarea => {
-      textarea.style.width = '';
-      textarea.style.height = '';
+    document.querySelectorAll('textarea:not([id])').forEach((el, i) => {
+      el.id = `textarea-${i+1}`;
     });
-    
-    localStorage.removeItem('dndCharacterLayout');
-    alert("Layout has been reset to defaults.");
+  },
+  
+  save() {
+    try {
+      const layout = {
+        version: 'final',
+        timestamp: new Date().toISOString(),
+        sections: {},
+        textareas: {}
+      };
+
+      document.querySelectorAll('.section').forEach(section => {
+        if (section.offsetParent) {
+          layout.sections[section.id] = {
+            width: section.style.width || `${section.offsetWidth}px`,
+            height: section.style.height || `${section.offsetHeight}px`,
+            position: window.getComputedStyle(section).position
+          };
+        }
+      });
+
+      document.querySelectorAll('textarea').forEach(textarea => {
+        if (textarea.offsetParent) {
+          layout.textareas[textarea.id] = {
+            width: textarea.style.width || `${textarea.offsetWidth}px`,
+            height: textarea.style.height || `${textarea.offsetHeight}px`
+          };
+        }
+      });
+
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(layout));
+      alert('Layout saved successfully!');
+      return true;
+    } catch (e) {
+      console.error('Save failed:', e);
+      alert('Save error: ' + e.message);
+      return false;
+    }
+  },
+  
+  load() {
+    try {
+      const data = localStorage.getItem(this.STORAGE_KEY);
+      if (!data) return false;
+
+      const layout = JSON.parse(data);
+      console.log('Loading layout:', layout);
+
+      Object.entries(layout.sections || {}).forEach(([id, style]) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.width = style.width;
+          el.style.height = style.height;
+          if (style.position) el.style.position = style.position;
+        }
+      });
+
+      Object.entries(layout.textareas || {}).forEach(([id, style]) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.width = style.width;
+          el.style.height = style.height;
+        }
+      });
+
+      return true;
+    } catch (e) {
+      console.error('Load failed:', e);
+      return false;
+    }
+  },
+  
+  reset() {
+    if (confirm('Are you sure you want to reset ALL layout settings to default?')) {
+      // Reset sections
+      document.querySelectorAll('.section').forEach(section => {
+        section.style.width = '';
+        section.style.height = '';
+        section.style.position = '';
+        section.style.left = '';
+        section.style.top = '';
+      });
+      
+      // Reset textareas
+      document.querySelectorAll('textarea').forEach(textarea => {
+        textarea.style.width = '';
+        textarea.style.height = '';
+      });
+      
+      // Clear storage
+      localStorage.removeItem(this.STORAGE_KEY);
+      alert('Layout has been reset to default settings');
+    }
   }
-}
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  LayoutManager.init();
+});
+
 </script>
 </body>
 </html>
