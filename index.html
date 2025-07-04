@@ -2148,7 +2148,7 @@ function showEquipmentPopup() {
       <td><input type="text" value="${item.bonus || ''}" oninput="equipmentData[${index}].bonus = this.value"></td>
       <td><input type="number" value="${item.weight || 0}" step="0.1" oninput="equipmentData[${index}].weight = parseFloat(this.value) || 0"></td>
       <td><textarea class="table-notes" oninput="equipmentData[${index}].notes = this.value">${item.notes || ''}</textarea></td>
-      <td><button onclick="equipmentData.splice(${index}, 1); updateEquipmentPreviews()">Remove</button></td>
+      <td><button onclick="removeEquipmentItem(${index}); showEquipmentPopup()">Remove</button></td>
     `;
   });
   
@@ -2164,11 +2164,21 @@ function updateEquipmentPreviews() {
   const preview = document.getElementById('equipment_preview');
   preview.innerHTML = '';
   
+  // Clear both tables completely before rebuilding
+  const popupTbody = document.getElementById('equipment_table_popup').querySelector('tbody');
+  const inventoryTbody = document.getElementById('equipment_table_inventory').querySelector('tbody');
+  
+  popupTbody.innerHTML = '';
+  inventoryTbody.innerHTML = '';
+
   if (equipmentData.length === 0) {
     preview.innerHTML = '<p>No equipment added</p>';
+    updateEquipmentWeight();
+    autosave();
     return;
   }
-  
+
+  // Rebuild stats preview table
   const table = document.createElement('table');
   const header = table.createTHead();
   const headerRow = header.insertRow();
@@ -2187,10 +2197,8 @@ function updateEquipmentPreviews() {
   });
   
   preview.appendChild(table);
-  
-  const inventoryTbody = document.getElementById('equipment_table_inventory').querySelector('tbody');
-  inventoryTbody.innerHTML = '';
-  
+
+  // Rebuild inventory table
   equipmentData.forEach((item, index) => {
     const row = inventoryTbody.insertRow();
     row.className = 'item-row';
@@ -2200,13 +2208,20 @@ function updateEquipmentPreviews() {
       <td>${item.bonus || ''}</td>
       <td>${item.weight || 0}</td>
       <td class="table-notes">${item.notes || ''}</td>
-      <td><button onclick="equipmentData.splice(${index}, 1); updateEquipmentPreviews(); updateEquipmentWeight()">Remove</button></td>
+      <td><button onclick="removeEquipmentItem(${index})">Remove</button></td>
     `;
     row.onclick = () => showItemDetails(item, 'equipment');
   });
-  
+
   updateEquipmentWeight();
   autosave();
+}
+
+function removeEquipmentItem(index) {
+  if (index >= 0 && index < equipmentData.length) {
+    equipmentData.splice(index, 1);
+    updateEquipmentPreviews();
+  }
 }
 
 function updateEquipmentWeight() {
