@@ -6,6 +6,46 @@
 <title>Joz's Homebrew DND Sheet</title>
 <style>
 
+/* Container Styles */
+.section {
+  position: relative;
+  resize: both; /* Allows manual resizing */
+  overflow: auto;
+  min-height: 150px;
+  min-width: 200px;
+  padding: 1rem; /* Maintain padding */
+  display: flex; /* New - enables flexible layout */
+  flex-direction: column; /* New - stacks children vertically */
+}
+
+/* Textarea Styles */
+textarea {
+  resize: both;
+  min-height: 100px;
+  min-width: 200px;
+  overflow: auto;
+  flex-grow: 1; /* New - makes textarea grow to fill container */
+  margin-bottom: 10px; /* Space between textarea and other content */
+}
+
+/* Special case for basic-textareas */
+.basic-textarea {
+  resize: both;
+  min-height: 200px;
+  width: 100% !important; /* Full width of container */
+  flex-grow: 1;
+}
+
+/* Resizer handle styling */
+.section::-webkit-resizer {
+  background-color: var(--accent);
+}
+
+/* Ensure other content stays properly aligned */
+.section-content {
+  flex-shrink: 0; /* Prevents other content from shrinking */
+}
+
 /* Action Tracker Styles */
 .action-tracker {
   display: flex;
@@ -135,6 +175,88 @@ h1, h2, h3, h4 {
   background: var(--accent);
   color: black;
   font-weight: bold;
+}
+
+/* Home Page Styles */
+.welcome-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.welcome-section {
+  background: #2a2a2a;
+  padding: 15px;
+  border-radius: 6px;
+  border: var(--border);
+}
+
+.divider {
+  height: 1px;
+  background: var(--accent);
+  margin: 10px 0;
+  opacity: 0.3;
+}
+
+@media (max-width: 768px) {
+  .welcome-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Character Manager Styles */
+.character-manager-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.character-manager-grid > div {
+  background: #1e1e1e;
+  padding: 10px;
+  border-radius: 4px;
+  border: var(--border);
+}
+
+.character-manager-grid h4 {
+  margin-top: 0;
+  color: var(--accent);
+  font-size: 1rem;
+}
+
+.character-manager-grid input,
+.character-manager-grid select {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.delete-flow {
+  position: relative;
+}
+
+#deleteConfirmInput {
+  margin-top: 5px;
+  width: calc(100% - 10px);
+}
+
+#deleteCharCount {
+  position: absolute;
+  right: 10px;
+  bottom: -20px;
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+/* Delete button states */
+#deleteBtn.warning {
+  background-color: #ffcc00;
+  color: #000;
+}
+
+#deleteBtn.danger {
+  background-color: #ff6600;
+  color: #000;
+  animation: pulse 0.5s infinite alternate;
 }
 
 .page {
@@ -549,14 +671,14 @@ th {
 
 <!-- Data Controls -->
 <div style="text-align:right; margin-right:1rem; margin-top:-10px;">
+  <button onclick="document.getElementById('home').classList.add('active'); document.querySelectorAll('.page').forEach(p => { if(p.id !== 'home') p.classList.remove('active') }); document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));">🏠 Home</button>
   <button onclick="exportData()">📤 Export</button>
   <label style="display:inline-block; cursor:pointer;">
     📥 Import<input onchange="importData(event)" style="display:none;" type="file"/>
   </label>
   <button class="top-right-reset" onclick="resetLayout()">⟳ Reset Layout</button>
   <button onclick="saveLayout()" style="background:#333; color:var(--accent);">💾 Save Layout</button>
-<button onclick="autosave(); alert('Character data saved!')" style="background:#333; color:var(--accent);">📥 Save Data</button>
-
+  <button onclick="autosave(); alert('Character data saved!')" style="background:#333; color:var(--accent);">📥 Save Data</button>
 </div>
 
 <!-- Tabs -->
@@ -571,6 +693,63 @@ th {
 <!-- Pages -->
 <div id="pages">
   
+<!-- Home Page -->
+<div class="page" id="home">
+  <div class="section">
+    <h2>Welcome to Joz's Homebrew DND Sheet</h2>
+    <div class="welcome-grid">
+      <div class="welcome-section">
+        <h3>Character Manager</h3>
+        <div class="divider"></div>
+        <div class="character-manager-grid">
+          <div>
+            <h4>New Character</h4>
+            <input type="text" id="newCharName" placeholder="Character Name">
+            <button onclick="createNewCharacter()">Create</button>
+          </div>
+          <div>
+            <h4>Load Character</h4>
+            <select id="characterList"></select>
+            <button onclick="loadSelectedCharacter()">Load</button>
+          </div>
+          <div>
+            <h4>Delete Character</h4>
+            <div class="delete-flow">
+              <button id="deleteBtn" onclick="initiateDelete()">Delete Character</button>
+              <input type="text" id="deleteConfirmInput" placeholder="Type 'DELETE'" style="display: none;">
+              <span id="deleteCharCount" style="display: none;">0/6</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="welcome-section">
+        <h3>Getting Started</h3>
+        <div class="divider"></div>
+        <p>This digital character sheet automatically saves your data to your browser. To get started:</p>
+        <ol>
+          <li>Create a new character using the Character Manager</li>
+          <li>Fill in your basic character information on the Stats page</li>
+          <li>Use the tabs to navigate between different character sections</li>
+          <li>Remember to export your character for backup</li>
+        </ol>
+      </div>
+      
+      <div class="welcome-section">
+        <h3>Features</h3>
+        <div class="divider"></div>
+        <ul>
+          <li><strong>Automatic Saving:</strong> All changes are saved automatically</li>
+          <li><strong>Multiple Characters:</strong> Manage multiple character sheets</li>
+          <li><strong>Resizable Sections:</strong> Drag to resize any section</li>
+          <li><strong>Mobile Friendly:</strong> Works on phones and tablets</li>
+          <li><strong>Homebrew Ready:</strong> Customizable for any homebrew content</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
   <!-- Stats Page -->
   <div class="page active" id="page1">
 <!-- Character Basic Info -->
@@ -888,11 +1067,11 @@ th {
     
     <!-- Conditions (swapped with Proficiencies & Training) -->
     <div class="section">
-      <h2>Conditions 
+      <h2>Long Term Conditions 
         <button onclick="showConditionPopup()" style="float: right; padding: 2px 6px; font-size: 0.8rem;">+ Add</button>
       </h2>
       <div id="conditions_container">
-        <!-- Conditions will be added here dynamically -->
+        <!-- itions will be added here dynamically -->
       </div>
     </div>
 
@@ -1201,10 +1380,957 @@ th {
 
 <!-- Script Section -->
 <script>
-  
+
+// Auto-resize containers when textareas change
+function setupAutoResize() {
+  document.querySelectorAll('.section textarea').forEach(textarea => {
+    textarea.addEventListener('input', function() {
+      const section = this.closest('.section');
+      if (this.scrollHeight > section.clientHeight) {
+        section.style.height = `${this.scrollHeight + 30}px`; // Add some padding
+      }
+      if (this.scrollWidth > section.clientWidth) {
+        section.style.width = `${this.scrollWidth + 30}px`;
+      }
+    });
+  });
+}
+
+// Call this in your window.onload
+window.onload = function() {
+  // ... your existing load code ...
+  setupAutoResize();
+};
+// Enable resizable containers
+function makeContainersResizable() {
+  document.querySelectorAll('.section').forEach(section => {
+    section.classList.add('resizable-container');
+    
+    // Store initial size for reset functionality
+    if (!section.dataset.originalWidth) {
+      section.dataset.originalWidth = section.style.width || 'auto';
+      section.dataset.originalHeight = section.style.height || 'auto';
+    }
+  });
+}
+
+
 // ========== GLOBAL VARIABLES ==========
 let weaponsData = [];
 let equipmentData = [];
+let currentCharacter = null;
+let deleteState = 0;
+
+// ========== INITIALIZATION ==========
+window.onload = function() {
+  // Initialize character system
+  loadCharacterList();
+  
+  // Try to load last used character or first in list
+  const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+  if (characters.length > 0) {
+    currentCharacter = characters[0].id;
+    loadData();
+    document.querySelector('.tab[data-tab="page1"]').click(); // Start on Stats page
+  } else {
+    // Show home page if no characters exist
+    showHomePage();
+  }
+  
+  // Initialize portrait functionality
+  document.getElementById('portraitUpload').addEventListener('change', handlePortraitUpload);
+  document.getElementById('portraitPreview').addEventListener('click', function() {
+    document.getElementById('portraitUpload').click();
+  });
+  
+  // Initialize weapons and equipment if empty
+  if (weaponsData.length === 0) {
+    weaponsData.push({ name: '', toHit: '', damage: '', bonusDamage: '', notes: '' });
+    updateWeaponsPreview();
+  }
+  
+  if (equipmentData.length === 0) {
+    equipmentData.push({ name: '', type: '', bonus: '', weight: 0, notes: '' });
+    updateEquipmentPreviews();
+  }
+  
+  // Update weights
+  updateWeight();
+  document.querySelectorAll('#extra_containers .section').forEach(container => {
+    updateContainerWeight(container.id);
+  });
+
+  // Enable resizing
+  makeContainersResizable();
+  loadLayout(); // This should come after all elements are created
+
+};
+
+// ========== CHARACTER MANAGEMENT ==========
+function showHomePage() {
+  document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+  document.getElementById('home').classList.add('active');
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+}
+
+function createNewCharacter() {
+  const charName = document.getElementById('newCharName').value.trim();
+  if (!charName) {
+    alert("Please enter a character name");
+    return;
+  }
+  
+  const newChar = {
+    id: Date.now().toString(),
+    name: charName,
+    data: {
+      characterInfo: { name: charName },
+      page1: {},
+      page2: {},
+      page3: {},
+      page4: {},
+      page6: {},
+      weapons: [],
+      equipment: []
+    }
+  };
+  
+  let characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+  characters.push(newChar);
+  localStorage.setItem('dndCharacters', JSON.stringify(characters));
+  
+  currentCharacter = newChar.id;
+  loadCharacterList();
+  loadData();
+  document.querySelector('.tab[data-tab="page1"]').click();
+  document.getElementById('newCharName').value = '';
+}
+
+function loadCharacterList() {
+  const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+  const select = document.getElementById('characterList');
+  select.innerHTML = '';
+  
+  if (characters.length === 0) {
+    const option = document.createElement('option');
+    option.textContent = "No characters found";
+    select.appendChild(option);
+    select.disabled = true;
+    return;
+  }
+  
+  select.disabled = false;
+  characters.forEach(char => {
+    const option = document.createElement('option');
+    option.value = char.id;
+    option.textContent = char.name;
+    if (char.id === currentCharacter) option.selected = true;
+    select.appendChild(option);
+  });
+}
+
+function loadSelectedCharacter() {
+  const select = document.getElementById('characterList');
+  const charId = select.value;
+  if (!charId) return;
+  
+  currentCharacter = charId;
+  loadData();
+  document.querySelector('.tab[data-tab="page1"]').click();
+}
+
+function initiateDelete() {
+  const btn = document.getElementById('deleteBtn');
+  const input = document.getElementById('deleteConfirmInput');
+  const count = document.getElementById('deleteCharCount');
+  
+  deleteState++;
+  
+  if (deleteState === 1) {
+    const charName = document.getElementById('char_name').value || 'Character';
+    btn.textContent = `Delete ${charName}?`;
+    btn.classList.add('warning');
+  } else if (deleteState === 2) {
+    btn.textContent = 'CONFIRM DELETE!';
+    btn.classList.remove('warning');
+    btn.classList.add('danger');
+  } else if (deleteState === 3) {
+    btn.textContent = 'DELETE FOREVER';
+    input.style.display = 'block';
+    count.style.display = 'inline';
+    input.focus();
+    
+    input.oninput = function() {
+      count.textContent = `${input.value.length}/6`;
+      btn.disabled = input.value !== 'DELETE';
+    };
+  } else if (deleteState === 4 && input.value === 'DELETE') {
+    const charName = document.getElementById('char_name').value || 'character';
+    const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+    const updatedChars = characters.filter(char => char.id !== currentCharacter);
+    
+    localStorage.setItem('dndCharacters', JSON.stringify(updatedChars));
+    resetDeleteUI();
+    loadCharacterList();
+    alert(`${charName} deleted permanently`);
+    
+    if (updatedChars.length > 0) {
+      currentCharacter = updatedChars[0].id;
+      loadData();
+      document.querySelector('.tab[data-tab="page1"]').click();
+    } else {
+      currentCharacter = null;
+      showHomePage();
+    }
+  }
+}
+
+function resetDeleteUI() {
+  const btn = document.getElementById('deleteBtn');
+  const input = document.getElementById('deleteConfirmInput');
+  const count = document.getElementById('deleteCharCount');
+  
+  deleteState = 0;
+  btn.textContent = 'Delete Character';
+  btn.classList.remove('warning', 'danger');
+  btn.disabled = false;
+  input.style.display = 'none';
+  input.value = '';
+  count.style.display = 'none';
+}
+
+// ========== EXISTING FUNCTIONALITY (UPDATED FOR CHARACTER SYSTEM) ==========
+function autosave() {
+  if (!currentCharacter) return;
+  
+  const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+  const charIndex = characters.findIndex(char => char.id === currentCharacter);
+  if (charIndex === -1) return;
+  
+  const data = {
+    characterInfo: {
+      name: document.getElementById('char_name').value,
+      race: document.getElementById('char_race').value,
+      class: document.getElementById('char_class').value,
+      subclass: document.getElementById('char_subclass').value,
+      level: document.getElementById('char_level').value
+    },
+    actionTracker: {
+      actions: document.getElementById('action_counter').value,
+      actionUsed: document.getElementById('action_tick').checked,
+      bonusActions: document.getElementById('bonus_action_counter').value,
+      bonusActionUsed: document.getElementById('bonus_action_tick').checked
+    },
+    page1: {
+      abilities: ['str','dex','con','int','wis','cha'].reduce((obj,ability) => {
+        obj[ability] = document.getElementById(ability).value;
+        obj[`${ability}_bonus`] = document.getElementById(`${ability}_bonus`).value;
+        return obj;
+      }, {}),
+      combatStats: {
+        ac: document.getElementById('ac').value,
+        initiative: document.getElementById('initiative').value,
+        speed: document.getElementById('speed').value,
+        prof_bonus: document.getElementById('prof_bonus').value
+      },
+      health: {
+        max_hp: document.getElementById('max_hp').value,
+        curr_hp: document.getElementById('curr_hp').value
+      },
+      skills: ['acrobatics','animal_handling','arcana','athletics','deception','history',
+               'insight','intimidation','investigation','medicine','nature','perception',
+               'performance','persuasion','religion','sleight_of_hand','stealth','survival']
+               .reduce((obj,skill) => {
+        obj[`prof_${skill}`] = document.getElementById(`prof_${skill}`).checked;
+        obj[`bonus_${skill}`] = document.getElementById(`bonus_${skill}`).value;
+        return obj;
+      }, {}),
+      deathSaves: {
+        success: [
+          document.getElementById('death_save_success_1').checked,
+          document.getElementById('death_save_success_2').checked,
+          document.getElementById('death_save_success_3').checked
+        ],
+        failure: [
+          document.getElementById('death_save_failure_1').checked,
+          document.getElementById('death_save_failure_2').checked,
+          document.getElementById('death_save_failure_3').checked
+        ]
+      },
+      actionsFeatures: document.getElementById('actions_features').value,
+      proficienciesTraining: document.getElementById('proficiencies_training').value,
+      statsQuickNotes: document.getElementById('stats_quick_notes').value
+    },
+    page2: {
+      portrait: document.getElementById('portraitPreview').querySelector('img')?.src || null,
+      backstory: document.getElementById('char_backstory').value,
+      traits: {
+        personality: document.getElementById('personality_traits').value,
+        ideals: document.getElementById('traits_ideals').value,
+        bonds: document.getElementById('traits_bonds').value,
+        flaws: document.getElementById('traits_flaws').value,
+        allies: document.getElementById('traits_allies').value,
+        appearance: document.getElementById('traits_appearance').value
+      }
+    },
+    page3: {
+      spellNotes: document.getElementById('spell_notes').value
+    },
+    page4: {
+      gold: document.getElementById('gold_field').value,
+      equipment: equipmentData,
+      inventory: Array.from(document.querySelectorAll('#inventory_table tbody tr')).map(row => ({
+        name: row.cells[0].textContent,
+        description: row.cells[1].textContent,
+        notes: row.cells[2].textContent,
+        weight: parseFloat(row.cells[3].textContent) || 0
+      })),
+      containers: Array.from(document.querySelectorAll('#extra_containers .section')).map(container => ({
+        name: container.querySelector('h3').textContent,
+        maxWeight: container.querySelector('div').textContent.includes('Max Weight') ? 
+                   parseInt(container.querySelector('div').textContent.match(/\d+/)[0]) : 0,
+        items: Array.from(container.querySelectorAll('tbody tr')).map(row => ({
+          name: row.cells[0].textContent,
+          description: row.cells[1].textContent,
+          notes: row.cells[2].textContent,
+          weight: parseFloat(row.cells[3].textContent) || 0
+        }))
+      }))
+    },
+    page6: {
+      generalNotes: document.getElementById('general_notes').value,
+      questLog: document.getElementById('quest_log').value,
+      npcNotes: document.getElementById('npc_notes').value
+    },
+    weapons: weaponsData,
+    conditions: Array.from(document.querySelectorAll('#conditions_container .condition')).map(condition => ({
+      name: condition.querySelector('.condition-header').children[0].textContent,
+      turns: condition.querySelector('.condition-header').children[1].textContent,
+      effect: condition.children[1].textContent,
+      color: condition.classList.contains('blue') ? 'blue' : 
+             condition.classList.contains('green') ? 'green' : 'red'
+    }))
+  };
+  
+  characters[charIndex].data = data;
+  characters[charIndex].name = document.getElementById('char_name').value || 'Unnamed';
+  localStorage.setItem('dndCharacters', JSON.stringify(characters));
+}
+
+function loadData() {
+  if (!currentCharacter) return;
+  
+  const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+  const character = characters.find(char => char.id === currentCharacter);
+  if (!character) return;
+  
+  const data = character.data;
+  
+  // Character Info
+  if (data.characterInfo) {
+    document.getElementById('char_name').value = data.characterInfo.name || '';
+    document.getElementById('char_race').value = data.characterInfo.race || '';
+    document.getElementById('char_class').value = data.characterInfo.class || '';
+    document.getElementById('char_subclass').value = data.characterInfo.subclass || '';
+    document.getElementById('char_level').value = data.characterInfo.level || '';
+  }
+
+  // Action Tracker
+  if (data.actionTracker) {
+    document.getElementById('action_counter').value = data.actionTracker.actions || 0;
+    document.getElementById('action_tick').checked = data.actionTracker.actionUsed || false;
+    document.getElementById('bonus_action_counter').value = data.actionTracker.bonusActions || 0;
+    document.getElementById('bonus_action_tick').checked = data.actionTracker.bonusActionUsed || false;
+  }
+
+  // Page 1: Stats
+  if (data.page1) {
+    // Abilities
+    for (const ability in data.page1.abilities) {
+      const element = document.getElementById(ability);
+      if (element) element.value = data.page1.abilities[ability];
+    }
+    
+    // Combat Stats
+    if (data.page1.combatStats) {
+      document.getElementById('ac').value = data.page1.combatStats.ac || '';
+      document.getElementById('initiative').value = data.page1.combatStats.initiative || '';
+      document.getElementById('speed').value = data.page1.combatStats.speed || '';
+      document.getElementById('prof_bonus').value = data.page1.combatStats.prof_bonus || '';
+    }
+    
+    // Health
+    if (data.page1.health) {
+      document.getElementById('max_hp').value = data.page1.health.max_hp || '';
+      document.getElementById('curr_hp').value = data.page1.health.curr_hp || '';
+    }
+    
+    // Skills
+    if (data.page1.skills) {
+      for (const skill in data.page1.skills) {
+        if (skill.startsWith('prof_')) {
+          const checkbox = document.getElementById(skill);
+          if (checkbox) checkbox.checked = data.page1.skills[skill];
+        } else if (skill.startsWith('bonus_')) {
+          const input = document.getElementById(skill);
+          if (input) input.value = data.page1.skills[skill];
+        }
+      }
+    }
+    
+    // Death Saves
+    if (data.page1.deathSaves) {
+      for (let i = 0; i < 3; i++) {
+        if (data.page1.deathSaves.success[i]) {
+          document.getElementById(`death_save_success_${i+1}`).checked = true;
+        }
+        if (data.page1.deathSaves.failure[i]) {
+          document.getElementById(`death_save_failure_${i+1}`).checked = true;
+        }
+      }
+    }
+    
+    // Actions & Features
+    if (data.page1.actionsFeatures) {
+      document.getElementById('actions_features').value = data.page1.actionsFeatures;
+    }
+    
+    // Proficiencies & Training
+    if (data.page1.proficienciesTraining) {
+      document.getElementById('proficiencies_training').value = data.page1.proficienciesTraining;
+    }
+    
+    // Quick Notes
+    if (data.page1.statsQuickNotes) {
+      document.getElementById('stats_quick_notes').value = data.page1.statsQuickNotes;
+    }
+  }
+  
+  // Page 2: Background
+  if (data.page2) {
+    // Portrait
+    if (data.page2.portrait) {
+      const img = document.createElement('img');
+      img.src = data.page2.portrait;
+      img.style.maxWidth = '100%';
+      img.style.maxHeight = '100%';
+      document.getElementById('portraitPreview').innerHTML = '';
+      document.getElementById('portraitPreview').appendChild(img);
+    }
+    
+    // Backstory
+    if (data.page2.backstory) {
+      document.getElementById('char_backstory').value = data.page2.backstory;
+    }
+    
+    // Traits
+    if (data.page2.traits) {
+      document.getElementById('personality_traits').value = data.page2.traits.personality || '';
+      document.getElementById('traits_ideals').value = data.page2.traits.ideals || '';
+      document.getElementById('traits_bonds').value = data.page2.traits.bonds || '';
+      document.getElementById('traits_flaws').value = data.page2.traits.flaws || '';
+      document.getElementById('traits_allies').value = data.page2.traits.allies || '';
+      document.getElementById('traits_appearance').value = data.page2.traits.appearance || '';
+    }
+  }
+  
+  // Page 3: Spells
+  if (data.page3 && data.page3.spellNotes) {
+    document.getElementById('spell_notes').value = data.page3.spellNotes;
+  }
+  
+  // Page 4: Inventory
+  if (data.page4) {
+    // Gold
+    if (data.page4.gold) {
+      document.getElementById('gold_field').value = data.page4.gold;
+    }
+    
+    // Equipment
+    if (data.page4.equipment) {
+      equipmentData = data.page4.equipment;
+      updateEquipmentPreviews();
+    }
+    
+    // Main Inventory
+    if (data.page4.inventory) {
+      const tbody = document.getElementById('inventory_table').querySelector('tbody');
+      tbody.innerHTML = '';
+      
+      data.page4.inventory.forEach(item => {
+        const row = tbody.insertRow();
+        row.className = 'item-row';
+        row.innerHTML = `
+          <td>${item.name || ''}</td>
+          <td>${item.description || ''}</td>
+          <td class="table-notes">${item.notes || ''}</td>
+          <td>${item.weight || 0}</td>
+          <td>${(item.weight * 0.453592).toFixed(2)}</td>
+          <td><button onclick="this.closest('tr').remove(); updateWeight(); autosave()">Remove</button></td>
+        `;
+        row.onclick = () => showItemDetails(item, 'inventory');
+      });
+      
+      updateWeight();
+    }
+    
+    // Containers
+    if (data.page4.containers) {
+      const extraContainers = document.getElementById('extra_containers');
+      extraContainers.innerHTML = '';
+      const containerDropdown = document.getElementById('item_container');
+      
+      while (containerDropdown.children.length > 1) {
+        containerDropdown.removeChild(containerDropdown.lastChild);
+      }
+      
+      data.page4.containers.forEach(containerData => {
+        const containerId = 'container_' + Date.now();
+        const containerHTML = `
+          <div class="section" id="${containerId}">
+            <div class="inventory-controls">
+              <h3>${containerData.name}</h3>
+              ${containerData.maxWeight > 0 ? `<div>Max Weight: ${containerData.maxWeight} lbs</div>` : ''}
+              <button class="delete-container-btn" onclick="confirmContainerDeletion('${containerId}')">Delete Container</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Description</th>
+                  <th>Notes</th>
+                  <th>Weight (lbs)</th>
+                  <th>Weight (kg)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${containerData.items.map(item => `
+                  <tr class="item-row">
+                    <td>${item.name || ''}</td>
+                    <td>${item.description || ''}</td>
+                    <td class="table-notes">${item.notes || ''}</td>
+                    <td>${item.weight || 0}</td>
+                    <td>${(item.weight * 0.453592).toFixed(2)}</td>
+                    <td><button onclick="this.closest('tr').remove(); updateContainerWeight('${containerId}'); autosave()">Remove</button></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            <button onclick="showAddContainerItemPopup('${containerId}')" style="margin-top: 10px;">+ Add Item</button>
+            <div class="weight-display">Current: ${containerData.items.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0).toFixed(1)} lbs / 
+              ${(containerData.items.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0) * 0.453592).toFixed(1)} kg</div>
+          </div>
+        `;
+        
+        extraContainers.insertAdjacentHTML('beforeend', containerHTML);
+        
+        containerData.items.forEach(item => {
+          const rows = document.querySelectorAll(`#${containerId} tbody tr`);
+          rows.forEach(row => {
+            if (row.cells[0].textContent === item.name) {
+              row.onclick = () => showItemDetails(item, 'inventory');
+            }
+          });
+        });
+        
+        const option = document.createElement('option');
+        option.value = containerId;
+        option.textContent = containerData.name;
+        containerDropdown.appendChild(option);
+      });
+    }
+  }
+  
+  // Page 6: Notes
+  if (data.page6) {
+    if (data.page6.generalNotes) {
+      document.getElementById('general_notes').value = data.page6.generalNotes;
+    }
+    if (data.page6.questLog) {
+      document.getElementById('quest_log').value = data.page6.questLog;
+    }
+    if (data.page6.npcNotes) {
+      document.getElementById('npc_notes').value = data.page6.npcNotes;
+    }
+  }
+  
+  // Weapons
+  if (data.weapons) {
+    weaponsData = data.weapons;
+    updateWeaponsPreview();
+  }
+  
+  // Conditions
+  if (data.conditions) {
+    const container = document.getElementById('conditions_container');
+    container.innerHTML = '';
+    
+    data.conditions.forEach(condition => {
+      const conditionId = Date.now();
+      const conditionHTML = `
+        <div class="condition ${condition.color}" id="condition_${conditionId}">
+          <div class="condition-header">
+            <span>${condition.name}</span>
+            <span class="condition-turns">${condition.turns}</span>
+          </div>
+          <div>${condition.effect}</div>
+          <button onclick="removeCondition('${conditionId}')" style="float:right; padding:2px 5px; margin-top:5px;">Remove</button>
+        </div>
+      `;
+      
+      container.insertAdjacentHTML('beforeend', conditionHTML);
+    });
+  }
+}
+
+// ========== EXISTING FUNCTIONS (UPDATED) ==========
+function exportData() {
+  if (!currentCharacter) {
+    alert("No character loaded to export");
+    return;
+  }
+  
+  const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+  const character = characters.find(char => char.id === currentCharacter);
+  
+  if (!character) return;
+  
+  const blob = new Blob([JSON.stringify(character.data)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${character.name || 'dnd_character'}_backup.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      const charName = importedData.characterInfo?.name || 'Imported Character';
+      
+      const newChar = {
+        id: Date.now().toString(),
+        name: charName,
+        data: importedData
+      };
+      
+      let characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+      characters.push(newChar);
+      localStorage.setItem('dndCharacters', JSON.stringify(characters));
+      
+      currentCharacter = newChar.id;
+      loadCharacterList();
+      loadData();
+      
+      alert(`Character "${charName}" imported successfully!`);
+      document.querySelector('.tab[data-tab="page1"]').click();
+    } catch (err) {
+      alert("Error importing file: " + err.message);
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ========== WEAPONS SYSTEM ==========
+function showWeaponsPopup() {
+  const tbody = document.getElementById('weapons_table_popup').querySelector('tbody');
+  tbody.innerHTML = '';
+  
+  weaponsData.forEach((weapon, index) => {
+    const row = tbody.insertRow();
+    row.innerHTML = `
+      <td><input type="text" value="${weapon.name || ''}" oninput="weaponsData[${index}].name = this.value"></td>
+      <td><input type="text" value="${weapon.toHit || ''}" oninput="weaponsData[${index}].toHit = this.value"></td>
+      <td><input type="text" value="${weapon.damage || ''}" oninput="weaponsData[${index}].damage = this.value"></td>
+      <td><input type="text" value="${weapon.bonusDamage || ''}" oninput="weaponsData[${index}].bonusDamage = this.value"></td>
+      <td><textarea class="table-notes" oninput="weaponsData[${index}].notes = this.value">${weapon.notes || ''}</textarea></td>
+      <td><button onclick="weaponsData.splice(${index}, 1); showWeaponsPopup()">Remove</button></td>
+    `;
+  });
+  
+  showPopup('weaponsPopup');
+}
+
+function addWeapon() {
+  weaponsData.push({ name: '', toHit: '', damage: '', bonusDamage: '', notes: '' });
+  showWeaponsPopup();
+}
+
+function updateWeaponsPreview() {
+  const preview = document.getElementById('weapons_preview');
+  preview.innerHTML = '';
+  
+  if (weaponsData.length === 0) {
+    preview.innerHTML = '<p>No weapons added</p>';
+    return;
+  }
+  
+  const table = document.createElement('table');
+  const header = table.createTHead();
+  const headerRow = header.insertRow();
+  headerRow.innerHTML = '<th>Weapon</th><th>To Hit</th><th>Dmg</th>';
+  
+  const body = table.createTBody();
+  weaponsData.forEach(weapon => {
+    const row = body.insertRow();
+    row.className = 'item-row';
+    row.innerHTML = `
+      <td>${weapon.name || '-'}</td>
+      <td>${weapon.toHit || '-'}</td>
+      <td>${weapon.damage || '-'}</td>
+    `;
+    row.onclick = () => showItemDetails(weapon, 'weapon');
+  });
+  
+  preview.appendChild(table);
+  autosave();
+}
+
+// ========== EQUIPMENT SYSTEM ==========
+function showEquipmentPopup() {
+  const tbody = document.getElementById('equipment_table_popup').querySelector('tbody');
+  tbody.innerHTML = '';
+  
+  equipmentData.forEach((item, index) => {
+    const row = tbody.insertRow();
+    row.innerHTML = `
+      <td><input type="text" value="${item.name || ''}" oninput="equipmentData[${index}].name = this.value"></td>
+      <td><input type="text" value="${item.type || ''}" oninput="equipmentData[${index}].type = this.value"></td>
+      <td><input type="text" value="${item.bonus || ''}" oninput="equipmentData[${index}].bonus = this.value"></td>
+      <td><input type="number" value="${item.weight || 0}" step="0.1" oninput="equipmentData[${index}].weight = parseFloat(this.value) || 0"></td>
+      <td><textarea class="table-notes" oninput="equipmentData[${index}].notes = this.value">${item.notes || ''}</textarea></td>
+      <td><button onclick="equipmentData.splice(${index}, 1); updateEquipmentPreviews()">Remove</button></td>
+    `;
+  });
+  
+  showPopup('equipmentPopup');
+}
+
+function addEquipment() {
+  equipmentData.push({ name: '', type: '', bonus: '', weight: 0, notes: '' });
+  showEquipmentPopup();
+}
+
+function updateEquipmentPreviews() {
+  const preview = document.getElementById('equipment_preview');
+  preview.innerHTML = '';
+  
+  if (equipmentData.length === 0) {
+    preview.innerHTML = '<p>No equipment added</p>';
+    return;
+  }
+  
+  const table = document.createElement('table');
+  const header = table.createTHead();
+  const headerRow = header.insertRow();
+  headerRow.innerHTML = '<th>Name</th><th>Type</th><th>Bonus</th>';
+  
+  const body = table.createTBody();
+  equipmentData.forEach(item => {
+    const row = body.insertRow();
+    row.className = 'item-row';
+    row.innerHTML = `
+      <td>${item.name || '-'}</td>
+      <td>${item.type || '-'}</td>
+      <td>${item.bonus || '-'}</td>
+    `;
+    row.onclick = () => showItemDetails(item, 'equipment');
+  });
+  
+  preview.appendChild(table);
+  
+  const inventoryTbody = document.getElementById('equipment_table_inventory').querySelector('tbody');
+  inventoryTbody.innerHTML = '';
+  
+  equipmentData.forEach((item, index) => {
+    const row = inventoryTbody.insertRow();
+    row.className = 'item-row';
+    row.innerHTML = `
+      <td>${item.name || ''}</td>
+      <td>${item.type || ''}</td>
+      <td>${item.bonus || ''}</td>
+      <td>${item.weight || 0}</td>
+      <td class="table-notes">${item.notes || ''}</td>
+      <td><button onclick="equipmentData.splice(${index}, 1); updateEquipmentPreviews(); updateEquipmentWeight()">Remove</button></td>
+    `;
+    row.onclick = () => showItemDetails(item, 'equipment');
+  });
+  
+  updateEquipmentWeight();
+  autosave();
+}
+
+function updateEquipmentWeight() {
+  let totalWeight = equipmentData.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0);
+  document.getElementById('equipment_weight_total').textContent = 
+    `Total: ${totalWeight.toFixed(1)} lbs / ${(totalWeight * 0.453592).toFixed(1)} kg`;
+}
+
+// ========== INVENTORY FUNCTIONS ==========
+function showAddItemPopup() {
+  document.getElementById('item_name').value = '';
+  document.getElementById('item_description').value = '';
+  document.getElementById('item_notes').value = '';
+  document.getElementById('item_weight').value = '';
+  
+  const containerDropdown = document.getElementById('item_container');
+  containerDropdown.innerHTML = '<option value="main">Main Inventory</option>';
+  
+  document.querySelectorAll('#extra_containers .section').forEach(container => {
+    const option = document.createElement('option');
+    option.value = container.id;
+    option.textContent = container.querySelector('h3').textContent;
+    containerDropdown.appendChild(option);
+  });
+  
+  showPopup('addItemPopup');
+}
+
+function addInventoryItem() {
+  const name = document.getElementById('item_name').value;
+  const description = document.getElementById('item_description').value;
+  const notes = document.getElementById('item_notes').value;
+  const weight = parseFloat(document.getElementById('item_weight').value) || 0;
+  const containerId = document.getElementById('item_container').value;
+
+  if (!name) {
+    alert("Please enter an item name");
+    return;
+  }
+
+  const item = {
+    name,
+    description,
+    notes,
+    weight
+  };
+
+  if (containerId === 'main') {
+    const tbody = document.getElementById('inventory_table').querySelector('tbody');
+    const row = tbody.insertRow();
+    row.className = 'item-row';
+    row.innerHTML = `
+      <td>${name}</td>
+      <td>${description}</td>
+      <td class="table-notes">${notes}</td>
+      <td>${weight}</td>
+      <td>${(weight * 0.453592).toFixed(2)}</td>
+      <td><button onclick="this.closest('tr').remove(); updateWeight(); autosave()">Remove</button></td>
+    `;
+    row.onclick = () => showItemDetails(item, 'inventory');
+    updateWeight();
+  } else {
+    const container = document.getElementById(containerId);
+    if (container) {
+      const tbody = container.querySelector('tbody');
+      const row = tbody.insertRow();
+      row.className = 'item-row';
+      row.innerHTML = `
+        <td>${name}</td>
+        <td>${description}</td>
+        <td class="table-notes">${notes}</td>
+        <td>${weight}</td>
+        <td>${(weight * 0.453592).toFixed(2)}</td>
+        <td><button onclick="this.closest('tr').remove(); updateContainerWeight('${containerId}'); autosave()">Remove</button></td>
+      `;
+      row.onclick = () => showItemDetails(item, 'inventory');
+      updateContainerWeight(containerId);
+    }
+  }
+
+  closePopup('addItemPopup');
+  autosave();
+}
+
+function addExtraContainer() {
+  const containerName = document.getElementById('container_name').value;
+  const maxWeight = document.getElementById('container_max_weight').value;
+  
+  if (!containerName) {
+    alert("Please enter a container name");
+    return;
+  }
+  
+  const containerId = 'container_' + Date.now();
+  
+  const containerHTML = `
+    <div class="section" id="${containerId}">
+      <div class="inventory-controls">
+        <h3>${containerName}</h3>
+        ${maxWeight > 0 ? `<div>Max Weight: ${maxWeight} lbs</div>` : ''}
+        <button class="delete-container-btn" onclick="confirmContainerDeletion('${containerId}')">Delete Container</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Description</th>
+            <th>Notes</th>
+            <th>Weight (lbs)</th>
+            <th>Weight (kg)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <button onclick="showAddContainerItemPopup('${containerId}')" style="margin-top: 10px;">+ Add Item</button>
+      <div class="weight-display">Current: 0 lbs / 0 kg</div>
+    </div>
+  `;
+  
+  document.getElementById('extra_containers').insertAdjacentHTML('beforeend', containerHTML);
+  
+  const containerDropdown = document.getElementById('item_container');
+  const option = document.createElement('option');
+  option.value = containerId;
+  option.textContent = containerName;
+  containerDropdown.appendChild(option);
+  
+  document.getElementById('container_name').value = '';
+  document.getElementById('container_max_weight').value = '';
+  
+  autosave();
+}
+
+function confirmContainerDeletion(containerId) {
+  const container = document.getElementById(containerId);
+  const deleteBtn = container.querySelector('.delete-container-btn');
+  
+  if (deleteBtn.classList.contains('confirm')) {
+    const containerDropdown = document.getElementById('item_container');
+    const option = containerDropdown.querySelector(`option[value="${containerId}"]`);
+    if (option) containerDropdown.removeChild(option);
+    
+    container.remove();
+    autosave();
+  } else {
+    deleteBtn.textContent = 'Confirm Delete';
+    deleteBtn.classList.add('confirm');
+    setTimeout(() => {
+      if (deleteBtn) {
+        deleteBtn.textContent = 'Delete Container';
+        deleteBtn.classList.remove('confirm');
+      }
+    }, 3000);
+  }
+}
+
+function showAddContainerItemPopup(containerId) {
+  document.getElementById('item_container').value = containerId;
+  showAddItemPopup();
+}
 
 // ========== WEIGHT CALCULATION FUNCTIONS ==========
 function updateWeight() {
@@ -1237,7 +2363,6 @@ function updateContainerWeight(containerId) {
     weightDisplay.textContent = 
       `Current: ${totalWeight.toFixed(1)} lbs / ${(totalWeight * 0.453592).toFixed(1)} kg`;
     
-    // Check against max weight if set
     const maxWeightText = container.querySelector('.inventory-controls div');
     if (maxWeightText && maxWeightText.textContent.includes('Max Weight')) {
       const maxWeight = parseFloat(maxWeightText.textContent.match(/[\d.]+/)[0]);
@@ -1390,314 +2515,6 @@ function removeCondition(id) {
   autosave();
 }
 
-// ========== WEAPONS SYSTEM ==========
-function showWeaponsPopup() {
-  const tbody = document.getElementById('weapons_table_popup').querySelector('tbody');
-  tbody.innerHTML = '';
-  
-  weaponsData.forEach((weapon, index) => {
-    const row = tbody.insertRow();
-    row.innerHTML = `
-      <td><input type="text" value="${weapon.name || ''}" oninput="weaponsData[${index}].name = this.value"></td>
-      <td><input type="text" value="${weapon.toHit || ''}" oninput="weaponsData[${index}].toHit = this.value"></td>
-      <td><input type="text" value="${weapon.damage || ''}" oninput="weaponsData[${index}].damage = this.value"></td>
-      <td><input type="text" value="${weapon.bonusDamage || ''}" oninput="weaponsData[${index}].bonusDamage = this.value"></td>
-      <td><textarea class="table-notes" oninput="weaponsData[${index}].notes = this.value">${weapon.notes || ''}</textarea></td>
-      <td><button onclick="weaponsData.splice(${index}, 1); showWeaponsPopup()">Remove</button></td>
-    `;
-  });
-  
-  showPopup('weaponsPopup');
-}
-
-function addWeapon() {
-  weaponsData.push({ name: '', toHit: '', damage: '', bonusDamage: '', notes: '' });
-  showWeaponsPopup();
-}
-
-function updateWeaponsPreview() {
-  const preview = document.getElementById('weapons_preview');
-  preview.innerHTML = '';
-  
-  if (weaponsData.length === 0) {
-    preview.innerHTML = '<p>No weapons added</p>';
-    return;
-  }
-  
-  const table = document.createElement('table');
-  const header = table.createTHead();
-  const headerRow = header.insertRow();
-  headerRow.innerHTML = '<th>Weapon</th><th>To Hit</th><th>Dmg</th>';
-  
-  const body = table.createTBody();
-  weaponsData.forEach(weapon => {
-    const row = body.insertRow();
-    row.className = 'item-row';
-    row.innerHTML = `
-      <td>${weapon.name || '-'}</td>
-      <td>${weapon.toHit || '-'}</td>
-      <td>${weapon.damage || '-'}</td>
-    `;
-    row.onclick = () => showItemDetails(weapon, 'weapon');
-  });
-  
-  preview.appendChild(table);
-  autosave();
-}
-
-// ========== ROUND RESET BUTTON ==========
-function resetRoundActions() {
-  document.getElementById('action_tick').checked = false;
-  document.getElementById('bonus_action_tick').checked = false;
-  autosave();
-  alert("Action counters reset for new round!");
-}
-
-// ========== EQUIPMENT SYSTEM ==========
-function showEquipmentPopup() {
-  const tbody = document.getElementById('equipment_table_popup').querySelector('tbody');
-  tbody.innerHTML = '';
-  
-  equipmentData.forEach((item, index) => {
-    const row = tbody.insertRow();
-    row.innerHTML = `
-      <td><input type="text" value="${item.name || ''}" oninput="equipmentData[${index}].name = this.value"></td>
-      <td><input type="text" value="${item.type || ''}" oninput="equipmentData[${index}].type = this.value"></td>
-      <td><input type="text" value="${item.bonus || ''}" oninput="equipmentData[${index}].bonus = this.value"></td>
-      <td><input type="number" value="${item.weight || 0}" step="0.1" oninput="equipmentData[${index}].weight = parseFloat(this.value) || 0"></td>
-      <td><textarea class="table-notes" oninput="equipmentData[${index}].notes = this.value">${item.notes || ''}</textarea></td>
-      <td><button onclick="equipmentData.splice(${index}, 1); updateEquipmentPreviews()">Remove</button></td>
-    `;
-  });
-  
-  showPopup('equipmentPopup');
-}
-
-function addEquipment() {
-  equipmentData.push({ name: '', type: '', bonus: '', weight: 0, notes: '' });
-  showEquipmentPopup();
-}
-
-function updateEquipmentPreviews() {
-  const preview = document.getElementById('equipment_preview');
-  preview.innerHTML = '';
-  
-  if (equipmentData.length === 0) {
-    preview.innerHTML = '<p>No equipment added</p>';
-    return;
-  }
-  
-  const table = document.createElement('table');
-  const header = table.createTHead();
-  const headerRow = header.insertRow();
-  headerRow.innerHTML = '<th>Name</th><th>Type</th><th>Bonus</th>';
-  
-  const body = table.createTBody();
-  equipmentData.forEach(item => {
-    const row = body.insertRow();
-    row.className = 'item-row';
-    row.innerHTML = `
-      <td>${item.name || '-'}</td>
-      <td>${item.type || '-'}</td>
-      <td>${item.bonus || '-'}</td>
-    `;
-    row.onclick = () => showItemDetails(item, 'equipment');
-  });
-  
-  preview.appendChild(table);
-  
-  const inventoryTbody = document.getElementById('equipment_table_inventory').querySelector('tbody');
-  inventoryTbody.innerHTML = '';
-  
-  equipmentData.forEach((item, index) => {
-    const row = inventoryTbody.insertRow();
-    row.className = 'item-row';
-    row.innerHTML = `
-      <td>${item.name || ''}</td>
-      <td>${item.type || ''}</td>
-      <td>${item.bonus || ''}</td>
-      <td>${item.weight || 0}</td>
-      <td class="table-notes">${item.notes || ''}</td>
-      <td><button onclick="equipmentData.splice(${index}, 1); updateEquipmentPreviews(); updateEquipmentWeight()">Remove</button></td>
-    `;
-    row.onclick = () => showItemDetails(item, 'equipment');
-  });
-  
-  updateEquipmentWeight();
-  autosave();
-}
-
-function updateEquipmentWeight() {
-  let totalWeight = equipmentData.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0);
-  document.getElementById('equipment_weight_total').textContent = 
-    `Total: ${totalWeight.toFixed(1)} lbs / ${(totalWeight * 0.453592).toFixed(1)} kg`;
-}
-
-// ========== INVENTORY FUNCTIONS ==========
-function showAddItemPopup() {
-  // Clear previous values
-  document.getElementById('item_name').value = '';
-  document.getElementById('item_description').value = '';
-  document.getElementById('item_notes').value = '';
-  document.getElementById('item_weight').value = '';
-  
-  // Update container dropdown options
-  const containerDropdown = document.getElementById('item_container');
-  containerDropdown.innerHTML = '<option value="main">Main Inventory</option>';
-  
-  // Add extra containers to dropdown
-  document.querySelectorAll('#extra_containers .section').forEach(container => {
-    const option = document.createElement('option');
-    option.value = container.id;
-    option.textContent = container.querySelector('h3').textContent;
-    containerDropdown.appendChild(option);
-  });
-  
-  showPopup('addItemPopup');
-}
-
-function addInventoryItem() {
-  const name = document.getElementById('item_name').value;
-  const description = document.getElementById('item_description').value;
-  const notes = document.getElementById('item_notes').value;
-  const weight = parseFloat(document.getElementById('item_weight').value) || 0;
-  const containerId = document.getElementById('item_container').value;
-
-  if (!name) {
-    alert("Please enter an item name");
-    return;
-  }
-
-  const item = {
-    name,
-    description,
-    notes,
-    weight
-  };
-
-  if (containerId === 'main') {
-    // Add to main inventory
-    const tbody = document.getElementById('inventory_table').querySelector('tbody');
-    const row = tbody.insertRow();
-    row.className = 'item-row';
-    row.innerHTML = `
-      <td>${name}</td>
-      <td>${description}</td>
-      <td class="table-notes">${notes}</td>
-      <td>${weight}</td>
-      <td>${(weight * 0.453592).toFixed(2)}</td>
-      <td><button onclick="this.closest('tr').remove(); updateWeight(); autosave()">Remove</button></td>
-    `;
-    row.onclick = () => showItemDetails(item, 'inventory');
-    updateWeight();
-  } else {
-    // Add to container
-    const container = document.getElementById(containerId);
-    if (container) {
-      const tbody = container.querySelector('tbody');
-      const row = tbody.insertRow();
-      row.className = 'item-row';
-      row.innerHTML = `
-        <td>${name}</td>
-        <td>${description}</td>
-        <td class="table-notes">${notes}</td>
-        <td>${weight}</td>
-        <td>${(weight * 0.453592).toFixed(2)}</td>
-        <td><button onclick="this.closest('tr').remove(); updateContainerWeight('${containerId}'); autosave()">Remove</button></td>
-      `;
-      row.onclick = () => showItemDetails(item, 'inventory');
-      updateContainerWeight(containerId);
-    }
-  }
-
-  closePopup('addItemPopup');
-  autosave();
-}
-
-function addExtraContainer() {
-  const containerName = document.getElementById('container_name').value;
-  const maxWeight = document.getElementById('container_max_weight').value;
-  
-  if (!containerName) {
-    alert("Please enter a container name");
-    return;
-  }
-  
-  const containerId = 'container_' + Date.now();
-  
-  const containerHTML = `
-    <div class="section" id="${containerId}">
-      <div class="inventory-controls">
-        <h3>${containerName}</h3>
-        ${maxWeight > 0 ? `<div>Max Weight: ${maxWeight} lbs</div>` : ''}
-        <button class="delete-container-btn" onclick="confirmContainerDeletion('${containerId}')">Delete Container</button>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Description</th>
-            <th>Notes</th>
-            <th>Weight (lbs)</th>
-            <th>Weight (kg)</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Items will be added here dynamically -->
-        </tbody>
-      </table>
-      <button onclick="showAddContainerItemPopup('${containerId}')" style="margin-top: 10px;">+ Add Item</button>
-      <div class="weight-display">Current: 0 lbs / 0 kg</div>
-    </div>
-  `;
-  
-  document.getElementById('extra_containers').insertAdjacentHTML('beforeend', containerHTML);
-  
-  // Add to container dropdown
-  const containerDropdown = document.getElementById('item_container');
-  const option = document.createElement('option');
-  option.value = containerId;
-  option.textContent = containerName;
-  containerDropdown.appendChild(option);
-  
-  // Clear inputs
-  document.getElementById('container_name').value = '';
-  document.getElementById('container_max_weight').value = '';
-  
-  autosave();
-}
-
-function confirmContainerDeletion(containerId) {
-  const container = document.getElementById(containerId);
-  const deleteBtn = container.querySelector('.delete-container-btn');
-  
-  if (deleteBtn.classList.contains('confirm')) {
-    // Remove from dropdown first
-    const containerDropdown = document.getElementById('item_container');
-    const option = containerDropdown.querySelector(`option[value="${containerId}"]`);
-    if (option) containerDropdown.removeChild(option);
-    
-    // Then remove container
-    container.remove();
-    autosave();
-  } else {
-    deleteBtn.textContent = 'Confirm Delete';
-    deleteBtn.classList.add('confirm');
-    setTimeout(() => {
-      if (deleteBtn) {
-        deleteBtn.textContent = 'Delete Container';
-        deleteBtn.classList.remove('confirm');
-      }
-    }, 3000);
-  }
-}
-
-function showAddContainerItemPopup(containerId) {
-  document.getElementById('item_container').value = containerId;
-  showAddItemPopup();
-}
-
 // ========== ITEM DETAILS ==========
 function showItemDetails(item, type) {
   document.getElementById('itemDetailsTitle').textContent = item.name || 'Unnamed Item';
@@ -1729,497 +2546,93 @@ function showItemDetails(item, type) {
   showPopup('itemDetailsPopup');
 }
 
-// ========== DATA MANAGEMENT ==========
-function autosave() {
-  const data = {
-    // char info
-    characterInfo: {
-      name: document.getElementById('char_name').value,
-      race: document.getElementById('char_race').value,
-      class: document.getElementById('char_class').value,
-      subclass: document.getElementById('char_subclass').value,
-      level: document.getElementById('char_level').value
-    },
-
-    actionTracker: {
-  actions: document.getElementById('action_counter').value,
-  actionUsed: document.getElementById('action_tick').checked,
-  bonusActions: document.getElementById('bonus_action_counter').value,
-  bonusActionUsed: document.getElementById('bonus_action_tick').checked
-},
-
-    // Page 1: Stats
-page1: {
-  abilities: ['str','dex','con','int','wis','cha'].reduce((obj,ability) => {
-    obj[ability] = document.getElementById(ability).value;
-    obj[`${ability}_bonus`] = document.getElementById(`${ability}_bonus`).value;
-    return obj;
-  }, {}),
-  combatStats: {
-    ac: document.getElementById('ac').value,
-    initiative: document.getElementById('initiative').value,
-    speed: document.getElementById('speed').value,
-    prof_bonus: document.getElementById('prof_bonus').value
-  },
-  health: {
-    max_hp: document.getElementById('max_hp').value,
-    curr_hp: document.getElementById('curr_hp').value
-  },
-  skills: ['acrobatics','animal_handling','arcana','athletics','deception','history',
-           'insight','intimidation','investigation','medicine','nature','perception',
-           'performance','persuasion','religion','sleight_of_hand','stealth','survival']
-           .reduce((obj,skill) => {
-    obj[`prof_${skill}`] = document.getElementById(`prof_${skill}`).checked;
-    obj[`bonus_${skill}`] = document.getElementById(`bonus_${skill}`).value;
-    return obj;
-  }, {}),
-  deathSaves: {
-    success: [
-      document.getElementById('death_save_success_1').checked,
-      document.getElementById('death_save_success_2').checked,
-      document.getElementById('death_save_success_3').checked
-    ],
-    failure: [
-      document.getElementById('death_save_failure_1').checked,
-      document.getElementById('death_save_failure_2').checked,
-      document.getElementById('death_save_failure_3').checked
-    ]
-  },
-  actionsFeatures: document.getElementById('actions_features').value,
-  proficienciesTraining: document.getElementById('proficiencies_training').value,
-  statsQuickNotes: document.getElementById('stats_quick_notes').value
-},
-    
-    
-    // Page 2: Background
-    page2: {
-      portrait: document.getElementById('portraitPreview').querySelector('img')?.src || null,
-      backstory: document.getElementById('char_backstory').value,
-      traits: {
-        personality: document.getElementById('personality_traits').value,
-        ideals: document.getElementById('traits_ideals').value,
-        bonds: document.getElementById('traits_bonds').value,
-        flaws: document.getElementById('traits_flaws').value,
-        allies: document.getElementById('traits_allies').value,
-        appearance: document.getElementById('traits_appearance').value
-      }
-    },
-    
-    // Page 3: Spells
-    page3: {
-      spellNotes: document.getElementById('spell_notes').value
-    },
-    
-    // Page 4: Inventory
-    page4: {
-      gold: document.getElementById('gold_field').value,
-      equipment: equipmentData,
-      inventory: Array.from(document.querySelectorAll('#inventory_table tbody tr')).map(row => ({
-        name: row.cells[0].textContent,
-        description: row.cells[1].textContent,
-        notes: row.cells[2].textContent,
-        weight: parseFloat(row.cells[3].textContent) || 0
-      })),
-      containers: Array.from(document.querySelectorAll('#extra_containers .section')).map(container => ({
-        name: container.querySelector('h3').textContent,
-        maxWeight: container.querySelector('div').textContent.includes('Max Weight') ? 
-                   parseInt(container.querySelector('div').textContent.match(/\d+/)[0]) : 0,
-        items: Array.from(container.querySelectorAll('tbody tr')).map(row => ({
-          name: row.cells[0].textContent,
-          description: row.cells[1].textContent,
-          notes: row.cells[2].textContent,
-          weight: parseFloat(row.cells[3].textContent) || 0
-        }))
-      }))
-    },
-    
-    // Page 6: Notes
-    page6: {
-      generalNotes: document.getElementById('general_notes').value,
-      questLog: document.getElementById('quest_log').value,
-      npcNotes: document.getElementById('npc_notes').value
-    },
-    
-    // Weapons data
-    weapons: weaponsData,
-    
-    // Conditions
-    conditions: Array.from(document.querySelectorAll('#conditions_container .condition')).map(condition => ({
-      name: condition.querySelector('.condition-header').children[0].textContent,
-      turns: condition.querySelector('.condition-header').children[1].textContent,
-      effect: condition.children[1].textContent,
-      color: condition.classList.contains('blue') ? 'blue' : 
-             condition.classList.contains('green') ? 'green' : 'red'
-    }))
-  };
-  
-  localStorage.setItem('dndCharacterData', JSON.stringify(data));
-}
-
-function loadData() {
-  const savedData = localStorage.getItem('dndCharacterData');
-  if (!savedData) return;
-  
-  const data = JSON.parse(savedData);
-  
-  // Load Page 1: Stats
-
-  if (data.page1.actionTracker) {
-    document.getElementById('action_counter').value = data.page1.actionTracker.actions || 0;
-    document.getElementById('action_tick').checked = data.page1.actionTracker.actionUsed || false;
-    document.getElementById('bonus_action_counter').value = data.page1.actionTracker.bonusActions || 0;
-    document.getElementById('bonus_action_tick').checked = data.page1.actionTracker.bonusActionUsed || false;
-  }
-
-  if (data.page1) {
-    // Abilities
-    for (const ability in data.page1.abilities) {
-      const element = document.getElementById(ability);
-      if (element) element.value = data.page1.abilities[ability];
-    }
-    
-    // Load Character Info
-    if (data.characterInfo) {
-      document.getElementById('char_name').value = data.characterInfo.name || '';
-      document.getElementById('char_race').value = data.characterInfo.race || '';
-      document.getElementById('char_class').value = data.characterInfo.class || '';
-      document.getElementById('char_subclass').value = data.characterInfo.subclass || '';
-      document.getElementById('char_level').value = data.characterInfo.level || '';
-    }
-  
-    // Combat Stats
-    if (data.page1.combatStats) {
-      document.getElementById('ac').value = data.page1.combatStats.ac || '';
-      document.getElementById('initiative').value = data.page1.combatStats.initiative || '';
-      document.getElementById('speed').value = data.page1.combatStats.speed || '';
-      document.getElementById('prof_bonus').value = data.page1.combatStats.prof_bonus || '';
-    }
-    
-    // Health
-    if (data.page1.health) {
-      document.getElementById('max_hp').value = data.page1.health.max_hp || '';
-      document.getElementById('curr_hp').value = data.page1.health.curr_hp || '';
-    }
-    
-    // Skills
-    if (data.page1.skills) {
-      for (const skill in data.page1.skills) {
-        if (skill.startsWith('prof_')) {
-          const checkbox = document.getElementById(skill);
-          if (checkbox) checkbox.checked = data.page1.skills[skill];
-        } else if (skill.startsWith('bonus_')) {
-          const input = document.getElementById(skill);
-          if (input) input.value = data.page1.skills[skill];
-        }
-      }
-    }
-    
-    // Death Saves
-    if (data.page1.deathSaves) {
-      for (let i = 0; i < 3; i++) {
-        if (data.page1.deathSaves.success[i]) {
-          document.getElementById(`death_save_success_${i+1}`).checked = true;
-        }
-        if (data.page1.deathSaves.failure[i]) {
-          document.getElementById(`death_save_failure_${i+1}`).checked = true;
-        }
-      }
-    }
-    
-    // Actions & Features
-    if (data.page1.actionsFeatures) {
-      document.getElementById('actions_features').value = data.page1.actionsFeatures;
-    }
-    
-    // Proficiencies & Training
-    if (data.page1.proficienciesTraining) {
-      document.getElementById('proficiencies_training').value = data.page1.proficienciesTraining;
-    }
-    
-    // Quick Notes
-    if (data.page1.statsQuickNotes) {
-      document.getElementById('stats_quick_notes').value = data.page1.statsQuickNotes;
-    }
-  }
-  
-  // Load Page 2: Background
-  if (data.page2) {
-    // Portrait
-    if (data.page2.portrait) {
-      const img = document.createElement('img');
-      img.src = data.page2.portrait;
-      img.style.maxWidth = '100%';
-      img.style.maxHeight = '100%';
-      document.getElementById('portraitPreview').innerHTML = '';
-      document.getElementById('portraitPreview').appendChild(img);
-    }
-    
-    // Backstory
-    if (data.page2.backstory) {
-      document.getElementById('char_backstory').value = data.page2.backstory;
-    }
-    
-    // Traits
-    if (data.page2.traits) {
-      document.getElementById('personality_traits').value = data.page2.traits.personality || '';
-      document.getElementById('traits_ideals').value = data.page2.traits.ideals || '';
-      document.getElementById('traits_bonds').value = data.page2.traits.bonds || '';
-      document.getElementById('traits_flaws').value = data.page2.traits.flaws || '';
-      document.getElementById('traits_allies').value = data.page2.traits.allies || '';
-      document.getElementById('traits_appearance').value = data.page2.traits.appearance || '';
-    }
-  }
-  
-  // Load Page 3: Spells
-  if (data.page3 && data.page3.spellNotes) {
-    document.getElementById('spell_notes').value = data.page3.spellNotes;
-  }
-  
-  // Load Page 4: Inventory
-  if (data.page4) {
-    // Gold
-    if (data.page4.gold) {
-      document.getElementById('gold_field').value = data.page4.gold;
-    }
-    
-    // Equipment
-    if (data.page4.equipment) {
-      equipmentData = data.page4.equipment;
-      updateEquipmentPreviews();
-    }
-    
-    // Main Inventory
-    if (data.page4.inventory) {
-      const tbody = document.getElementById('inventory_table').querySelector('tbody');
-      tbody.innerHTML = '';
-      
-      data.page4.inventory.forEach(item => {
-        const row = tbody.insertRow();
-        row.className = 'item-row';
-        row.innerHTML = `
-          <td>${item.name || ''}</td>
-          <td>${item.description || ''}</td>
-          <td class="table-notes">${item.notes || ''}</td>
-          <td>${item.weight || 0}</td>
-          <td>${(item.weight * 0.453592).toFixed(2)}</td>
-          <td><button onclick="this.closest('tr').remove(); updateWeight(); autosave()">Remove</button></td>
-        `;
-        row.onclick = () => showItemDetails(item, 'inventory');
-      });
-      
-      updateWeight();
-    }
-    
-    // Containers
-    if (data.page4.containers) {
-      const extraContainers = document.getElementById('extra_containers');
-      extraContainers.innerHTML = '';
-      const containerDropdown = document.getElementById('item_container');
-      
-      while (containerDropdown.children.length > 1) {
-        containerDropdown.removeChild(containerDropdown.lastChild);
-      }
-      
-      data.page4.containers.forEach(containerData => {
-        const containerId = 'container_' + Date.now();
-        const containerHTML = `
-          <div class="section" id="${containerId}">
-            <div class="inventory-controls">
-              <h3>${containerData.name}</h3>
-              ${containerData.maxWeight > 0 ? `<div>Max Weight: ${containerData.maxWeight} lbs</div>` : ''}
-              <button class="delete-container-btn" onclick="confirmContainerDeletion('${containerId}')">Delete Container</button>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Description</th>
-                  <th>Notes</th>
-                  <th>Weight (lbs)</th>
-                  <th>Weight (kg)</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${containerData.items.map(item => `
-                  <tr class="item-row">
-                    <td>${item.name || ''}</td>
-                    <td>${item.description || ''}</td>
-                    <td class="table-notes">${item.notes || ''}</td>
-                    <td>${item.weight || 0}</td>
-                    <td>${(item.weight * 0.453592).toFixed(2)}</td>
-                    <td><button onclick="this.closest('tr').remove(); updateContainerWeight('${containerId}'); autosave()">Remove</button></td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-            <button onclick="showAddContainerItemPopup('${containerId}')" style="margin-top: 10px;">+ Add Item</button>
-            <div class="weight-display">Current: ${containerData.items.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0).toFixed(1)} lbs / 
-              ${(containerData.items.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0) * 0.453592).toFixed(1)} kg</div>
-          </div>
-        `;
-        
-        extraContainers.insertAdjacentHTML('beforeend', containerHTML);
-        
-        containerData.items.forEach(item => {
-          const rows = document.querySelectorAll(`#${containerId} tbody tr`);
-          rows.forEach(row => {
-            if (row.cells[0].textContent === item.name) {
-              row.onclick = () => showItemDetails(item, 'inventory');
-            }
-          });
-        });
-        
-        const option = document.createElement('option');
-        option.value = containerId;
-        option.textContent = containerData.name;
-        containerDropdown.appendChild(option);
-      });
-    }
-  }
-  
-  // Load Page 6: Notes
-  if (data.page6) {
-    if (data.page6.generalNotes) {
-      document.getElementById('general_notes').value = data.page6.generalNotes;
-    }
-    if (data.page6.questLog) {
-      document.getElementById('quest_log').value = data.page6.questLog;
-    }
-    if (data.page6.npcNotes) {
-      document.getElementById('npc_notes').value = data.page6.npcNotes;
-    }
-  }
-  
-  // Load Weapons
-  if (data.weapons) {
-    weaponsData = data.weapons;
-    updateWeaponsPreview();
-  }
-  
-  // Load Conditions
-  if (data.conditions) {
-    const container = document.getElementById('conditions_container');
-    container.innerHTML = '';
-    
-    data.conditions.forEach(condition => {
-      const conditionId = Date.now();
-      const conditionHTML = `
-        <div class="condition ${condition.color}" id="condition_${conditionId}">
-          <div class="condition-header">
-            <span>${condition.name}</span>
-            <span class="condition-turns">${condition.turns}</span>
-          </div>
-          <div>${condition.effect}</div>
-          <button onclick="removeCondition('${conditionId}')" style="float:right; padding:2px 5px; margin-top:5px;">Remove</button>
-        </div>
-      `;
-      
-      container.insertAdjacentHTML('beforeend', conditionHTML);
-    });
-  }
-}
-
-function exportData() {
+// ========== ROUND RESET BUTTON ==========
+function resetRoundActions() {
+  document.getElementById('action_tick').checked = false;
+  document.getElementById('bonus_action_tick').checked = false;
   autosave();
-  const data = localStorage.getItem('dndCharacterData');
-  const blob = new Blob([data], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'dnd_character_backup.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  alert("Action counters reset for new round!");
 }
 
-function importData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      localStorage.setItem('dndCharacterData', JSON.stringify(data));
-      loadData();
-      alert("Character data imported successfully!");
-    } catch (err) {
-      alert("Error importing file: " + err.message);
-    }
-    event.target.value = '';
-  };
-  reader.readAsText(file);
-}
-
-function resetLayout() {
-  if (confirm("Reset all sections to their default positions and sizes? This won't erase your data.")) {
-    document.querySelectorAll('.section').forEach(el => {
-      el.style.width = '';
-      el.style.height = '';
-    });
-    autosave();
-  }
-}
-
+// ========== LAYOUT FUNCTIONS ==========
 function saveLayout() {
-  const layout = {};
-  document.querySelectorAll('.section').forEach(el => {
-    layout[el.id] = {
-      width: el.style.width,
-      height: el.style.height
+  const layout = {
+    sections: {},
+    textareas: {}
+  };
+
+  // Save container sizes
+  document.querySelectorAll('.resizable-container').forEach(section => {
+    layout.sections[section.id || `section_${Date.now()}`] = {
+      width: section.style.width || '',
+      height: section.style.height || ''
     };
   });
-  
+
+  // Save textarea sizes
+  document.querySelectorAll('textarea').forEach(textarea => {
+    layout.textareas[textarea.id || `textarea_${Date.now()}`] = {
+      width: textarea.style.width || '',
+      height: textarea.style.height || ''
+    };
+  });
+
   localStorage.setItem('dndCharacterLayout', JSON.stringify(layout));
-  alert("Layout saved!");
+  alert("Layout (containers and text boxes) saved successfully!");
 }
 
 function loadLayout() {
   const savedLayout = localStorage.getItem('dndCharacterLayout');
   if (!savedLayout) return;
-  
-  const layout = JSON.parse(savedLayout);
-  for (const id in layout) {
-    const el = document.getElementById(id);
-    if (el) {
-      el.style.width = layout[id].width;
-      el.style.height = layout[id].height;
+
+  try {
+    const layout = JSON.parse(savedLayout);
+
+    // Load container sizes
+    if (layout.sections) {
+      Object.entries(layout.sections).forEach(([id, size]) => {
+        const section = document.getElementById(id) || 
+                      document.querySelector(`[id^="${id}"]`);
+        if (section) {
+          if (size.width) section.style.width = size.width;
+          if (size.height) section.style.height = size.height;
+        }
+      });
     }
+
+    // Load textarea sizes
+    if (layout.textareas) {
+      Object.entries(layout.textareas).forEach(([id, size]) => {
+        const textarea = document.getElementById(id);
+        if (textarea) {
+          if (size.width) textarea.style.width = size.width;
+          if (size.height) textarea.style.height = size.height;
+        }
+      });
+    }
+  } catch (e) {
+    console.error("Error loading layout:", e);
   }
 }
 
-// ========== INITIALIZATION ==========
-window.onload = function() {
-  // Initialize data and layout
-  loadData();
-  loadLayout();
-  
-  // Initialize portrait functionality
-  document.getElementById('portraitUpload').addEventListener('change', handlePortraitUpload);
-  document.getElementById('portraitPreview').addEventListener('click', function() {
-    document.getElementById('portraitUpload').click();
-  });
-  
-  // Initialize weapons and equipment if empty
-  if (weaponsData.length === 0) {
-    weaponsData.push({ name: '', toHit: '', damage: '', bonusDamage: '', notes: '' });
-    updateWeaponsPreview();
+function resetLayout() {
+  if (confirm("Reset all sections and text boxes to default sizes? This won't erase your data.")) {
+    // Reset containers
+    document.querySelectorAll('.resizable-container').forEach(section => {
+      section.style.width = '';
+      section.style.height = '';
+    });
+    
+    // Reset textareas
+    document.querySelectorAll('textarea').forEach(textarea => {
+      textarea.style.width = '';
+      textarea.style.height = '';
+    });
+    
+    localStorage.removeItem('dndCharacterLayout');
+    alert("Layout has been reset to defaults.");
   }
-  
-  if (equipmentData.length === 0) {
-    equipmentData.push({ name: '', type: '', bonus: '', weight: 0, notes: '' });
-    updateEquipmentPreviews();
-  }
-  
-  // Update weights
-  updateWeight();
-  document.querySelectorAll('#extra_containers .section').forEach(container => {
-    updateContainerWeight(container.id);
-  });
-};
+}
 </script>
 </body>
 </html>
