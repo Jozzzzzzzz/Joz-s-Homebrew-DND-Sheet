@@ -900,6 +900,26 @@ th {
             <input id="prof_bonus" oninput="autosave()"/>
           </div>
         </div>
+        <!-- Saving Throws - Added inside the same section -->
+<h3 style="margin-top: 15px;">Saving Throws</h3>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+  <div>
+    <label>STR Save</label>
+    <input id="str_save" oninput="autosave()"/>
+    <label>DEX Save</label>
+    <input id="dex_save" oninput="autosave()"/>
+    <label>CON Save</label>
+    <input id="con_save" oninput="autosave()"/>
+  </div>
+  <div>
+    <label>INT Save</label>
+    <input id="int_save" oninput="autosave()"/>
+    <label>WIS Save</label>
+    <input id="wis_save" oninput="autosave()"/>
+    <label>CHA Save</label>
+    <input id="cha_save" oninput="autosave()"/>
+  </div>
+</div>
       </div>
       
       <!-- Skills -->
@@ -1660,17 +1680,20 @@ function autosave() {
       bonusActionUsed: document.getElementById('bonus_action_tick').checked
     },
     page1: {
-      abilities: ['str','dex','con','int','wis','cha'].reduce((obj,ability) => {
-        obj[ability] = document.getElementById(ability).value;
-        obj[`${ability}_bonus`] = document.getElementById(`${ability}_bonus`).value;
-        return obj;
-      }, {}),
+    abilities: ['str','dex','con','int','wis','cha'].reduce((obj,ability) => {
+  obj[ability] = document.getElementById(ability).value;
+  obj[`${ability}_bonus`] = document.getElementById(`${ability}_bonus`).value;
+  // Add this line for saving throws:
+  obj[`${ability}_save`] = document.getElementById(`${ability}_save`).value;
+  return obj;
+}, {}),
       combatStats: {
         ac: document.getElementById('ac').value,
         initiative: document.getElementById('initiative').value,
         speed: document.getElementById('speed').value,
         prof_bonus: document.getElementById('prof_bonus').value
       },
+
       health: {
         max_hp: document.getElementById('max_hp').value,
         curr_hp: document.getElementById('curr_hp').value
@@ -1787,6 +1810,10 @@ function loadData() {
     for (const ability in data.page1.abilities) {
       const element = document.getElementById(ability);
       if (element) element.value = data.page1.abilities[ability];
+  // Add these lines for saving throws:
+  const saveElement = document.getElementById(`${ability}_save`);
+  if (saveElement) saveElement.value = data.page1.abilities[`${ability}_save`] || '';
+
     }
     
     // Combat Stats
@@ -1796,7 +1823,7 @@ function loadData() {
       document.getElementById('speed').value = data.page1.combatStats.speed || '';
       document.getElementById('prof_bonus').value = data.page1.combatStats.prof_bonus || '';
     }
-    
+
     // Health
     if (data.page1.health) {
       document.getElementById('max_hp').value = data.page1.health.max_hp || '';
