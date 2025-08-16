@@ -465,6 +465,31 @@ th {
   background: #2a2a2a;
 }
 
+/* Add to your existing styles */
+#syncIndicator {
+  display: none;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  background: #333;
+  color: white;
+  border-radius: 3px;
+  z-index: 1000;
+}
+
+.offline-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #ff9800;
+  color: black;
+  text-align: center;
+  padding: 5px;
+  z-index: 1000;
+}
+
 /* === UPDATED STYLES === */
 /* Basic Textarea Style (for direct editing) */
 .basic-textarea {
@@ -697,33 +722,6 @@ th {
 </style>
 </head>
 <body>
-
-  <!-- Auth Modal -->
-<div id="auth-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; display:flex; justify-content:center; align-items:center;">
-  <div style="background:#2a2a2a; padding:2rem; border-radius:8px; width:90%; max-width:400px; border: 1px solid var(--accent);">
-    <h2 style="color:var(--accent); text-align:center; margin-top:0;">Login / Register</h2>
-    
-    <!-- Login Form -->
-    <div id="login-form">
-      <input type="email" id="login-email" placeholder="Email" style="width:100%; margin-bottom:1rem; padding:8px; background:#333; color:white; border:1px solid #444;">
-      <input type="password" id="login-password" placeholder="Password" style="width:100%; margin-bottom:1rem; padding:8px; background:#333; color:white; border:1px solid #444;">
-      <button onclick="loginUser()" style="width:100%; margin-bottom:1rem; padding:8px;">Login</button>
-      <button onclick="showRegister()" style="width:100%; padding:8px; background:#333; color:#ccc; border:1px solid #444;">Create Account</button>
-    </div>
-    
-    <!-- Register Form -->
-    <div id="register-form" style="display:none;">
-      <input type="text" id="register-name" placeholder="Your Name" style="width:100%; margin-bottom:1rem; padding:8px; background:#333; color:white; border:1px solid #444;">
-      <input type="email" id="register-email" placeholder="Email" style="width:100%; margin-bottom:1rem; padding:8px; background:#333; color:white; border:1px solid #444;">
-      <input type="password" id="register-password" placeholder="Password (min 6 chars)" style="width:100%; margin-bottom:1rem; padding:8px; background:#333; color:white; border:1px solid #444;">
-      <button onclick="registerUser()" style="width:100%; margin-bottom:1rem; padding:8px;">Register</button>
-      <button onclick="showLogin()" style="width:100%; padding:8px; background:#333; color:#ccc; border:1px solid #444;">Back to Login</button>
-    </div>
-    
-    <div id="auth-message" style="margin-top:1rem; color:var(--condition-red); text-align:center;"></div>
-  </div>
-</div>
-
 <!-- Warning Banner -->
 <div style="text-align:center; background:#222; color:#ccc; padding:8px; border-bottom: var(--border);">
 ⚠️ This sheet autosaves character data to your browser. Use Export to back up your character.
@@ -747,10 +745,19 @@ th {
 </div>
 
 <!-- Add this near your other control buttons -->
-<div id="user-status" style="text-align:right; margin-bottom:10px;">
-  <span id="user-email" style="color:var(--accent);"></span>
-  <button id="logout-btn" onclick="logoutUser()" style="margin-left:10px; display:none; background:#333; color:var(--condition-red);">Logout</button>
+<div id="authContainer" style="text-align:center; margin:10px 0;">
+  <div id="loginUI" style="display:none;">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+  </div>
+  <div id="userUI" style="display:none;">
+    <span id="userEmail"></span>
+    <button onclick="logout()">Logout</button>
+  </div>
 </div>
+
 
 <!-- Tabs -->
 <div class="tabs">
@@ -781,7 +788,7 @@ th {
           <div>
             <h4>Load Character</h4>
             <select id="characterList"></select>
-            <button onclick="loadSelectedCharacter()">Load</button>
+            <button onclick="loadData()">Load</button>
           </div>
           <div>
             <h4>Delete Character</h4>
@@ -1469,12 +1476,194 @@ th {
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+
+<!-- FireBase -->
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+
 
 <!-- Script Section -->
 <script>
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyA5QPG6QRAMK-jeQFzc_S07QtWL1ITEmsE",
+  authDomain: "dnd-char-sheet-95cac.firebaseapp.com",
+  projectId: "dnd-char-sheet-95cac",
+  storageBucket: "dnd-char-sheet-95cac.firebasestorage.app",
+  messagingSenderId: "52657563276",
+  appId: "1:52657563276:web:c724b24a2e8b67c7403da9",
+  measurementId: "G-PTCGYWNY8L"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Enable offline persistence
+db.enablePersistence()
+  .then(() => {
+    console.log("Offline persistence enabled");
+    // Initialize sync indicator
+    const syncIndicator = document.createElement('div');
+    syncIndicator.id = 'syncIndicator';
+    syncIndicator.style.position = 'fixed';
+    syncIndicator.style.bottom = '10px';
+    syncIndicator.style.right = '10px';
+    syncIndicator.style.padding = '5px 10px';
+    syncIndicator.style.background = '#333';
+    syncIndicator.style.color = 'white';
+    syncIndicator.style.borderRadius = '3px';
+    syncIndicator.textContent = 'Syncing...';
+    document.body.appendChild(syncIndicator);
+
+    // Listen for sync state changes
+    db.onSnapshotsInSync(() => {
+      syncIndicator.textContent = 'Synced';
+      syncIndicator.style.background = '#4CAF50';
+      setTimeout(() => {
+        syncIndicator.style.display = 'none';
+      }, 2000);
+    });
+  })
+  .catch((err) => {
+    if (err.code == 'failed-precondition') {
+      console.warn("Offline persistence can only be enabled in one tab at a time.");
+    } else if (err.code == 'unimplemented') {
+      console.warn("The current browser does not support offline persistence.");
+    }
+  });
+
+// Update your existing auth listener
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('loginUI').style.display = 'none';
+    document.getElementById('userUI').style.display = 'block';
+    document.getElementById('userEmail').textContent = user.email;
+    
+    // Load characters and attempt migration
+    loadUserCharacters().then(() => {
+      migrateLocalCharacters();
+    });
+  } else {
+    document.getElementById('loginUI').style.display = 'block';
+    document.getElementById('userUI').style.display = 'none';
+    currentCharacter = null;
+    showHomePage();
+  }
+
+      // Check for pending changes
+    const pendingChangesKey = `pendingChanges_${currentCharacter}`;
+    const pendingChanges = JSON.parse(localStorage.getItem(pendingChangesKey));
+    
+    if (pendingChanges) {
+      if (confirm('You have unsynced changes. Would you like to sync them now?')) {
+        autosave().then(() => {
+          localStorage.removeItem(pendingChangesKey);
+        });
+      }
+    }
+  }
+);
+
+// Auth functions
+function login() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  auth.signInWithEmailAndPassword(email, password)
+    .catch(error => {
+      alert("Login error: " + error.message);
+    });
+}
+
+// ========== MIGRATION FROM LOCALSTORAGE ==========
+async function migrateLocalCharacters() {
+  const localChars = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+  if (localChars.length === 0) return;
+  
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    // Check if user already has cloud characters
+    const snapshot = await db.collection('users').doc(user.uid).collection('characters').get();
+    
+    if (snapshot.empty) {
+      // Only migrate if user has no existing cloud characters
+      if (confirm(`Would you like to migrate your ${localChars.length} local character(s) to the cloud?`)) {
+        const migrationBatch = db.batch();
+        const charactersRef = db.collection('users').doc(user.uid).collection('characters');
+        
+        for (const char of localChars) {
+          const newCharRef = charactersRef.doc();
+          migrationBatch.set(newCharRef, {
+            name: char.name,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            data: char.data || getDefaultCharacterData(char.name),
+            migrated: true
+          });
+        }
+        
+        await migrationBatch.commit();
+        localStorage.removeItem('dndCharacters');
+        alert(`Successfully migrated ${localChars.length} character(s)!`);
+        loadUserCharacters();
+      }
+    }
+  } catch (error) {
+    console.error("Migration failed:", error);
+    alert("Migration failed. Please check console for details.");
+  }
+}
+
+function signup() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  auth.createUserWithEmailAndPassword(email, password)
+    .catch(error => {
+      alert("Signup error: " + error.message);
+    });
+}
+
+function logout() {
+  auth.signOut();
+}
+
+// Network status detection
+function setupNetworkDetection() {
+  const offlineWarning = document.createElement('div');
+  offlineWarning.className = 'offline-warning';
+  offlineWarning.textContent = '⚠️ Offline - Working locally (changes will sync when back online)';
+  offlineWarning.style.display = 'none';
+  document.body.appendChild(offlineWarning);
+
+  window.addEventListener('online', () => {
+    offlineWarning.style.display = 'none';
+    document.getElementById('syncIndicator').style.display = 'block';
+    document.getElementById('syncIndicator').textContent = 'Syncing...';
+    document.getElementById('syncIndicator').style.background = '#333';
+  });
+
+  window.addEventListener('offline', () => {
+    offlineWarning.style.display = 'block';
+  });
+
+  // Initial check
+  if (!navigator.onLine) {
+    offlineWarning.style.display = 'block';
+  }
+}
+
+// Call this in your window.onload
+window.onload = function() {
+  // ... existing code ...
+  setupNetworkDetection();
+};
 
 // Auto-resize containers when textareas change
 function setupAutoResize() {
@@ -1489,146 +1678,6 @@ function setupAutoResize() {
       }
     });
   });
-}
-
-// Firebase Configuration (replace with your actual config)
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// Auth State Listener
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    // User is signed in
-    document.getElementById('user-email').textContent = user.email;
-    document.getElementById('logout-btn').style.display = 'inline-block';
-    document.getElementById('auth-modal').style.display = 'none';
-    loadCloudData(); // Load data from Firestore
-  } else {
-    // No user signed in
-    document.getElementById('user-email').textContent = 'Not logged in';
-    document.getElementById('logout-btn').style.display = 'none';
-    document.getElementById('auth-modal').style.display = 'flex';
-    showLogin();
-  }
-});
-
-// Auth Functions
-function showLogin() {
-  document.getElementById('login-form').style.display = 'block';
-  document.getElementById('register-form').style.display = 'none';
-  document.getElementById('auth-message').textContent = '';
-}
-
-function showRegister() {
-  document.getElementById('login-form').style.display = 'none';
-  document.getElementById('register-form').style.display = 'block';
-  document.getElementById('auth-message').textContent = '';
-}
-
-function showAuthMessage(message, isError = true) {
-  const msgEl = document.getElementById('auth-message');
-  msgEl.textContent = message;
-  msgEl.style.color = isError ? 'var(--condition-red)' : 'var(--condition-green)';
-}
-
-function loginUser() {
-  const email = document.getElementById('login-email').value;
-  const password = document.getElementById('login-password').value;
-  
-  auth.signInWithEmailAndPassword(email, password)
-    .catch((error) => {
-      showAuthMessage(error.message);
-    });
-}
-
-function registerUser() {
-  const name = document.getElementById('register-name').value;
-  const email = document.getElementById('register-email').value;
-  const password = document.getElementById('register-password').value;
-  
-  if (password.length < 6) {
-    showAuthMessage('Password must be at least 6 characters');
-    return;
-  }
-  
-  auth.createUserWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      // Add user to Firestore
-      return db.collection('users').doc(userCredential.user.uid).set({
-        name: name,
-        email: email,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    })
-    .then(() => {
-      showAuthMessage('Account created successfully!', false);
-    })
-    .catch((error) => {
-      showAuthMessage(error.message);
-    });
-}
-
-function logoutUser() {
-  auth.signOut();
-}
-
-// Cloud Data Functions
-function loadCloudData() {
-  if (!auth.currentUser) return;
-  
-  db.collection('characters').where('userId', '==', auth.currentUser.uid).get()
-    .then((querySnapshot) => {
-      if (!querySnapshot.empty) {
-        // Load the first character (you can extend this to handle multiple)
-        const doc = querySnapshot.docs[0];
-        currentCharacter = doc.id;
-        const data = doc.data();
-        // Use your existing loadData function to populate the UI
-        populateData(data);
-      }
-    })
-    .catch((error) => {
-      console.error("Error loading data:", error);
-    });
-}
-
-function saveToCloud() {
-  if (!auth.currentUser || !currentCharacter) return;
-  
-  // Collect all your data (use your existing autosave data collection)
-  const charData = {
-    userId: auth.currentUser.uid,
-    // ... all your existing character data ...
-    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-  };
-  
-  // Save to Firestore
-  db.collection('characters').doc(currentCharacter).set(charData, { merge: true })
-    .then(() => {
-      console.log("Saved to cloud");
-    })
-    .catch((error) => {
-      console.error("Error saving:", error);
-      // Fallback to localStorage
-      localStorage.setItem(`char_${currentCharacter}`, JSON.stringify(charData));
-    });
-}
-
-// Modify your existing autosave function to call saveToCloud()
-function autosave() {
-  // ... your existing data collection ...
-  saveToCloud();
 }
 
 // Call this in your window.onload
@@ -1708,70 +1757,144 @@ function showHomePage() {
   document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
 }
 
-function createNewCharacter() {
+// Modified character functions
+async function loadUserCharacters() {
+  const user = auth.currentUser;
+  if (!user) return;
+  
+  try {
+    const snapshot = await db.collection('users').doc(user.uid).collection('characters').get();
+    const characters = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    // Update UI
+    const select = document.getElementById('characterList');
+    select.innerHTML = '';
+    
+    if (characters.length === 0) {
+      const option = document.createElement('option');
+      option.textContent = "No characters found";
+      select.appendChild(option);
+      select.disabled = true;
+      return;
+    }
+    
+    select.disabled = false;
+    characters.forEach(char => {
+      const option = document.createElement('option');
+      option.value = char.id;
+      option.textContent = char.name;
+      if (char.id === currentCharacter) option.selected = true;
+      select.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error loading characters:", error);
+  }
+}
+
+async function createNewCharacter() {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Please log in to create characters");
+    return;
+  }
+  
   const charName = document.getElementById('newCharName').value.trim();
   if (!charName) {
     alert("Please enter a character name");
     return;
   }
   
-  const newChar = {
-    id: Date.now().toString(),
-    name: charName,
-    data: {
-      characterInfo: { name: charName },
-      page1: {},
-      page2: {},
-      page3: {},
-      page4: {},
-      page6: {},
-      weapons: [],
-      equipment: []
-    }
-  };
-  
-  let characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
-  characters.push(newChar);
-  localStorage.setItem('dndCharacters', JSON.stringify(characters));
-  
-  currentCharacter = newChar.id;
-  loadCharacterList();
-  loadData();
-  document.querySelector('.tab[data-tab="page1"]').click();
-  document.getElementById('newCharName').value = '';
-}
-
-function loadCharacterList() {
-  const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
-  const select = document.getElementById('characterList');
-  select.innerHTML = '';
-  
-  if (characters.length === 0) {
-    const option = document.createElement('option');
-    option.textContent = "No characters found";
-    select.appendChild(option);
-    select.disabled = true;
-    return;
+  try {
+    const newCharRef = await db.collection('users').doc(user.uid).collection('characters').add({
+      name: charName,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      data: getDefaultCharacterData(charName)
+    });
+    
+    currentCharacter = newCharRef.id;
+    loadUserCharacters();
+    loadData();
+    document.querySelector('.tab[data-tab="page1"]').click();
+    document.getElementById('newCharName').value = '';
+  } catch (error) {
+    console.error("Error creating character:", error);
   }
-  
-  select.disabled = false;
-  characters.forEach(char => {
-    const option = document.createElement('option');
-    option.value = char.id;
-    option.textContent = char.name;
-    if (char.id === currentCharacter) option.selected = true;
-    select.appendChild(option);
-  });
 }
 
-function loadSelectedCharacter() {
-  const select = document.getElementById('characterList');
-  const charId = select.value;
-  if (!charId) return;
+function getDefaultCharacterData(name) {
+  return {
+    characterInfo: { name },
+    page1: {},
+    page2: {},
+    page3: {},
+    page4: {},
+    page6: {},
+    weapons: [],
+    equipment: [],
+    conditions: []
+  };
+}
+
+async function autosave() {
+  const user = auth.currentUser;
+  if (!user || !currentCharacter) return;
+
+  try {
+    const data = gatherAllCharacterData();
+    const charRef = db.collection('users').doc(user.uid).collection('characters').doc(currentCharacter);
+    
+    // Use batch writes for better offline performance
+    const batch = db.batch();
+    batch.update(charRef, {
+      name: document.getElementById('char_name').value || 'Unnamed',
+      data: data,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      hasPendingWrites: true
+    });
+    
+    await batch.commit();
+    
+    // Show sync indicator
+    const syncIndicator = document.getElementById('syncIndicator');
+    if (syncIndicator) {
+      syncIndicator.style.display = 'block';
+      syncIndicator.textContent = 'Syncing...';
+      syncIndicator.style.background = '#333';
+    }
+  } catch (error) {
+    console.error("Error saving character:", error);
+    
+    // If we're offline, store changes in localStorage temporarily
+    if (error.code === 'unavailable') {
+      const pendingChanges = {
+        timestamp: new Date().toISOString(),
+        characterId: currentCharacter,
+        data: gatherAllCharacterData()
+      };
+      localStorage.setItem(`pendingChanges_${currentCharacter}`, JSON.stringify(pendingChanges));
+    }
+  }
+}
+
+async function loadData() {
+  const user = auth.currentUser;
+  if (!user || !currentCharacter) return;
   
-  currentCharacter = charId;
-  loadData();
-  document.querySelector('.tab[data-tab="page1"]').click();
+  try {
+    const doc = await db.collection('users').doc(user.uid).collection('characters')
+      .doc(currentCharacter)
+      .get();
+    
+    if (doc.exists) {
+      const charData = doc.data();
+      populateCharacterData(charData.data); // Your existing data population function
+    }
+  } catch (error) {
+    console.error("Error loading character:", error);
+  }
 }
 
 function initiateDelete() {
@@ -2227,51 +2350,65 @@ function loadData() {
 }
 
 // ========== EXISTING FUNCTIONS (UPDATED) ==========
-function exportData() {
+async function exportData() {
   if (!currentCharacter) {
     alert("No character loaded to export");
     return;
   }
   
-  const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
-  const character = characters.find(char => char.id === currentCharacter);
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Please log in to export characters");
+    return;
+  }
   
-  if (!character) return;
-  
-  const blob = new Blob([JSON.stringify(character.data)], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${character.name || 'dnd_character'}_backup.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  try {
+    const doc = await db.collection('users').doc(user.uid).collection('characters')
+      .doc(currentCharacter)
+      .get();
+    
+    if (doc.exists) {
+      const charData = doc.data();
+      const blob = new Blob([JSON.stringify(charData.data)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${charData.name || 'dnd_character'}_backup.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  } catch (error) {
+    console.error("Error exporting character:", error);
+  }
 }
 
-function importData(event) {
+async function importData(event) {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Please log in to import characters");
+    return;
+  }
+  
   const file = event.target.files[0];
   if (!file) return;
   
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = async function(e) {
     try {
       const importedData = JSON.parse(e.target.result);
       const charName = importedData.characterInfo?.name || 'Imported Character';
       
-      const newChar = {
-        id: Date.now().toString(),
+      const newCharRef = await db.collection('users').doc(user.uid).collection('characters').add({
         name: charName,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         data: importedData
-      };
+      });
       
-      let characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
-      characters.push(newChar);
-      localStorage.setItem('dndCharacters', JSON.stringify(characters));
-      
-      currentCharacter = newChar.id;
-      loadCharacterList();
+      currentCharacter = newCharRef.id;
+      loadUserCharacters();
       loadData();
       
       alert(`Character "${charName}" imported successfully!`);
@@ -2283,7 +2420,6 @@ function importData(event) {
   };
   reader.readAsText(file);
 }
-
 // ========== WEAPONS SYSTEM ==========
 function showWeaponsPopup() {
   const tbody = document.getElementById('weapons_table_popup').querySelector('tbody');
@@ -2968,4 +3104,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
