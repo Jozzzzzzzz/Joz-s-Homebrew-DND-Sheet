@@ -1492,7 +1492,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyA5QPG6QRAMK-jeQFzc_S07QtWL1ITEmsE",
   authDomain: "dnd-char-sheet-95cac.firebaseapp.com",
   projectId: "dnd-char-sheet-95cac",
-  storageBucket: "dnd-char-sheet-95cac.firebasestorage.app",
+  storageBucket: "dnd-char-sheet-95cac.appspot.com",
   messagingSenderId: "52657563276",
   appId: "1:52657563276:web:c724b24a2e8b67c7403da9",
   measurementId: "G-PTCGYWNY8L"
@@ -1620,18 +1620,76 @@ async function migrateLocalCharacters() {
   }
 }
 
-function signup() {
-  const email = document.getElementById('email').value;
+async function signup() {
+  const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
   
-  auth.createUserWithEmailAndPassword(email, password)
-    .catch(error => {
-      alert("Signup error: " + error.message);
+  // Basic validation
+  if (!validateEmail(email)) {
+    alert("Please enter a valid email address");
+    return;
+  }
+  
+  if (password.length < 6) {
+    alert("Password must be at least 6 characters");
+    return;
+  }
+
+  try {
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    const user = userCredential.user;
+    
+    // Create user document in Firestore
+    await db.collection('users').doc(user.uid).set({
+      email: user.email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      lastLogin: firebase.firestore.FieldValue.serverTimestamp()
     });
+    
+    alert("Account created successfully!");
+    // Optional: Send verification email
+    await user.sendEmailVerification();
+  } catch (error) {
+    handleAuthError(error);
+  }
+}
+
+// Email validation helper
+function validateEmail(email) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
+
+// Error handling
+function handleAuthError(error) {
+  switch (error.code) {
+    case 'auth/invalid-email':
+      alert("Please enter a valid email address");
+      break;
+    case 'auth/email-already-in-use':
+      alert("This email is already registered");
+      break;
+    case 'auth/weak-password':
+      alert("Password should be at least 6 characters");
+      break;
+    default:
+      alert("Error: " + error.message);
+      console.error(error);
+  }
 }
 
 function logout() {
   auth.signOut();
+}
+
+function testAuth() {
+  auth.signInWithEmailAndPassword("test@example.com", "password")
+    .then((userCredential) => {
+      console.log("Success:", userCredential.user);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 }
 
 // Network status detection
