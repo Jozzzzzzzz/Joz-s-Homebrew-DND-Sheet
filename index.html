@@ -4,6 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=0.85, maximum-scale=0.85, user-scalable=no">
 <title>Joz's Homebrew DND Sheet</title>
+<!-- Add Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
 <style>
 
  .section, textarea {
@@ -694,17 +698,113 @@ th {
 #saveDataBtn:hover, #saveLayoutBtn:hover {
   background: #444;
 }
+
+/* Auth Popup Styles */
+#authPopup {
+  max-width: 400px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 5px;
+}
+
+.auth-form button {
+  width: 100%;
+  padding: 10px;
+}
+
+.auth-tabs {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.auth-tabs button {
+  flex: 1;
+  background: #333;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.auth-tabs button.active {
+  background: var(--accent);
+  color: black;
+}
+
+.auth-status {
+  text-align: center;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.auth-status.logged-in {
+  background: var(--condition-green);
+  color: black;
+}
+
+.auth-status.logged-out {
+  background: var(--condition-red);
+}
+
+.auth-email {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* Sync Controls */
+.sync-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.sync-controls button {
+  flex: 1;
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+#syncStatus {
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.syncing {
+  background: var(--condition-blue);
+  color: white;
+}
+
+.synced {
+  background: var(--condition-green);
+  color: black;
+}
+
+.error {
+  background: var(--condition-red);
+  color: white;
+}
 </style>
 </head>
 <body>
 <!-- Warning Banner -->
 <div style="text-align:center; background:#222; color:#ccc; padding:8px; border-bottom: var(--border);">
-⚠️ This sheet autosaves character data to your browser. Use Export to back up your character.
+⚠️ This sheet autosaves character data to your browser and can sync with your account.
 </div>
 
 <!-- Header -->
 <h1>Joz's Homebrew DND Sheet 
-  <span style="font-size:0.8rem; color:#aaa; margin-left:10px;">[Autosaves Locally]</span>
+  <span style="font-size:0.8rem; color:#aaa; margin-left:10px;">[Cloud Sync Enabled]</span>
 </h1>
 
 <!-- Data Controls -->
@@ -717,6 +817,7 @@ th {
   <button id="resetLayoutBtn">⟳ Reset Layout</button>
   <button id="saveLayoutBtn">💾 Save Layout</button>
   <button onclick="autosave(); alert('Character data saved!')" style="background:#333; color:var(--accent);">📥 Save Data</button>
+  <button id="authBtn" onclick="showAuthPopup()" style="background:#333; color:var(--accent);">🔒 Login</button>
 </div>
 
 <!-- Tabs -->
@@ -764,8 +865,9 @@ th {
       <div class="welcome-section">
         <h3>Getting Started</h3>
         <div class="divider"></div>
-        <p>This digital character sheet automatically saves your data to your browser. To get started:</p>
+        <p>This digital character sheet automatically saves your data to your browser and can sync with your account. To get started:</p>
         <ol>
+          <li>Create an account or login using the button in the top right</li>
           <li>Create a new character using the Character Manager</li>
           <li>Fill in your basic character information on the Stats page</li>
           <li>Use the tabs to navigate between different character sections</li>
@@ -777,6 +879,7 @@ th {
         <h3>Features</h3>
         <div class="divider"></div>
         <ul>
+          <li><strong>Cloud Sync:</strong> Sync your characters across devices</li>
           <li><strong>Automatic Saving:</strong> All changes are saved automatically</li>
           <li><strong>Multiple Characters:</strong> Manage multiple character sheets</li>
           <li><strong>Resizable Sections:</strong> Drag to resize any section</li>
@@ -1436,42 +1539,257 @@ th {
   </div>
 </div>
 
+<!-- Auth Popup -->
+<div class="popup" id="authPopup">
+  <h3 id="authPopupTitle">Login or Register</h3>
+  <div class="auth-tabs">
+    <button class="active" onclick="switchAuthTab('login')">Login</button>
+    <button onclick="switchAuthTab('register')">Register</button>
+  </div>
+  
+  <div id="loginForm" class="auth-form">
+    <input type="email" id="loginEmail" placeholder="Email" required>
+    <input type="password" id="loginPassword" placeholder="Password" required>
+    <button onclick="loginUser()">Login</button>
+    <div id="loginError" style="color: var(--condition-red); text-align: center;"></div>
+  </div>
+  
+  <div id="registerForm" class="auth-form" style="display: none;">
+    <input type="text" id="registerName" placeholder="Display Name">
+    <input type="email" id="registerEmail" placeholder="Email" required>
+    <input type="password" id="registerPassword" placeholder="Password (min 6 chars)" required>
+    <input type="password" id="registerPasswordConfirm" placeholder="Confirm Password" required>
+    <button onclick="registerUser()">Register</button>
+    <div id="registerError" style="color: var(--condition-red); text-align: center;"></div>
+  </div>
+  
+  <div id="authStatus" class="auth-status logged-out" style="display: none;">
+    Not logged in
+  </div>
+  
+  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+    <button onclick="closePopup('authPopup')">Close</button>
+    <button onclick="logoutUser()" style="background: var(--condition-red);">Logout</button>
+  </div>
+</div>
+
 <!-- Script Section -->
 <script>
-
-// Auto-resize containers when textareas change
-function setupAutoResize() {
-  document.querySelectorAll('.section textarea').forEach(textarea => {
-    textarea.addEventListener('input', function() {
-      const section = this.closest('.section');
-      if (this.scrollHeight > section.clientHeight) {
-        section.style.height = `${this.scrollHeight + 30}px`; // Add some padding
-      }
-      if (this.scrollWidth > section.clientWidth) {
-        section.style.width = `${this.scrollWidth + 30}px`;
-      }
-    });
-  });
-}
-
-// Call this in your window.onload
-window.onload = function() {
-  // ... your existing load code ...
-  setupAutoResize();
+// ========== FIREBASE INITIALIZATION ==========
+const firebaseConfig = {
+  apiKey: "AIzaSyA5QPG6QRAMK-jeQFzc_S07QtWL1ITEmsE",
+  authDomain: "dnd-char-sheet-95cac.firebaseapp.com",
+  projectId: "dnd-char-sheet-95cac",
+  storageBucket: "dnd-char-sheet-95cac.appspot.com",
+  messagingSenderId: "52657563276",
+  appId: "1:52657563276:web:c724b24a2e8b67c7403da9",
+  measurementId: "G-PTCGYWNY8L"
 };
-// Enable resizable containers
-function makeContainersResizable() {
-  document.querySelectorAll('.section').forEach(section => {
-    section.classList.add('resizable-container');
-    
-    // Store initial size for reset functionality
-    if (!section.dataset.originalWidth) {
-      section.dataset.originalWidth = section.style.width || 'auto';
-      section.dataset.originalHeight = section.style.height || 'auto';
-    }
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const database = firebase.database();
+
+// ========== AUTHENTICATION FUNCTIONS ==========
+let currentUser = null;
+
+function showAuthPopup() {
+  document.getElementById('loginError').textContent = '';
+  document.getElementById('registerError').textContent = '';
+  document.getElementById('authStatus').style.display = 'none';
+  switchAuthTab('login');
+  showPopup('authPopup');
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  
+  const tabs = document.querySelectorAll('#authPopup .auth-tabs button');
+  tabs.forEach(t => t.classList.remove('active'));
+  tabs[tab === 'login' ? 0 : 1].classList.add('active');
+}
+
+function loginUser() {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  
+  if (!email || !password) {
+    document.getElementById('loginError').textContent = 'Please fill in all fields';
+    return;
+  }
+  
+  auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      currentUser = userCredential.user;
+      updateAuthUI();
+      closePopup('authPopup');
+      loadCharactersFromCloud();
+    })
+    .catch((error) => {
+      document.getElementById('loginError').textContent = error.message;
+    });
+}
+
+function registerUser() {
+  const name = document.getElementById('registerName').value;
+  const email = document.getElementById('registerEmail').value;
+  const password = document.getElementById('registerPassword').value;
+  const confirmPassword = document.getElementById('registerPasswordConfirm').value;
+  
+  if (!email || !password || !confirmPassword) {
+    document.getElementById('registerError').textContent = 'Please fill in all fields';
+    return;
+  }
+  
+  if (password !== confirmPassword) {
+    document.getElementById('registerError').textContent = 'Passwords do not match';
+    return;
+  }
+  
+  if (password.length < 6) {
+    document.getElementById('registerError').textContent = 'Password must be at least 6 characters';
+    return;
+  }
+  
+  auth.createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      currentUser = userCredential.user;
+      // Save display name if provided
+      if (name) {
+        currentUser.updateProfile({
+          displayName: name
+        });
+      }
+      updateAuthUI();
+      closePopup('authPopup');
+    })
+    .catch((error) => {
+      document.getElementById('registerError').textContent = error.message;
+    });
+}
+
+function logoutUser() {
+  auth.signOut().then(() => {
+    currentUser = null;
+    updateAuthUI();
+    document.getElementById('authPopupTitle').textContent = 'Login or Register';
+    switchAuthTab('login');
   });
 }
 
+function updateAuthUI() {
+  const authBtn = document.getElementById('authBtn');
+  const authStatus = document.getElementById('authStatus');
+  
+  if (currentUser) {
+    authBtn.textContent = '🔓 ' + (currentUser.displayName || currentUser.email);
+    authBtn.style.color = 'var(--condition-green)';
+    authStatus.textContent = `Logged in as: ${currentUser.email}`;
+    authStatus.className = 'auth-status logged-in';
+    document.getElementById('authPopupTitle').textContent = `Logged in as ${currentUser.email}`;
+  } else {
+    authBtn.textContent = '🔒 Login';
+    authBtn.style.color = 'var(--accent)';
+    authStatus.textContent = 'Not logged in';
+    authStatus.className = 'auth-status logged-out';
+    document.getElementById('authPopupTitle').textContent = 'Login or Register';
+  }
+  
+  authStatus.style.display = 'block';
+}
+
+// Listen for auth state changes
+auth.onAuthStateChanged((user) => {
+  currentUser = user;
+  updateAuthUI();
+  
+  if (user) {
+    // User is signed in, load their characters
+    loadCharactersFromCloud();
+  } else {
+    // User is signed out, just use local storage
+    loadCharacterList();
+  }
+});
+
+// ========== CLOUD SYNC FUNCTIONS ==========
+function saveToCloud() {
+  if (!currentUser || !currentCharacter) return;
+  
+  const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+  const character = characters.find(char => char.id === currentCharacter);
+  
+  if (!character) return;
+  
+  // Update sync status
+  const syncStatus = document.getElementById('syncStatus');
+  syncStatus.textContent = 'Syncing to cloud...';
+  syncStatus.className = 'syncing';
+  
+  // Save to Firebase
+  database.ref(`users/${currentUser.uid}/characters/${currentCharacter}`).set(character.data)
+    .then(() => {
+      syncStatus.textContent = 'Synced to cloud!';
+      syncStatus.className = 'synced';
+      setTimeout(() => {
+        syncStatus.textContent = '';
+        syncStatus.className = '';
+      }, 3000);
+    })
+    .catch((error) => {
+      syncStatus.textContent = 'Sync failed: ' + error.message;
+      syncStatus.className = 'error';
+    });
+}
+
+function loadCharactersFromCloud() {
+  if (!currentUser) return;
+  
+  // Update sync status
+  const syncStatus = document.getElementById('syncStatus');
+  syncStatus.textContent = 'Loading from cloud...';
+  syncStatus.className = 'syncing';
+  
+  database.ref(`users/${currentUser.uid}/characters`).once('value')
+    .then((snapshot) => {
+      const cloudCharacters = snapshot.val() || {};
+      let localCharacters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+      
+      // Merge cloud characters with local ones
+      Object.entries(cloudCharacters).forEach(([id, data]) => {
+        const existingIndex = localCharacters.findIndex(char => char.id === id);
+        
+        if (existingIndex >= 0) {
+          // Update existing character
+          localCharacters[existingIndex].data = data;
+        } else {
+          // Add new character from cloud
+          localCharacters.push({
+            id: id,
+            name: data.characterInfo?.name || 'Unnamed Character',
+            data: data
+          });
+        }
+      });
+      
+      // Save merged list
+      localStorage.setItem('dndCharacters', JSON.stringify(localCharacters));
+      loadCharacterList();
+      
+      syncStatus.textContent = 'Loaded from cloud!';
+      syncStatus.className = 'synced';
+      setTimeout(() => {
+        syncStatus.textContent = '';
+        syncStatus.className = '';
+      }, 3000);
+    })
+    .catch((error) => {
+      syncStatus.textContent = 'Load failed: ' + error.message;
+      syncStatus.className = 'error';
+    });
+}
 
 // ========== GLOBAL VARIABLES ==========
 let weaponsData = [];
@@ -1521,7 +1839,6 @@ window.onload = function() {
   // Enable resizing
   makeContainersResizable();
   loadLayout(); // This should come after all elements are created
-
 };
 
 // ========== CHARACTER MANAGEMENT ==========
@@ -1562,6 +1879,11 @@ function createNewCharacter() {
   loadData();
   document.querySelector('.tab[data-tab="page1"]').click();
   document.getElementById('newCharName').value = '';
+  
+  // Save to cloud if logged in
+  if (currentUser) {
+    saveToCloud();
+  }
 }
 
 function loadCharacterList() {
@@ -1631,6 +1953,12 @@ function initiateDelete() {
     resetDeleteUI();
     loadCharacterList();
     alert(`${charName} deleted permanently`);
+    
+    // Delete from cloud if logged in
+    if (currentUser) {
+      database.ref(`users/${currentUser.uid}/characters/${currentCharacter}`).remove()
+        .catch(error => console.error('Error deleting from cloud:', error));
+    }
     
     if (updatedChars.length > 0) {
       currentCharacter = updatedChars[0].id;
@@ -1776,6 +2104,11 @@ function autosave() {
   characters[charIndex].data = data;
   characters[charIndex].name = document.getElementById('char_name').value || 'Unnamed';
   localStorage.setItem('dndCharacters', JSON.stringify(characters));
+  
+  // Save to cloud if logged in
+  if (currentUser) {
+    saveToCloud();
+  }
 }
 
 function loadData() {
@@ -2096,6 +2429,11 @@ function importData(event) {
       currentCharacter = newChar.id;
       loadCharacterList();
       loadData();
+      
+      // Save to cloud if logged in
+      if (currentUser) {
+        saveToCloud();
+      }
       
       alert(`Character "${charName}" imported successfully!`);
       document.querySelector('.tab[data-tab="page1"]').click();
@@ -2788,6 +3126,33 @@ document.addEventListener('DOMContentLoaded', () => {
   LayoutManager.init();
 });
 
+// Auto-resize containers when textareas change
+function setupAutoResize() {
+  document.querySelectorAll('.section textarea').forEach(textarea => {
+    textarea.addEventListener('input', function() {
+      const section = this.closest('.section');
+      if (this.scrollHeight > section.clientHeight) {
+        section.style.height = `${this.scrollHeight + 30}px`; // Add some padding
+      }
+      if (this.scrollWidth > section.clientWidth) {
+        section.style.width = `${this.scrollWidth + 30}px`;
+      }
+    });
+  });
+}
+
+// Enable resizable containers
+function makeContainersResizable() {
+  document.querySelectorAll('.section').forEach(section => {
+    section.classList.add('resizable-container');
+    
+    // Store initial size for reset functionality
+    if (!section.dataset.originalWidth) {
+      section.dataset.originalWidth = section.style.width || 'auto';
+      section.dataset.originalHeight = section.style.height || 'auto';
+    }
+  });
+}
 </script>
 </body>
 </html>
