@@ -814,12 +814,14 @@ th {
   <label style="display:inline-block; cursor:pointer;">
     📥 Import<input onchange="importData(event)" style="display:none;" type="file"/>
   </label>
+  <button onclick="forceSync()" style="background:#333; color:var(--accent);">🔄 Sync Now</button>
   <button id="resetLayoutBtn">⟳ Reset Layout</button>
   <button id="saveLayoutBtn">💾 Save Layout</button>
   <button onclick="autosave(); alert('Character data saved!')" style="background:#333; color:var(--accent);">📥 Save Data</button>
   <button id="authBtn" onclick="showAuthPopup()" style="background:#333; color:var(--accent);">🔒 Login</button>
-  <button id="manualSyncBtn" onclick="forceSync()" style="background:#333; color:var(--accent);">🔄 Sync Now</button>
 </div>
+
+<div id="syncStatus" class="sync-indicator"></div>
 
 <!-- Tabs -->
 <div class="tabs">
@@ -1707,45 +1709,16 @@ auth.onAuthStateChanged((user) => {
   updateAuthUI();
   
   if (user) {
-    // Wait a brief moment to ensure UI updates
-    setTimeout(() => {
-      loadCharactersFromCloud();
-    }, 500);
+    // User is signed in, load their characters
+    loadCharactersFromCloud();
   } else {
     // User is signed out, just use local storage
     loadCharacterList();
   }
 });
 
-function loadCharactersFromCloud() {
-  if (!currentUser) return;
-  
-  // Update sync status
-  const syncStatus = document.getElementById('syncStatus');
-  syncStatus.textContent = 'Loading from cloud...';
-  syncStatus.className = 'syncing';
-  
-  database.ref(`users/${currentUser.uid}/characters`).once('value')
-    .then((snapshot) => {
-      const cloudCharacters = snapshot.val() || {};
-      updateLocalCharacterList(cloudCharacters);
-      
-      syncStatus.textContent = 'Loaded from cloud!';
-      syncStatus.className = 'synced';
-      setTimeout(() => {
-        syncStatus.textContent = '';
-        syncStatus.className = '';
-      }, 3000);
-    })
-    .catch((error) => {
-      syncStatus.textContent = 'Load failed: ' + error.message;
-      syncStatus.className = 'error';
-    });
-}
-
 // ========== CLOUD SYNC FUNCTIONS ==========
 function saveToCloud() {
-    
   if (!currentUser || !currentCharacter) return;
   
   const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
@@ -1753,60 +1726,115 @@ function saveToCloud() {
   
   if (!character) return;
   
-  // Add user reference to character data
-  character.data.userId = currentUser.uid;
-  
-  // Update sync status
-  const syncStatus = document.getElementById('syncStatus');
-  syncStatus.textContent = 'Syncing to cloud...';
-  syncStatus.className = 'syncing';
-  
-  // Save to Firebase under the user's characters
-  database.ref(`users/${currentUser.uid}/characters/${currentCharacter}`).set(character.data)
-    .then(() => {
-      syncStatus.textContent = 'Synced to cloud!';
-      syncStatus.className = 'synced';
-      setTimeout(() => {
-        syncStatus.textContent = '';
-        syncStatus.className = '';
-      }, 3000);
-      
-      // Also update the local character list with cloud data
-      return database.ref(`users/${currentUser.uid}/characters`).once('value');
-    })
-    .then((snapshot) => {
-      const cloudCharacters = snapshot.val() || {};
-      updateLocalCharacterList(cloudCharacters);
-    })
-    .catch((error) => {
-      syncStatus.textContent = 'Sync failed: ' + error.message;
-      syncStatus.className = 'error';
-    });
+  try {
+    // Update sync status
+    const syncStatus = document.getElementById('syncStatus');
+    if (syncStatus) {
+      syncStatus.textContent = 'Syncing to cloud...';
+      syncStatus.className = 'syncing';
+    }
+    
+    // Add timestamp
+    character.data.lastUpdated = firebase.database.ServerValue.TIMESTAMP;
+    
+    // Save to Firebase
+    return database.ref(`users/${currentUser.uid}/characters/${currentCharacter}`).set(character.data)
+      .then(() => {
+        if (syncStatus) {
+          syncStatus.textContent = 'Synced to cloud!';
+          syncStatus.className = 'synced';
+          setTimeout(() => {
+            syncStatus.textContent = '';
+            syncStatus.className = '';
+          }, 3000);
+        }
+        return true;
+      })
+      .catch((error) => {
+        console.error("Sync error:", error);
+        if (syncStatus) {
+          syncStatus.textContent = 'Sync failed: ' + error.message;
+          syncStatus.className = 'error';
+        }
+        return false;
+      });
+  } catch (e) {
+    console.error("Save to cloud failed:", e);
+    return false;
+  }
 }
 
-function updateLocalCharacterList(cloudCharacters) {
-  let localCharacters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+function loadCharactersFromCloud() {
+  if (!currentUser) return Promise.resolve();
   
-  // Merge cloud characters with local ones
-  Object.entries(cloudCharacters).forEach(([id, data]) => {
-    const existingIndex = localCharacters.findIndex(char => char.id === id);
-    
-    if (existingIndex >= 0) {
-      // Update existing character
-      localCharacters[existingIndex].data = data;
-    } else {
-      // Add new character from cloud
-      localCharacters.push({
-        id: id,
-        name: data.characterInfo?.name || 'Unnamed Character',
-        data: data
-      });
+  try {
+    // Update sync status
+    const syncStatus = document.getElementById('syncStatus');
+    if (syncStatus) {
+      syncStatus.textContent = 'Loading from cloud...';
+      syncStatus.className = 'syncing';
     }
-  });
-  
-  // Save merged list
-  localStorage.setItem('dndCharacters', JSON.stringify(localCharacters));
-  loadCharacterList();
+    
+    return database.ref(`users/${currentUser.uid}/characters`).once('value')
+      .then((snapshot) => {
+        const cloudCharacters = snapshot.val() || {};
+        let localCharacters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+        
+        // Merge strategy: keep newer version of each character
+        Object.entries(cloudCharacters).forEach(([id, cloudData]) => {
+          const localCharIndex = localCharacters.findIndex(char => char.id === id);
+          const localChar = localCharacters[localCharIndex];
+          
+          if (localChar) {
+            // Compare timestamps
+            const cloudTime = cloudData.lastUpdated || 0;
+            const localTime = localChar.data.lastUpdated || 0;
+            
+            if (cloudTime > localTime) {
+              // Cloud has newer version
+              localCharacters[localCharIndex].data = cloudData;
+            }
+          } else {
+            // New character from cloud
+            localCharacters.push({
+              id: id,
+              name: cloudData.characterInfo?.name || 'Unnamed Character',
+              data: cloudData
+            });
+          }
+        });
+        
+        // Save merged list
+        localStorage.setItem('dndCharacters', JSON.stringify(localCharacters));
+        loadCharacterList();
+        
+        // Reload current character if it exists
+        if (currentCharacter && localCharacters.some(c => c.id === currentCharacter)) {
+          loadData();
+        }
+        
+        if (syncStatus) {
+          syncStatus.textContent = 'Loaded from cloud!';
+          syncStatus.className = 'synced';
+          setTimeout(() => {
+            syncStatus.textContent = '';
+            syncStatus.className = '';
+          }, 3000);
+        }
+        return true;
+      })
+      .catch((error) => {
+        console.error("Load error:", error);
+        if (syncStatus) {
+          syncStatus.textContent = 'Load failed: ' + error.message;
+          syncStatus.className = 'error';
+        }
+        return false;
+      });
+  } catch (e) {
+    console.error("Load from cloud failed:", e);
+    return Promise.resolve(false);
+  }
 }
 
 // ========== GLOBAL VARIABLES ==========
@@ -1816,7 +1844,8 @@ let currentCharacter = null;
 let deleteState = 0;
 
 // ========== INITIALIZATION ==========
-window.onload = function() {
+// Replace the window.onload function with this:
+function initializeApp() {
   // Initialize character system
   loadCharacterList();
   
@@ -1856,8 +1885,50 @@ window.onload = function() {
 
   // Enable resizing
   makeContainersResizable();
-  loadLayout(); // This should come after all elements are created
-};
+  LayoutManager.init();
+}
+
+// Use both DOMContentLoaded and auth state change
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize Firebase first
+  firebase.initializeApp(firebaseConfig);
+  
+  // Set up auth state listener
+  auth.onAuthStateChanged((user) => {
+    currentUser = user;
+    updateAuthUI();
+    
+    if (user) {
+      // User is signed in, initialize app and load from cloud
+      initializeApp();
+      loadCharactersFromCloud();
+    } else {
+      // User is signed out, just initialize with local data
+      initializeApp();
+    }
+  });
+});
+
+function forceSync() {
+  if (!currentUser) {
+    alert("Please login to sync");
+    showAuthPopup();
+    return;
+  }
+  
+  if (!currentCharacter) {
+    alert("No character selected to sync");
+    return;
+  }
+  
+  // First save local changes to cloud
+  saveToCloud();
+  
+  // Then reload from cloud to get any remote changes
+  setTimeout(() => {
+    loadCharactersFromCloud();
+  }, 1000);
+}
 
 // ========== CHARACTER MANAGEMENT ==========
 function showHomePage() {
@@ -1972,17 +2043,6 @@ function initiateDelete() {
     loadCharacterList();
     alert(`${charName} deleted permanently`);
     
-// Add to your JavaScript
-function forceSync() {
-  if (!currentUser) {
-    alert("Please login to sync");
-    showAuthPopup();
-    return;
-  }
-  
-  saveToCloud();
-}
-
     // Delete from cloud if logged in
     if (currentUser) {
       database.ref(`users/${currentUser.uid}/characters/${currentCharacter}`).remove()
