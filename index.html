@@ -465,31 +465,6 @@ th {
   background: #2a2a2a;
 }
 
-/* Add to your existing styles */
-#syncIndicator {
-  display: none;
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  padding: 5px 10px;
-  background: #333;
-  color: white;
-  border-radius: 3px;
-  z-index: 1000;
-}
-
-.offline-warning {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: #ff9800;
-  color: black;
-  text-align: center;
-  padding: 5px;
-  z-index: 1000;
-}
-
 /* === UPDATED STYLES === */
 /* Basic Textarea Style (for direct editing) */
 .basic-textarea {
@@ -744,21 +719,6 @@ th {
   <button onclick="autosave(); alert('Character data saved!')" style="background:#333; color:var(--accent);">📥 Save Data</button>
 </div>
 
-<!-- Add this near your other control buttons -->
-<div id="authContainer" style="text-align:center; margin:10px 0;">
-  <div id="loginUI" style="display:none;">
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <button onclick="signup()">Sign Up</button>
-  </div>
-  <div id="userUI" style="display:none;">
-    <span id="userEmail"></span>
-    <button onclick="logout()">Logout</button>
-  </div>
-</div>
-
-
 <!-- Tabs -->
 <div class="tabs">
   <button class="tab active" data-tab="page1" onclick="switchTab(this)">Stats</button>
@@ -788,7 +748,7 @@ th {
           <div>
             <h4>Load Character</h4>
             <select id="characterList"></select>
-            <button onclick="loadData()">Load</button>
+            <button onclick="loadSelectedCharacter()">Load</button>
           </div>
           <div>
             <h4>Delete Character</h4>
@@ -1476,252 +1436,8 @@ th {
   </div>
 </div>
 
-
-
-<!-- FireBase -->
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-
-
 <!-- Script Section -->
 <script>
-
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyA5QPG6QRAMK-jeQFzc_S07QtWL1ITEmsE",
-  authDomain: "dnd-char-sheet-95cac.firebaseapp.com",
-  projectId: "dnd-char-sheet-95cac",
-  storageBucket: "dnd-char-sheet-95cac.appspot.com",
-  messagingSenderId: "52657563276",
-  appId: "1:52657563276:web:c724b24a2e8b67c7403da9",
-  measurementId: "G-PTCGYWNY8L"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// Enable offline persistence
-db.enablePersistence()
-  .then(() => {
-    console.log("Offline persistence enabled");
-    // Initialize sync indicator
-    const syncIndicator = document.createElement('div');
-    syncIndicator.id = 'syncIndicator';
-    syncIndicator.style.position = 'fixed';
-    syncIndicator.style.bottom = '10px';
-    syncIndicator.style.right = '10px';
-    syncIndicator.style.padding = '5px 10px';
-    syncIndicator.style.background = '#333';
-    syncIndicator.style.color = 'white';
-    syncIndicator.style.borderRadius = '3px';
-    syncIndicator.textContent = 'Syncing...';
-    document.body.appendChild(syncIndicator);
-
-    // Listen for sync state changes
-    db.onSnapshotsInSync(() => {
-      syncIndicator.textContent = 'Synced';
-      syncIndicator.style.background = '#4CAF50';
-      setTimeout(() => {
-        syncIndicator.style.display = 'none';
-      }, 2000);
-    });
-  })
-  .catch((err) => {
-    if (err.code == 'failed-precondition') {
-      console.warn("Offline persistence can only be enabled in one tab at a time.");
-    } else if (err.code == 'unimplemented') {
-      console.warn("The current browser does not support offline persistence.");
-    }
-  });
-
-// Update your existing auth listener
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById('loginUI').style.display = 'none';
-    document.getElementById('userUI').style.display = 'block';
-    document.getElementById('userEmail').textContent = user.email;
-    
-    // Load characters and attempt migration
-    loadUserCharacters().then(() => {
-      migrateLocalCharacters();
-    });
-  } else {
-    document.getElementById('loginUI').style.display = 'block';
-    document.getElementById('userUI').style.display = 'none';
-    currentCharacter = null;
-    showHomePage();
-  }
-
-      // Check for pending changes
-    const pendingChangesKey = `pendingChanges_${currentCharacter}`;
-    const pendingChanges = JSON.parse(localStorage.getItem(pendingChangesKey));
-    
-    if (pendingChanges) {
-      if (confirm('You have unsynced changes. Would you like to sync them now?')) {
-        autosave().then(() => {
-          localStorage.removeItem(pendingChangesKey);
-        });
-      }
-    }
-  }
-);
-
-// Auth functions
-function login() {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  
-  auth.signInWithEmailAndPassword(email, password)
-    .catch(error => {
-      alert("Login error: " + error.message);
-    });
-}
-
-// ========== MIGRATION FROM LOCALSTORAGE ==========
-async function migrateLocalCharacters() {
-  const localChars = JSON.parse(localStorage.getItem('dndCharacters')) || [];
-  if (localChars.length === 0) return;
-  
-  const user = auth.currentUser;
-  if (!user) return;
-
-  try {
-    // Check if user already has cloud characters
-    const snapshot = await db.collection('users').doc(user.uid).collection('characters').get();
-    
-    if (snapshot.empty) {
-      // Only migrate if user has no existing cloud characters
-      if (confirm(`Would you like to migrate your ${localChars.length} local character(s) to the cloud?`)) {
-        const migrationBatch = db.batch();
-        const charactersRef = db.collection('users').doc(user.uid).collection('characters');
-        
-        for (const char of localChars) {
-          const newCharRef = charactersRef.doc();
-          migrationBatch.set(newCharRef, {
-            name: char.name,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            data: char.data || getDefaultCharacterData(char.name),
-            migrated: true
-          });
-        }
-        
-        await migrationBatch.commit();
-        localStorage.removeItem('dndCharacters');
-        alert(`Successfully migrated ${localChars.length} character(s)!`);
-        loadUserCharacters();
-      }
-    }
-  } catch (error) {
-    console.error("Migration failed:", error);
-    alert("Migration failed. Please check console for details.");
-  }
-}
-
-async function signup() {
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  
-  // Basic validation
-  if (!validateEmail(email)) {
-    alert("Please enter a valid email address");
-    return;
-  }
-  
-  if (password.length < 6) {
-    alert("Password must be at least 6 characters");
-    return;
-  }
-
-  try {
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    const user = userCredential.user;
-    
-    // Create user document in Firestore
-    await db.collection('users').doc(user.uid).set({
-      email: user.email,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    
-    alert("Account created successfully!");
-    // Optional: Send verification email
-    await user.sendEmailVerification();
-  } catch (error) {
-    handleAuthError(error);
-  }
-}
-
-// Email validation helper
-function validateEmail(email) {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(email);
-}
-
-// Error handling
-function handleAuthError(error) {
-  switch (error.code) {
-    case 'auth/invalid-email':
-      alert("Please enter a valid email address");
-      break;
-    case 'auth/email-already-in-use':
-      alert("This email is already registered");
-      break;
-    case 'auth/weak-password':
-      alert("Password should be at least 6 characters");
-      break;
-    default:
-      alert("Error: " + error.message);
-      console.error(error);
-  }
-}
-
-function logout() {
-  auth.signOut();
-}
-
-function testAuth() {
-  auth.signInWithEmailAndPassword("test@example.com", "password")
-    .then((userCredential) => {
-      console.log("Success:", userCredential.user);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
-
-// Network status detection
-function setupNetworkDetection() {
-  const offlineWarning = document.createElement('div');
-  offlineWarning.className = 'offline-warning';
-  offlineWarning.textContent = '⚠️ Offline - Working locally (changes will sync when back online)';
-  offlineWarning.style.display = 'none';
-  document.body.appendChild(offlineWarning);
-
-  window.addEventListener('online', () => {
-    offlineWarning.style.display = 'none';
-    document.getElementById('syncIndicator').style.display = 'block';
-    document.getElementById('syncIndicator').textContent = 'Syncing...';
-    document.getElementById('syncIndicator').style.background = '#333';
-  });
-
-  window.addEventListener('offline', () => {
-    offlineWarning.style.display = 'block';
-  });
-
-  // Initial check
-  if (!navigator.onLine) {
-    offlineWarning.style.display = 'block';
-  }
-}
-
-// Call this in your window.onload
-window.onload = function() {
-  // ... existing code ...
-  setupNetworkDetection();
-};
 
 // Auto-resize containers when textareas change
 function setupAutoResize() {
@@ -1815,144 +1531,70 @@ function showHomePage() {
   document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
 }
 
-// Modified character functions
-async function loadUserCharacters() {
-  const user = auth.currentUser;
-  if (!user) return;
-  
-  try {
-    const snapshot = await db.collection('users').doc(user.uid).collection('characters').get();
-    const characters = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    
-    // Update UI
-    const select = document.getElementById('characterList');
-    select.innerHTML = '';
-    
-    if (characters.length === 0) {
-      const option = document.createElement('option');
-      option.textContent = "No characters found";
-      select.appendChild(option);
-      select.disabled = true;
-      return;
-    }
-    
-    select.disabled = false;
-    characters.forEach(char => {
-      const option = document.createElement('option');
-      option.value = char.id;
-      option.textContent = char.name;
-      if (char.id === currentCharacter) option.selected = true;
-      select.appendChild(option);
-    });
-  } catch (error) {
-    console.error("Error loading characters:", error);
-  }
-}
-
-async function createNewCharacter() {
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Please log in to create characters");
-    return;
-  }
-  
+function createNewCharacter() {
   const charName = document.getElementById('newCharName').value.trim();
   if (!charName) {
     alert("Please enter a character name");
     return;
   }
   
-  try {
-    const newCharRef = await db.collection('users').doc(user.uid).collection('characters').add({
-      name: charName,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      data: getDefaultCharacterData(charName)
-    });
-    
-    currentCharacter = newCharRef.id;
-    loadUserCharacters();
-    loadData();
-    document.querySelector('.tab[data-tab="page1"]').click();
-    document.getElementById('newCharName').value = '';
-  } catch (error) {
-    console.error("Error creating character:", error);
-  }
-}
-
-function getDefaultCharacterData(name) {
-  return {
-    characterInfo: { name },
-    page1: {},
-    page2: {},
-    page3: {},
-    page4: {},
-    page6: {},
-    weapons: [],
-    equipment: [],
-    conditions: []
+  const newChar = {
+    id: Date.now().toString(),
+    name: charName,
+    data: {
+      characterInfo: { name: charName },
+      page1: {},
+      page2: {},
+      page3: {},
+      page4: {},
+      page6: {},
+      weapons: [],
+      equipment: []
+    }
   };
-}
-
-async function autosave() {
-  const user = auth.currentUser;
-  if (!user || !currentCharacter) return;
-
-  try {
-    const data = gatherAllCharacterData();
-    const charRef = db.collection('users').doc(user.uid).collection('characters').doc(currentCharacter);
-    
-    // Use batch writes for better offline performance
-    const batch = db.batch();
-    batch.update(charRef, {
-      name: document.getElementById('char_name').value || 'Unnamed',
-      data: data,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      hasPendingWrites: true
-    });
-    
-    await batch.commit();
-    
-    // Show sync indicator
-    const syncIndicator = document.getElementById('syncIndicator');
-    if (syncIndicator) {
-      syncIndicator.style.display = 'block';
-      syncIndicator.textContent = 'Syncing...';
-      syncIndicator.style.background = '#333';
-    }
-  } catch (error) {
-    console.error("Error saving character:", error);
-    
-    // If we're offline, store changes in localStorage temporarily
-    if (error.code === 'unavailable') {
-      const pendingChanges = {
-        timestamp: new Date().toISOString(),
-        characterId: currentCharacter,
-        data: gatherAllCharacterData()
-      };
-      localStorage.setItem(`pendingChanges_${currentCharacter}`, JSON.stringify(pendingChanges));
-    }
-  }
-}
-
-async function loadData() {
-  const user = auth.currentUser;
-  if (!user || !currentCharacter) return;
   
-  try {
-    const doc = await db.collection('users').doc(user.uid).collection('characters')
-      .doc(currentCharacter)
-      .get();
-    
-    if (doc.exists) {
-      const charData = doc.data();
-      populateCharacterData(charData.data); // Your existing data population function
-    }
-  } catch (error) {
-    console.error("Error loading character:", error);
+  let characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+  characters.push(newChar);
+  localStorage.setItem('dndCharacters', JSON.stringify(characters));
+  
+  currentCharacter = newChar.id;
+  loadCharacterList();
+  loadData();
+  document.querySelector('.tab[data-tab="page1"]').click();
+  document.getElementById('newCharName').value = '';
+}
+
+function loadCharacterList() {
+  const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+  const select = document.getElementById('characterList');
+  select.innerHTML = '';
+  
+  if (characters.length === 0) {
+    const option = document.createElement('option');
+    option.textContent = "No characters found";
+    select.appendChild(option);
+    select.disabled = true;
+    return;
   }
+  
+  select.disabled = false;
+  characters.forEach(char => {
+    const option = document.createElement('option');
+    option.value = char.id;
+    option.textContent = char.name;
+    if (char.id === currentCharacter) option.selected = true;
+    select.appendChild(option);
+  });
+}
+
+function loadSelectedCharacter() {
+  const select = document.getElementById('characterList');
+  const charId = select.value;
+  if (!charId) return;
+  
+  currentCharacter = charId;
+  loadData();
+  document.querySelector('.tab[data-tab="page1"]').click();
 }
 
 function initiateDelete() {
@@ -2408,65 +2050,51 @@ function loadData() {
 }
 
 // ========== EXISTING FUNCTIONS (UPDATED) ==========
-async function exportData() {
+function exportData() {
   if (!currentCharacter) {
     alert("No character loaded to export");
     return;
   }
   
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Please log in to export characters");
-    return;
-  }
+  const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+  const character = characters.find(char => char.id === currentCharacter);
   
-  try {
-    const doc = await db.collection('users').doc(user.uid).collection('characters')
-      .doc(currentCharacter)
-      .get();
-    
-    if (doc.exists) {
-      const charData = doc.data();
-      const blob = new Blob([JSON.stringify(charData.data)], {type: 'application/json'});
-      const url = URL.createObjectURL(blob);
-      
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${charData.name || 'dnd_character'}_backup.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-  } catch (error) {
-    console.error("Error exporting character:", error);
-  }
+  if (!character) return;
+  
+  const blob = new Blob([JSON.stringify(character.data)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${character.name || 'dnd_character'}_backup.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
-async function importData(event) {
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Please log in to import characters");
-    return;
-  }
-  
+function importData(event) {
   const file = event.target.files[0];
   if (!file) return;
   
   const reader = new FileReader();
-  reader.onload = async function(e) {
+  reader.onload = function(e) {
     try {
       const importedData = JSON.parse(e.target.result);
       const charName = importedData.characterInfo?.name || 'Imported Character';
       
-      const newCharRef = await db.collection('users').doc(user.uid).collection('characters').add({
+      const newChar = {
+        id: Date.now().toString(),
         name: charName,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         data: importedData
-      });
+      };
       
-      currentCharacter = newCharRef.id;
-      loadUserCharacters();
+      let characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
+      characters.push(newChar);
+      localStorage.setItem('dndCharacters', JSON.stringify(characters));
+      
+      currentCharacter = newChar.id;
+      loadCharacterList();
       loadData();
       
       alert(`Character "${charName}" imported successfully!`);
@@ -2478,6 +2106,7 @@ async function importData(event) {
   };
   reader.readAsText(file);
 }
+
 // ========== WEAPONS SYSTEM ==========
 function showWeaponsPopup() {
   const tbody = document.getElementById('weapons_table_popup').querySelector('tbody');
