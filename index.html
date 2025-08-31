@@ -153,6 +153,27 @@
       color: #333333 !important;
     }
     
+/* Fix for home button text color on mobile */
+button[onclick*="home"] {
+    color: black !important;
+}
+
+/* Ensure it works in both themes */
+[data-theme="light"] button[onclick*="home"] {
+    color: black !important;
+}
+
+/* Mobile-specific fix */
+@media (max-width: 768px) {
+    button[onclick*="home"] {
+        color: black !important;
+    }
+    
+    [data-theme="light"] button[onclick*="home"] {
+        color: black !important;
+    }
+}
+
     [data-theme="light"] .tabs button.active {
       color: #000000 !important;
     }
