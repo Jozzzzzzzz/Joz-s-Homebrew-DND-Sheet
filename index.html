@@ -544,11 +544,39 @@ button[onclick*="home"] {
     width: 100%;
     padding: 8px;
     background: #2a2a2a;
-    color: white;
+    color: white !important;
     border: 1px solid #666;
     border-radius: 4px;
     margin: 4px 0 10px;
     box-sizing: border-box;
+  }
+  
+  /* Ensure all input text is black/white, never blue */
+  input[type="text"], 
+  input[type="number"], 
+  input[type="email"], 
+  input[type="password"], 
+  input[type="search"], 
+  input[type="tel"], 
+  input[type="url"],
+  textarea,
+  select {
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+  }
+  
+  /* Light theme inputs */
+  [data-theme="light"] input[type="text"], 
+  [data-theme="light"] input[type="number"], 
+  [data-theme="light"] input[type="email"], 
+  [data-theme="light"] input[type="password"], 
+  [data-theme="light"] input[type="search"], 
+  [data-theme="light"] input[type="tel"], 
+  [data-theme="light"] input[type="url"],
+  [data-theme="light"] textarea,
+  [data-theme="light"] select {
+    color: #333 !important;
+    -webkit-text-fill-color: #333 !important;
   }
 
   textarea {
@@ -1383,9 +1411,36 @@ button[onclick*="home"] {
   }
   
   @media (max-width: 768px) {
-    
+     
     .spell-form-grid {
       grid-template-columns: 1fr;
+    }
+    
+    /* Mobile text color fixes */
+    input, textarea, select {
+      color: white !important;
+      -webkit-text-fill-color: white !important;
+    }
+    
+    [data-theme="light"] input, 
+    [data-theme="light"] textarea, 
+    [data-theme="light"] select {
+      color: #333 !important;
+      -webkit-text-fill-color: #333 !important;
+    }
+  }
+  
+  @media (max-width: 768px) and (orientation: portrait) {
+    /* Mobile portrait mode - zoom out 10% for better fit */
+    body {
+      transform: scale(0.9);
+      transform-origin: top left;
+      width: 111.11%; /* Compensate for the scale to prevent horizontal scroll */
+      height: 111.11%;
+    }
+    
+    html {
+      overflow-x: hidden;
     }
     
     .spell-detail-row {
