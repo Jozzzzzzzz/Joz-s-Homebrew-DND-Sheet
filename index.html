@@ -101,7 +101,7 @@
     gap: 15px;
     padding: 10px;
     background: #2a2a2a;
-    border: var(--border);
+    border: 2px solid var(--accent-border);
     border-radius: 4px;
     margin-bottom: 15px;
     align-items: center;
@@ -126,7 +126,7 @@
     text-align: center;
     background: #333;
     color: white;
-    border: 1px solid #444;
+    border: 1px solid var(--accent-border);
     border-radius: 3px;
   }
 
@@ -161,25 +161,21 @@
     font-size: 0.7rem;
     background: #333;
     color: var(--accent);
-    border: 1px solid #444;
+    border: 1px solid var(--accent-border);
   }
 
   /* === POPUP FIXES === */
-  .popup {
-    pointer-events: none;
-  }
-
-  .popup[style*="display: block"] {
-    pointer-events: auto;
-  }
+  /* Popup pointer-events handled in main popup CSS */
 
   /* === EXISTING CSS (OPTIMIZED) === */
   /* ========== THEME SYSTEM ========== */
   :root {
     --dark-bg: #121212;
     --panel-bg: #1e1e1e;
+    --card-bg: #2a2a2a;
     --border: 1px solid #444;
-    --accent: gold;
+    --accent: #ffd700;
+    --accent-border: var(--accent);
     --text-light: #f0f0f0;
     --condition-red: #ff6b6b;
     --condition-blue: #6b8cff;
@@ -189,6 +185,7 @@
     /* Light theme variables (default hidden) */
     --light-bg: #f5f5f5;
     --light-panel: #ffffff;
+    --light-card: #f8f8f8;
     --light-border: 1px solid #ddd;
     --light-text: #333333;
     --light-popup: #f0f0f0;
@@ -294,6 +291,7 @@ button[onclick*="home"] {
   [data-theme="light"] {
     --dark-bg: var(--light-bg);
     --panel-bg: var(--light-panel);
+    --card-bg: var(--light-card);
     --border: var(--light-border);
     --text-light: var(--light-text);
     --popup-bg: var(--light-popup);
@@ -375,7 +373,16 @@ button[onclick*="home"] {
     font-family: 'Segoe UI', sans-serif;
     background: var(--dark-bg);
     color: var(--text-light);
+    transition: all 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-x: hidden;
   }
+
+  /* Global smooth transitions for theme changes */
+  * {
+    transition: all 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Smooth tab transitions - handled in main .page rule below */
 
   h1, h2, h3, h4 {
     color: var(--accent);
@@ -397,17 +404,27 @@ button[onclick*="home"] {
   .tabs button {
     background: var(--panel-bg);
     color: white;
-    border: var(--border);
+    border: 2px solid var(--accent-border);
     padding: 8px 16px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 2.5s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 4px;
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .tabs button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.1);
   }
 
   .tabs button.active {
     background: var(--accent);
     color: black;
     font-weight: bold;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
 
   /* Home Page Styles */
@@ -421,7 +438,15 @@ button[onclick*="home"] {
     background: #2a2a2a;
     padding: 15px;
     border-radius: 6px;
-    border: var(--border);
+    border: 2px solid var(--accent-border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .welcome-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
 
   .divider {
@@ -448,7 +473,15 @@ button[onclick*="home"] {
     background: #1e1e1e;
     padding: 10px;
     border-radius: 4px;
-    border: var(--border);
+    border: 2px solid var(--accent-border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .character-manager-grid > div:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
 
   .character-manager-grid h4 {
@@ -495,10 +528,36 @@ button[onclick*="home"] {
   .page {
     display: none;
     padding: 1rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .page.active {
+    display: block !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
   }
 
+  /* Ensure active page is visible on load */
   .page.active {
-    display: block;
+    visibility: visible !important;
+  }
+
+  /* Force initial page to be visible */
+  #page1.page.active {
+    display: block !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    visibility: visible !important;
+  }
+
+  /* Ensure all pages with active class are visible */
+  .page.active {
+    display: block !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    visibility: visible !important;
   }
 
   .section {
@@ -506,9 +565,16 @@ button[onclick*="home"] {
     padding: 1rem;
     margin: 1rem 0;
     border-radius: 6px;
-    border: var(--border);
-    transition: all 0.3s ease;
+    border: 2px solid var(--accent-border);
+    transition: all 2.5s cubic-bezier(0.4, 0, 0.2, 1);
     box-sizing: border-box;
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
 
   .resizable {
@@ -545,10 +611,24 @@ button[onclick*="home"] {
     padding: 8px;
     background: #2a2a2a;
     color: white !important;
-    border: 1px solid #666;
+    border: 1px solid var(--accent-border);
     border-radius: 4px;
     margin: 4px 0 10px;
     box-sizing: border-box;
+    transition: all 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+    transform: translateY(-1px);
+  }
+
+  input:hover, textarea:hover, select:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
   }
   
   /* Ensure all input text is black/white, never blue */
@@ -563,6 +643,13 @@ button[onclick*="home"] {
   select {
     color: white !important;
     -webkit-text-fill-color: white !important;
+    -webkit-text-security: none !important;
+    border: 2px solid var(--accent-border) !important;
+    border-radius: 4px;
+    background-color: #2a2a2a !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
   }
   
   /* Light theme inputs */
@@ -577,6 +664,11 @@ button[onclick*="home"] {
   [data-theme="light"] select {
     color: #333 !important;
     -webkit-text-fill-color: #333 !important;
+    -webkit-text-security: none !important;
+    background-color: #f5f5f5 !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
   }
 
   textarea {
@@ -592,14 +684,22 @@ button[onclick*="home"] {
     font-weight: bold;
     cursor: pointer;
     margin: 4px 2px;
-    transition: all 0.2s;
+    transition: all 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
- button:hover {
-  background: var(--accent);
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-}
+  button:hover {
+    background: #555;
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 
 
   .top-right-reset {
@@ -608,7 +708,7 @@ button[onclick*="home"] {
     right: 10px;
     background: var(--panel-bg);
     color: var(--accent);
-    border: var(--border);
+    border: 2px solid var(--accent-border);
     cursor: pointer;
     padding: 5px 10px;
     z-index: 1000;
@@ -641,17 +741,33 @@ button[onclick*="home"] {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(0.8);
     background: var(--popup-bg);
     padding: 20px;
-    border: var(--border);
+    border: 2px solid var(--accent-border);
     border-radius: 6px;
     z-index: 1000;
     width: 90%;
     max-width: 800px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  /* Ensure popup shows when display is set */
+  .popup[style*="display: block"] {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+
+  .popup.show {
+    opacity: 1 !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+    pointer-events: auto !important;
+    z-index: 1001 !important;
   }
 
   .popup-backdrop {
@@ -662,19 +778,34 @@ button[onclick*="home"] {
     right: 0;
     bottom: 0;
     background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
     z-index: 999;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .popup-backdrop.show {
+    opacity: 1;
   }
 
   .portrait-container {
     width: 200px;
     height: 250px;
-    border: var(--border);
+    border: 2px solid var(--accent-border);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     margin-bottom: 10px;
     background: #2a2a2a;
+    transition: all 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .portrait-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
 
   .portrait-container img {
@@ -712,12 +843,18 @@ button[onclick*="home"] {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   th, td {
     padding: 8px;
-    border: 1px solid #444;
+    border: 1px solid var(--accent-border);
     text-align: left;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  tr:hover {
+    background-color: rgba(255, 215, 0, 0.05);
   }
 
   th {
@@ -741,7 +878,7 @@ button[onclick*="home"] {
     min-height: 200px;
     background: #2a2a2a;
     color: white;
-    border: 1px solid #666;
+    border: 1px solid var(--accent-border);
     padding: 10px;
     box-sizing: border-box;
     resize: vertical;
@@ -765,7 +902,7 @@ button[onclick*="home"] {
   .notes-container {
     min-height: 100px;
     background: #2a2a2a;
-    border: 1px solid #444;
+    border: 1px solid var(--accent-border);
     padding: 10px;
     margin-bottom: 10px;
   }
@@ -845,7 +982,7 @@ button[onclick*="home"] {
 
   .hp-display {
     background: var(--card-bg);
-    border: 2px solid var(--border);
+    border: 2px solid var(--accent-border);
     border-radius: 8px;
     padding: 10px;
     text-align: center;
@@ -886,6 +1023,10 @@ button[onclick*="home"] {
     font-size: 1em;
     font-weight: bold;
     padding: 6px;
+    border: 2px solid var(--accent-border);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text);
   }
 
   .hp-controls {
@@ -911,12 +1052,17 @@ button[onclick*="home"] {
   .hp-controls button:not(.custom-hp-btn) {
     background: var(--accent);
     color: #000;
-    border: 2px solid var(--accent);
+    border: 2px solid var(--accent-border);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .hp-controls button:not(.custom-hp-btn):hover {
-    background: var(--accent);
+    background: #555;
     opacity: 0.8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
   .custom-hp-btn {
@@ -930,8 +1076,8 @@ button[onclick*="home"] {
   }
 
   .temp-hp-display {
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
-    color: #333;
+    background: var(--accent);
+    color: #000;
     padding: 8px;
     border-radius: 6px;
     margin-top: 10px;
@@ -965,7 +1111,8 @@ button[onclick*="home"] {
 
   .rest-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    filter: brightness(1.1);
   }
 
   .rest-button:active {
@@ -975,7 +1122,7 @@ button[onclick*="home"] {
   .short-rest-btn {
     background: var(--accent);
     color: #000;
-    border: 2px solid var(--accent);
+    border: 2px solid var(--accent-border);
   }
 
   .short-rest-btn:hover {
@@ -986,7 +1133,7 @@ button[onclick*="home"] {
   .long-rest-btn {
     background: var(--accent);
     color: #000;
-    border: 2px solid var(--accent);
+    border: 2px solid var(--accent-border);
   }
 
   .long-rest-btn:hover {
@@ -997,7 +1144,7 @@ button[onclick*="home"] {
   /* Hit Dice Section Styling */
   .hit-dice-section {
     background: var(--card-bg);
-    border: 2px solid var(--border);
+    border: 2px solid var(--accent-border);
     border-radius: 8px;
     padding: 15px;
     margin-top: 15px;
@@ -1036,29 +1183,41 @@ button[onclick*="home"] {
     width: 80px;
     text-align: center;
     padding: 4px;
-    border: 2px solid var(--accent);
+    border: 2px solid var(--accent-border);
     border-radius: 4px;
-    background: var(--input-bg);
-    color: var(--text);
+    background: #2a2a2a;
+    color: #fff;
     font-weight: bold;
-  }
-
-  .hit-dice-group select {
-    background: var(--accent);
-    color: #000;
-    border: 2px solid var(--accent);
     cursor: pointer;
   }
 
   .hit-dice-group select:hover {
-    background: #ffd700;
-    border-color: #ffd700;
+    background: #333;
+    border-color: #666;
+    color: #fff;
   }
 
   .hit-dice-group select:focus {
     outline: none;
-    border-color: #ffed4e;
-    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    border-color: var(--accent-border);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+  }
+
+  /* Style the dropdown options to match the image */
+  .hit-dice-group select option {
+    background: #2a2a2a;
+    color: #fff;
+    padding: 8px;
+  }
+
+  .hit-dice-group select option:hover {
+    background: #2196F3;
+    color: #fff;
+  }
+
+  .hit-dice-group select option:checked {
+    background: #2196F3;
+    color: #fff;
   }
 
   .hit-dice-recovery {
@@ -1088,7 +1247,7 @@ button[onclick*="home"] {
   /* Health Potion Section Styling */
   .health-potion-section {
     background: var(--card-bg);
-    border: 2px solid var(--accent);
+    border: 2px solid var(--accent-border);
     border-radius: 8px;
     padding: 15px;
     margin-top: 15px;
@@ -1125,23 +1284,41 @@ button[onclick*="home"] {
     width: 300px;
     text-align: center;
     padding: 8px;
-    border: 2px solid var(--accent);
+    border: 2px solid var(--accent-border);
     border-radius: 4px;
-    background: var(--accent);
-    color: #000;
+    background: #2a2a2a;
+    color: #fff;
     font-weight: bold;
     cursor: pointer;
   }
 
   .potion-group select:hover {
-    background: #ffd700;
-    border-color: #ffd700;
+    background: #333;
+    border-color: #666;
+    color: #fff;
   }
 
   .potion-group select:focus {
     outline: none;
-    border-color: #ffed4e;
-    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    border-color: var(--accent-border);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+  }
+
+  /* Style the dropdown options to match the image */
+  .potion-group select option {
+    background: #2a2a2a;
+    color: #fff;
+    padding: 8px;
+  }
+
+  .potion-group select option:hover {
+    background: #2196F3;
+    color: #fff;
+  }
+
+  .potion-group select option:checked {
+    background: #2196F3;
+    color: #fff;
   }
 
   .potion-info {
@@ -1171,25 +1348,42 @@ button[onclick*="home"] {
 
   /* Light mode Hit Dice dropdown styling */
   [data-theme="light"] .hit-dice-group select {
-    background: #ffd700;
-    color: #000;
-    border: 2px solid #ffd700;
+    background: #2a2a2a;
+    color: #fff;
+    border: 2px solid var(--accent-border);
   }
 
   [data-theme="light"] .hit-dice-group select:hover {
-    background: #ffed4e;
-    border-color: #ffed4e;
+    background: #333;
+    border-color: #666;
+    color: #fff;
   }
 
   [data-theme="light"] .hit-dice-group select:focus {
-    border-color: #ffc107;
-    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+    border-color: var(--accent-border);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+  }
+
+  [data-theme="light"] .hit-dice-group select option {
+    background: #2a2a2a;
+    color: #fff;
+    padding: 8px;
+  }
+
+  [data-theme="light"] .hit-dice-group select option:hover {
+    background: #2196F3;
+    color: #fff;
+  }
+
+  [data-theme="light"] .hit-dice-group select option:checked {
+    background: #2196F3;
+    color: #fff;
   }
 
   /* Remastered Death Saves */
   .death-saves-container {
     background: var(--card-bg);
-    border: 2px solid var(--border);
+    border: 2px solid var(--accent-border);
     border-radius: 8px;
     padding: 10px;
     margin-top: 0;
@@ -1247,14 +1441,14 @@ button[onclick*="home"] {
   }
 
   .death-save-check:hover {
-    border-color: var(--accent);
+    border-color: var(--accent-border);
     transform: scale(1.1);
     box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   }
 
   .death-save-check.checked {
     background: var(--accent);
-    border-color: var(--accent);
+    border-color: var(--accent-border);
     color: white;
   }
 
@@ -1304,7 +1498,7 @@ button[onclick*="home"] {
   }
 
   [data-theme="light"] .death-save-check:hover {
-    border-color: var(--accent);
+    border-color: var(--accent-border);
     background: #e8e8e8;
   }
 
@@ -1392,11 +1586,11 @@ button[onclick*="home"] {
     .hp-controls button:not(.custom-hp-btn) {
       background: var(--accent);
       color: #000;
-      border: 2px solid var(--accent);
+      border: 2px solid var(--accent-border);
     }
 
     .hp-controls button:not(.custom-hp-btn):hover {
-      background: var(--accent);
+      background: #555;
       opacity: 0.8;
     }
 
@@ -1430,7 +1624,7 @@ button[onclick*="home"] {
     .short-rest-btn {
       background: var(--accent);
       color: #000;
-      border: 2px solid var(--accent);
+      border: 2px solid var(--accent-border);
     }
 
     .short-rest-btn:hover {
@@ -1441,7 +1635,7 @@ button[onclick*="home"] {
     .long-rest-btn {
       background: var(--accent);
       color: #000;
-      border: 2px solid var(--accent);
+      border: 2px solid var(--accent-border);
     }
 
     .long-rest-btn:hover {
@@ -1462,6 +1656,9 @@ button[onclick*="home"] {
     .potion-group select {
       width: 250px;
       font-size: 0.9em;
+      background: #2a2a2a;
+      color: #fff;
+      border: 2px solid var(--accent-border);
     }
 
     .potion-btn {
@@ -1503,11 +1700,11 @@ button[onclick*="home"] {
     .hp-controls button:not(.custom-hp-btn) {
       background: var(--accent);
       color: #000;
-      border: 2px solid var(--accent);
+      border: 2px solid var(--accent-border);
     }
 
     .hp-controls button:not(.custom-hp-btn):hover {
-      background: var(--accent);
+      background: #555;
       opacity: 0.8;
     }
 
@@ -1564,7 +1761,7 @@ button[onclick*="home"] {
     .short-rest-btn {
       background: var(--accent);
       color: #000;
-      border: 2px solid var(--accent);
+      border: 2px solid var(--accent-border);
     }
 
     .short-rest-btn:hover {
@@ -1575,7 +1772,7 @@ button[onclick*="home"] {
     .long-rest-btn {
       background: var(--accent);
       color: #000;
-      border: 2px solid var(--accent);
+      border: 2px solid var(--accent-border);
     }
 
     .long-rest-btn:hover {
@@ -1606,6 +1803,9 @@ button[onclick*="home"] {
     .potion-group select {
       width: 200px;
       font-size: 0.85em;
+      background: #2a2a2a;
+      color: #fff;
+      border: 2px solid var(--accent-border);
     }
 
     .potion-btn {
@@ -1657,13 +1857,41 @@ button[onclick*="home"] {
     
     /* Ensure temp HP text is readable */
     .temp-hp-display {
-      color: #000 !important; /* Black text on gold background for maximum contrast */
+      color: #000 !important; /* Black text on accent background for maximum contrast */
       font-weight: bold;
     }
     
     /* Fix any other blue color references for mobile */
     [style*="color: #aaa"] {
       color: #666 !important; /* Darker gray for better readability */
+    }
+    
+    /* Prevent any blue text from appearing on mobile */
+    a, a:link, a:visited, a:hover, a:active {
+      color: var(--text) !important;
+    }
+    
+    /* Override any inline blue colors */
+    [style*="color: blue"], [style*="color: #0000ff"], [style*="color: #0000FF"] {
+      color: var(--text) !important;
+    }
+    
+    /* Ensure all text uses theme colors */
+    * {
+      color: var(--text) !important;
+    }
+    
+    /* Override specific elements that should have different colors */
+    .temp-hp-display, .temp-hp-display * {
+      color: #000 !important;
+    }
+    
+    input, select, textarea {
+      color: var(--text) !important;
+    }
+    
+    button {
+      color: #000 !important;
     }
   }
 
@@ -1673,7 +1901,7 @@ button[onclick*="home"] {
     overflow-y: auto;
     padding: 5px;
     background: #2a2a2a;
-    border: 1px solid #444;
+    border: 1px solid var(--accent-border);
     border-radius: 4px;
   }
 
@@ -1683,23 +1911,7 @@ button[onclick*="home"] {
   }
 
   /* ===== FIXED POPUP POSITIONING ===== */
-  .popup {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--popup-bg);
-    padding: 20px;
-    border: var(--border);
-    border-radius: 6px;
-    z-index: 1000;
-    width: 90%;
-    max-width: 800px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-sizing: border-box;
-  }
+  /* Popup styles handled in main CSS above */
 
   /* Mobile-specific fixes */
   @media (max-width: 768px) {
@@ -1709,6 +1921,10 @@ button[onclick*="home"] {
       height: auto;
       max-height: 85vh !important;
       padding: 15px;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      position: fixed !important;
     }
     
     .popup table {
@@ -1722,6 +1938,72 @@ button[onclick*="home"] {
     .popup table th {
       white-space: nowrap;
       padding: 6px 4px;
+    }
+    
+    /* Prevent blue text on mobile inputs */
+    input[type="text"], 
+    input[type="number"], 
+    input[type="email"], 
+    input[type="password"], 
+    input[type="search"], 
+    input[type="tel"], 
+    input[type="url"],
+    textarea,
+    select {
+      color: white !important;
+      -webkit-text-fill-color: white !important;
+      -webkit-text-security: none !important;
+      background-color: #2a2a2a !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      appearance: none !important;
+    }
+    
+    /* Light theme mobile inputs */
+    [data-theme="light"] input[type="text"], 
+    [data-theme="light"] input[type="number"], 
+    [data-theme="light"] input[type="email"], 
+    [data-theme="light"] input[type="password"], 
+    [data-theme="light"] input[type="search"], 
+    [data-theme="light"] input[type="tel"], 
+    [data-theme="light"] input[type="url"],
+    [data-theme="light"] textarea,
+    [data-theme="light"] select {
+      color: #333 !important;
+      -webkit-text-fill-color: #333 !important;
+      background-color: #f5f5f5 !important;
+    }
+    
+    /* Prevent horizontal scrolling */
+    body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+    
+    .section {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+    
+    /* Ensure all containers fit within viewport */
+    .welcome-grid,
+    .character-manager-grid,
+    .favorites-grid {
+      grid-template-columns: 1fr !important;
+      gap: 10px;
+    }
+    
+    /* Mobile-specific table fixes */
+    table {
+      width: 100% !important;
+      max-width: 100% !important;
+      table-layout: fixed;
+    }
+    
+    td, th {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      max-width: 0;
     }
   }
 
@@ -1759,7 +2041,7 @@ button[onclick*="home"] {
     min-height: 200px;
     background: #2a2a2a;
     color: white;
-    border: 1px solid #666;
+    border: 1px solid var(--accent-border);
     padding: 10px;
     box-sizing: border-box;
   }
@@ -1803,7 +2085,7 @@ button[onclick*="home"] {
     right: 0;
     bottom: 0;
     background-color: #ccc;
-    transition: .4s;
+    transition: all 2.5s ease-in-out;
   }
 
   .slider:before {
@@ -1814,15 +2096,19 @@ button[onclick*="home"] {
     left: 3px; /* Adjusted from 4px */
     bottom: 3px; /* Adjusted from 4px */
     background-color: white;
-    transition: .4s;
+    transition: all 2.5s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
 
   input:checked + .slider {
     background-color: var(--accent);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   }
 
   input:checked + .slider:before {
-    transform: translateX(20px); /* Reduced from 26px */
+    left: auto;
+    right: 3px; /* Position from right edge */
+    transform: none;
   }
 
   .slider.round {
@@ -1831,6 +2117,14 @@ button[onclick*="home"] {
 
   .slider.round:before {
     border-radius: 50%;
+  }
+
+  .slider:hover {
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  }
+
+  input:checked + .slider:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   }
 
 
@@ -1889,7 +2183,7 @@ button[onclick*="home"] {
     background: var(--panel-bg);
     padding: 1rem;
     border-radius: 6px;
-    border: var(--border);
+    border: 2px solid var(--accent-border);
   }
   
   .spell-level-row {
@@ -1919,7 +2213,7 @@ button[onclick*="home"] {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    border: 1px solid var(--accent);
+    border: 1px solid var(--accent-border);
     cursor: pointer;
     transition: all 0.2s;
   }
@@ -1932,7 +2226,7 @@ button[onclick*="home"] {
     background: var(--panel-bg);
     padding: 1rem;
     border-radius: 6px;
-    border: var(--border);
+    border: 2px solid var(--accent-border);
     max-height: 400px;
     overflow-y: auto;
   }
@@ -1943,7 +2237,7 @@ button[onclick*="home"] {
   
   .spell-level-header {
     color: var(--accent);
-    border-bottom: 1px solid var(--accent);
+    border-bottom: 1px solid var(--accent-border);
     padding-bottom: 5px;
     margin-bottom: 10px;
     display: flex;
@@ -1977,7 +2271,7 @@ button[onclick*="home"] {
     padding: 2px 5px;
     font-size: 0.7rem;
     background: #333;
-    border: 1px solid #444;
+    border: 1px solid var(--accent-border);
     color: var(--text-light);
     cursor: pointer;
     border-radius: 3px;
@@ -2137,13 +2431,471 @@ button[onclick*="home"] {
     background: var(--panel-bg);
     padding: 1rem;
     border-radius: 6px;
-    border: var(--border);
+    border: 2px solid var(--accent-border);
   }
 
   .favorites-cantrips h3, .favorites-spells h3 {
     color: var(--accent);
     margin-bottom: 10px;
     text-align: center;
+  }
+
+  /* Actions & Features Styling */
+  .actions-section {
+    margin-bottom: 30px;
+  }
+
+  .actions-section h3 {
+    margin: 0 0 15px 0;
+    color: var(--text);
+    font-size: 1.2em;
+    border-bottom: 2px solid var(--accent-border);
+    padding-bottom: 5px;
+  }
+
+  .actions-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .action-filter {
+    margin-left: auto;
+  }
+
+  .action-filter select {
+    padding: 5px 10px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text);
+    font-size: 0.9em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+  }
+
+  .action-filter select:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .action-filter select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+    transform: translateY(-1px);
+  }
+
+  .actions-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+  }
+
+  .action-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  /* Dark mode action card enhancement */
+  .action-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255,255,255,0.02) 100%);
+  }
+
+  /* Light mode action card enhancement */
+  [data-theme="light"] .action-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(0,0,0,0.02) 100%);
+  }
+
+  .action-card:hover {
+    border-color: var(--accent-border);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  .action-card.favorite {
+    border-color: var(--accent-border);
+    background: linear-gradient(135deg, var(--card-bg), rgba(255, 215, 0, 0.1));
+  }
+
+  .action-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .action-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: var(--text);
+    margin: 0;
+    flex: 1;
+  }
+
+  .action-type {
+    background: var(--accent);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-left: 10px;
+  }
+
+  .action-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .action-stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .action-stat-label {
+    font-size: 0.8em;
+    color: var(--text);
+    opacity: 0.8;
+    margin-bottom: 2px;
+  }
+
+  .action-stat-value {
+    font-weight: bold;
+    color: var(--accent);
+  }
+
+  .action-description {
+    color: var(--text);
+    font-size: 0.9em;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+
+  .action-actions {
+    display: flex;
+    gap: 5px;
+    justify-content: flex-end;
+  }
+
+  .action-btn {
+    padding: 4px 8px;
+    font-size: 0.8em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .favorite-btn {
+    background: var(--accent);
+    color: #000;
+  }
+
+  .favorite-btn:hover {
+    background: #ffed4e;
+  }
+
+  .favorite-btn.favorited {
+    background: #ff6b6b;
+    color: #fff;
+  }
+
+  .edit-btn {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  .edit-btn:hover {
+    background: var(--accent);
+    color: #000;
+  }
+
+  .delete-btn {
+    background: #ff4444;
+    color: #fff;
+  }
+
+  .delete-btn:hover {
+    background: #ff0000;
+  }
+
+  .favorites-section {
+    margin-bottom: 30px;
+  }
+
+  .favorites-section h3 {
+    color: var(--accent);
+    margin-bottom: 15px;
+    text-align: left;
+    font-size: 1.2em;
+    border-bottom: 2px solid var(--accent-border);
+    padding-bottom: 5px;
+  }
+
+  /* Inventory System Styling */
+  .equipment-controls, .inventory-controls, .storage-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .inventory-settings {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: auto;
+  }
+
+  .inventory-settings label {
+    font-weight: bold;
+    color: var(--text);
+  }
+
+  .inventory-settings input {
+    width: 120px;
+    padding: 5px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text);
+  }
+
+  .gold-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .gold-section label {
+    font-weight: bold;
+    color: var(--text);
+  }
+
+  .gold-section input {
+    width: 100px;
+    padding: 5px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text);
+  }
+
+  /* Additional Storage Section Styling */
+  .additional-storage-section {
+    margin-top: 20px;
+  }
+
+  .additional-storage-section h2 {
+    margin-bottom: 15px;
+    color: var(--text);
+  }
+
+  /* Storage Container Styling */
+  .storage-container-section {
+    margin-top: 20px;
+    border-top: 2px solid var(--border);
+    padding-top: 20px;
+  }
+
+  .storage-container-section h3 {
+    color: var(--accent);
+    margin-bottom: 15px;
+    font-size: 1.1em;
+  }
+
+  .delete-container-btn {
+    background: var(--condition-red);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+  }
+
+  .delete-container-btn:hover {
+    background: #e55a5a;
+  }
+
+  .delete-container-btn.confirm {
+    background: #ff4444;
+    animation: pulse 0.5s infinite alternate;
+  }
+
+  @keyframes pulse {
+    from { opacity: 1; }
+    to { opacity: 0.7; }
+  }
+
+  .equipment-list-container, .inventory-list-container, .storage-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+  }
+
+  .equipment-card, .item-card, .storage-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  /* Dark mode card enhancement */
+  .equipment-card, .item-card, .storage-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255,255,255,0.02) 100%);
+  }
+
+  /* Light mode card enhancement */
+  [data-theme="light"] .equipment-card, 
+  [data-theme="light"] .item-card, 
+  [data-theme="light"] .storage-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(0,0,0,0.02) 100%);
+  }
+
+  .equipment-card:hover, .item-card:hover, .storage-card:hover {
+    border-color: var(--accent-border);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  .equipment-header, .item-header, .storage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .equipment-name, .item-name, .storage-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: var(--text);
+    margin: 0;
+    flex: 1;
+  }
+
+  .equipment-type, .item-type, .storage-type {
+    background: var(--accent);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-left: 10px;
+  }
+
+  .equipment-stats, .item-stats, .storage-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .equipment-stat, .item-stat, .storage-stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .equipment-stat-label, .item-stat-label, .storage-stat-label {
+    font-size: 0.8em;
+    color: var(--text);
+    opacity: 0.8;
+    margin-bottom: 2px;
+  }
+
+  .equipment-stat-value, .item-stat-value, .storage-stat-value {
+    font-weight: bold;
+    color: var(--accent);
+  }
+
+  .equipment-description, .item-description, .storage-description {
+    color: var(--text);
+    font-size: 0.9em;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+
+  .equipment-actions, .item-actions, .storage-actions {
+    display: flex;
+    gap: 5px;
+    justify-content: flex-end;
+  }
+
+  .equipment-btn, .item-btn, .storage-btn {
+    padding: 4px 8px;
+    font-size: 0.8em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .edit-btn {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  .edit-btn:hover {
+    background: var(--accent);
+    color: #000;
+  }
+
+  .delete-btn {
+    background: #ff4444;
+    color: #fff;
+  }
+
+  .delete-btn:hover {
+    background: #ff0000;
+  }
+
+  .weight-display {
+    margin-top: 15px;
+    padding: 10px;
+    background: var(--panel-bg);
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--text);
+  }
+
+  .weight-warning {
+    background: #ff4444;
+    color: #fff;
+    border-color: #ff0000;
+  }
+
+  .weight-ok {
+    background: var(--panel-bg);
+    color: var(--text);
+  }
+
+  .storage-container {
+    margin-bottom: 30px;
+  }
+
+  .storage-container h3 {
+    color: var(--accent);
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    border-bottom: 2px solid var(--accent-border);
+    padding-bottom: 5px;
   }
 
   /* Import Popup Styles */
@@ -2270,7 +3022,26 @@ button[onclick*="home"] {
     }
   }
 
-</style>
+  </style>
+  
+  <!-- Immediate accent color loading to prevent flash -->
+  <script>
+    // Load saved accent color immediately to prevent flash
+    (function() {
+      const savedAccentColor = localStorage.getItem('dndAccentColor');
+      if (savedAccentColor) {
+        document.documentElement.style.setProperty('--accent', savedAccentColor);
+        
+        // Set border color with 60% opacity
+        const hex = savedAccentColor.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        const borderColor = `rgba(${r}, ${g}, ${b}, 0.6)`;
+        document.documentElement.style.setProperty('--accent-border', borderColor);
+      }
+    })();
+  </script>
 </head>
 <body>
 <!-- Warning Banner -->
@@ -2284,14 +3055,14 @@ button[onclick*="home"] {
 </h1>
 
 <!-- Data Controls -->
-<div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin: 10px 1rem 0 0;">
+<div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin: 10px auto; width: 100%;">
 
   <!-- Home Button -->
   <button onclick="
     document.getElementById('home').classList.add('active'); 
     document.querySelectorAll('.page').forEach(p => { if(p.id !== 'home') p.classList.remove('active'); });
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  ">Home</button>
+  " style="background: var(--accent); color: black;">Home</button>
 
   <!-- Reset Layout -->
   <button id="resetLayoutBtn" style="background: var(--accent); color: black;">Reset Layout</button>
@@ -2344,8 +3115,8 @@ button[onclick*="home"] {
 
       <!-- Export / Import -->
       <div style="border-top: 1px solid #444; margin: 10px 0; padding-top: 10px;">
-        <button onclick="exportData()" style="width: 100%; margin-bottom: 5px; background: var(--accent); color: black;">Export Character</button>
-        <label class="import-label" style="width: 100%; display: block; cursor: pointer; text-align: center; background: var(--accent); color: black; padding: 5px; border-radius: 4px;">
+        <button onclick="exportData()" style="width: 100%; margin-bottom: 5px; background: var(--accent); color: black; font-weight: bold;">Export Character</button>
+        <label class="import-label" style="width: 100%; display: block; cursor: pointer; text-align: center; background: var(--accent); color: black; padding: 5px; border-radius: 4px; font-weight: bold;">
           Import Character
           <input onchange="importData(event)" style="display: none;" type="file"/>
         </label>
@@ -2376,6 +3147,7 @@ button[onclick*="home"] {
       <div class="welcome-section">
         <h3>Character Manager</h3>
         <div class="divider"></div>
+        
         <div class="character-manager-grid">
           <div>
             <h4>New Character</h4>
@@ -2847,8 +3619,43 @@ button[onclick*="home"] {
       <!-- Actions & Features -->
       <div class="section">
         <h2>Actions & Features</h2>
-        <textarea id="actions_features" class="basic-textarea" 
-                  oninput="autosave()" placeholder="Enter your actions and features here..."></textarea>
+        
+        <!-- Favorites Section -->
+        <div class="favorites-section">
+          <h3>Favorite Actions</h3>
+          <div class="actions-list-container" id="favorites_actions_list">
+            <!-- Favorite actions will be populated here -->
+          </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+          <h3>Actions</h3>
+          <div class="actions-controls">
+            <button onclick="showActionForm('action')">+ Add Action</button>
+            <button onclick="clearAllActions('action')" class="clear-all-btn" style="margin-left: 10px;">Clear All Actions</button>
+            <div class="action-filter">
+              <select id="action_filter" onchange="filterActions('action')">
+                <option value="all">All Actions</option>
+                <option value="favorites">Favorites</option>
+                <option value="melee">Melee</option>
+                <option value="ranged">Ranged</option>
+                <option value="spell">Spell</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions-list-container" id="actions_list">
+            <!-- Actions will be populated here -->
+          </div>
+        </div>
+
+        <!-- Actions Notes Section -->
+        <div class="actions-section">
+          <h3>Actions Notes</h3>
+          <textarea id="actions_notes" class="basic-textarea" 
+                    oninput="autosave()" placeholder="Enter any additional notes about your actions here..."></textarea>
+        </div>
       </div>
 
       <!-- Conditions (swapped with Proficiencies & Training) -->
@@ -2998,7 +3805,7 @@ button[onclick*="home"] {
 
     <!-- Favorites Section -->
     <div class="section">
-      <h2>⭐ Favorites</h2>
+      <h2>Favorites</h2>
       <div class="favorites-grid">
         <div class="favorites-cantrips">
           <h3>Favorite Cantrips</h3>
@@ -3091,70 +3898,54 @@ button[onclick*="home"] {
   
   <!-- Inventory Page -->
   <div class="page" id="page4">
-    <!-- Equipment section first -->
+    <!-- Equipment Section -->
     <div class="section">
-      <h2>Equipment</h2>
-      <table id="equipment_table_inventory">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Bonus</th>
-            <th>Weight</th>
-            <th>Notes</th>
-            <th></th> <!-- For remove button -->
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Equipment will be added here -->
-        </tbody>
-      </table>
-      <button onclick="showEquipmentPopup()" style="margin-top: 10px;">+ Add Equipment</button>
-      <div class="weight-display" id="equipment_weight_total">Total: 0 lbs / 0 kg</div>
+      <h2>Equipment (Part of Main Inventory)</h2>
+      <div class="equipment-controls">
+        <button onclick="showEquipmentForm()">+ Add Equipment</button>
+      </div>
+      <div class="equipment-list-container" id="equipment_list">
+        <!-- Equipment will be populated here -->
+      </div>
+      <div class="weight-display" id="equipment_weight_total">Equipment Weight: 0 lbs / 0 kg</div>
     </div>
     
-    <!-- Main inventory second -->
+    <!-- Main Inventory Section -->
     <div class="section">
+      <h2>Main Inventory</h2>
       <div class="inventory-controls">
-        <h2>Inventory</h2>
-        <div>
-          Gold: <input id="gold_field" oninput="autosave()" style="width:100px;" type="number" value="0"/>
+        <div class="inventory-settings">
+          <label>Max Weight Capacity:</label>
+          <input type="number" id="max_weight_capacity" min="0" value="0" onchange="updateMaxWeightCapacity()" placeholder="Enter max weight in lbs"/>
+          <span>lbs</span>
+        </div>
+        <div class="gold-section">
+          <label>Gold:</label>
+          <input id="gold_field" oninput="autosave()" style="width:100px;" type="number" value="0"/>
         </div>
       </div>
       
-      <table id="inventory_table">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Description</th>
-            <th>Notes</th>
-            <th>Weight (lbs)</th>
-            <th>Weight (kg)</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Inventory items will be added here -->
-        </tbody>
-      </table>
-      <button onclick="showAddItemPopup()" style="margin-top: 10px;">+ Add Item</button>
-      <div class="weight-display" id="inventory_weight_total">Total: 0 lbs / 0 kg</div>
+      <div class="inventory-controls">
+        <button onclick="showItemForm('main')">+ Add Item</button>
+      </div>
+      
+      <div class="inventory-list-container" id="main_inventory_list">
+        <!-- Main inventory items will be populated here -->
+      </div>
+      <div class="weight-display" id="main_inventory_weight_total">Total: 0 lbs / 0 kg</div>
     </div>
+
     
     <!-- Extra containers last -->
     <div id="extra_containers">
       <!-- Additional containers will be added here -->
     </div>
     
-    <div class="section">
-      <h3>Add New Storage</h3>
-      <label>Container Name:</label>
-      <input id="container_name" type="text" placeholder="e.g. Backpack, Bag of Holding"/>
-      
-      <label>Max Weight (lbs):</label>
-      <input id="container_max_weight" type="number" placeholder="0 for unlimited"/>
-      
-      <button onclick="addExtraContainer()" style="margin-top: 10px;">+ Add Storage</button>
+    <div class="section additional-storage-section">
+      <h2>Additional Storage</h2>
+      <div class="inventory-controls">
+        <button onclick="showAddStoragePopup()">+ Add Additional Storage</button>
+      </div>
     </div>
   </div>
   
@@ -3235,19 +4026,19 @@ button[onclick*="home"] {
 <div class="popup" id="addItemPopup">
   <h3>Add Inventory Item</h3>
   <label>Item Name:</label>
-  <input type="text" id="item_name" placeholder="e.g. Health Potion"/>
+  <input type="text" id="old_item_name" placeholder="e.g. Health Potion"/>
   
   <label>Description:</label>
-  <input type="text" id="item_description" placeholder="Brief description"/>
+  <input type="text" id="old_item_description" placeholder="Brief description"/>
   
   <label>Notes:</label>
-  <textarea id="item_notes" placeholder="Any special notes" style="min-height: 100px;"></textarea>
+  <textarea id="old_item_notes" placeholder="Any special notes" style="min-height: 100px;"></textarea>
   
   <label>Weight (lbs):</label>
-  <input type="number" id="item_weight" step="0.1" placeholder="0.1"/>
+  <input type="number" id="old_item_weight" step="0.1" placeholder="0.1"/>
   
   <label>Container:</label>
-  <select id="item_container">
+  <select id="old_item_container">
     <option value="main">Main Inventory</option>
     <!-- Additional containers will be added here dynamically -->
   </select>
@@ -3565,6 +4356,131 @@ button[onclick*="home"] {
   </div>
 </div>
 
+<!-- Add Action Popup -->
+<div class="popup" id="actionFormPopup">
+  <h3 id="actionFormTitle">Add Action</h3>
+  
+  <label>Name:</label>
+  <input type="text" id="action_name" placeholder="e.g. Fireball, Sword Strike, Sneak Attack"/>
+  
+  <label>Category:</label>
+  <select id="action_category">
+    <option value="melee">Melee</option>
+    <option value="ranged">Ranged</option>
+    <option value="spell">Spell</option>
+    <option value="other">Other</option>
+  </select>
+  
+  <div id="action_stats_section">
+    <label>Damage/Effect:</label>
+    <input type="text" id="action_damage" placeholder="e.g. 1d8+3 slashing, 2d6 fire, Heal 1d8+2"/>
+    
+    <label>Range/Area:</label>
+    <input type="text" id="action_range" placeholder="e.g. 5ft, 60ft, 20ft radius"/>
+    
+    <label>Uses/Cooldown:</label>
+    <input type="text" id="action_uses" placeholder="e.g. 3/day, 1/short rest, At will"/>
+    
+    <label>Attack Bonus/Save DC:</label>
+    <input type="text" id="action_attack" placeholder="e.g. +5, DC 15, Advantage"/>
+  </div>
+  
+  <label>Description:</label>
+  <textarea id="action_description" placeholder="Describe the action in detail..."></textarea>
+  
+  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+    <button onclick="saveAction()" id="saveActionBtn">Add Action</button>
+    <button onclick="closePopup('actionFormPopup')">Cancel</button>
+  </div>
+</div>
+
+<!-- Add Equipment Popup -->
+<div class="popup" id="equipmentFormPopup">
+  <h3 id="equipmentFormTitle">Add Equipment</h3>
+  
+  <label>Name:</label>
+  <input type="text" id="equipment_name" placeholder="e.g. Longsword, Leather Armor, Ring of Protection"/>
+  
+  <label>Type:</label>
+  <select id="equipment_type">
+    <option value="weapon">Weapon</option>
+    <option value="armor">Armor</option>
+    <option value="shield">Shield</option>
+    <option value="accessory">Accessory</option>
+    <option value="tool">Tool</option>
+    <option value="other">Other</option>
+  </select>
+  
+  <label>Bonus/AC:</label>
+  <input type="text" id="equipment_bonus" placeholder="e.g. +1, AC 13, +2 to hit"/>
+  
+  <label>Weight (lbs):</label>
+  <input type="number" id="equipment_weight" min="0" step="0.1" placeholder="Enter weight in pounds"/>
+  
+  <label>Description/Notes:</label>
+  <textarea id="equipment_description" placeholder="Describe the equipment and any special properties..."></textarea>
+  
+  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+    <button onclick="saveEquipment()" id="saveEquipmentBtn">Add Equipment</button>
+    <button onclick="closePopup('equipmentFormPopup')">Cancel</button>
+  </div>
+</div>
+
+<!-- Add Item Popup -->
+<div class="popup" id="itemFormPopup">
+  <h3 id="itemFormTitle">Add Item</h3>
+  
+  <label>Name:</label>
+  <input type="text" id="item_name" placeholder="e.g. Rope, Potion of Healing, Rations"/>
+  
+  <label>Type:</label>
+  <select id="item_type">
+    <option value="consumable">Consumable</option>
+    <option value="tool">Tool</option>
+    <option value="treasure">Treasure</option>
+    <option value="misc">Miscellaneous</option>
+    <option value="other">Other</option>
+  </select>
+  
+  <label>Weight (lbs):</label>
+  <input type="number" id="item_weight" min="0" step="0.1" placeholder="Enter weight in pounds"/>
+  
+  <label>Description/Notes:</label>
+  <textarea id="item_description" placeholder="Describe the item and any special properties..."></textarea>
+  
+  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+    <button onclick="saveItem()" id="saveItemBtn">Add Item</button>
+    <button onclick="closePopup('itemFormPopup')">Cancel</button>
+  </div>
+</div>
+
+
+<!-- Weight Warning Popup -->
+<div class="popup" id="weightWarningPopup">
+  <h3>⚠️ Item Too Heavy!</h3>
+  <p id="weightWarningMessage">Sorry, that item won't fit into your bag.</p>
+  <p style="font-size: 0.8em; color: var(--text); opacity: 0.7; font-style: italic;">"Wish I had a bag of holding"</p>
+  <div style="margin-top: 15px; display: flex; justify-content: center;">
+    <button onclick="closePopup('weightWarningPopup')">OK</button>
+  </div>
+</div>
+
+<!-- Add Storage Container Popup -->
+<div class="popup" id="addStoragePopup">
+  <h3>Add Additional Storage</h3>
+  
+  <label>Container Name:</label>
+  <input type="text" id="storage_container_name" placeholder="e.g. Backpack, Bag of Holding, Chest"/>
+  
+  <label>Max Weight (lbs):</label>
+  <input type="number" id="storage_container_weight" min="0" placeholder="0 for unlimited"/>
+  
+  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+    <button onclick="addStorageContainer()">Add Storage Container</button>
+    <button onclick="closePopup('addStoragePopup')">Cancel</button>
+  </div>
+</div>
+
 <!-- Script Section -->
 <script>
 // Disable source map loading to prevent D&D Beyond errors
@@ -3604,7 +4520,6 @@ function setupAutoResize() {
 }
 
 function loadLayout() {
-  console.log("loadLayout function called.");
   // Add layout loading logic here if needed
 }
 
@@ -3642,6 +4557,14 @@ function toggleTheme() {
 function updateAccentColor(color) {
   document.documentElement.style.setProperty('--accent', color);
   localStorage.setItem('dndAccentColor', color);
+  
+  // Convert hex to rgba with 80% opacity for borders
+  const hex = color.replace('#', '');
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  const borderColor = `rgba(${r}, ${g}, ${b}, 0.6)`;
+  document.documentElement.style.setProperty('--accent-border', borderColor);
 }
 
 function loadThemeSettings() {
@@ -3663,6 +4586,14 @@ function loadThemeSettings() {
     document.documentElement.style.setProperty('--accent', savedAccentColor);
     const colorPicker = document.getElementById('accentColor');
     if (colorPicker) colorPicker.value = savedAccentColor;
+    
+    // Set border color with 80% opacity
+    const hex = savedAccentColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    const borderColor = `rgba(${r}, ${g}, ${b}, 0.6)`;
+    document.documentElement.style.setProperty('--accent-border', borderColor);
   }
 }
 
@@ -3686,12 +4617,23 @@ window.onload = function() {
   // Initialize potion info
   updatePotionInfo();
 
+  // Initialize actions and features
+  initializeActions();
+
+  // Initialize inventory system
+  initializeInventory();
+
+  // Initialize equipment data for stats page
+  if (typeof window.equipmentData === 'undefined') {
+    window.equipmentData = [];
+  }
+
   // Try to load last used character or first in list; if none, auto-create one
   const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
   if (characters.length > 0) {
     currentCharacter = characters[0].id;
     loadData();
-    document.querySelector('.tab[data-tab="page1"]').click(); // Start on Stats page
+    // Don't trigger click - let the page show naturally
   } else {
     // Auto-create a default character so autosave works immediately
     const defaultChar = {
@@ -3949,7 +4891,17 @@ function autosave() {
           document.getElementById('death_save_failure_3_checkbox').checked
         ]
       },
-      actionsFeatures: document.getElementById('actions_features').value,
+      actionsData: actionsData,
+      actionsNotes: document.getElementById('actions_notes').value,
+      inventoryData: inventoryData,
+      maxWeightCapacity: document.getElementById('max_weight_capacity').value,
+      equipmentData: inventoryData.equipment.map(item => ({
+        name: item.name,
+        type: item.type,
+        bonus: item.bonus,
+        weight: item.weight,
+        notes: item.description
+      })),
       proficienciesTraining: document.getElementById('proficiencies_training').value,
       statsQuickNotes: document.getElementById('stats_quick_notes').value
     },
@@ -4105,8 +5057,50 @@ function loadData() {
     initializeDeathSaves();
     
     // Actions & Features
-    if (data.page1.actionsFeatures) {
-      document.getElementById('actions_features').value = data.page1.actionsFeatures;
+    if (data.page1.actionsData) {
+      actionsData = data.page1.actionsData;
+      displayActions('action');
+      updateFavorites();
+    }
+    
+    // Actions Notes
+    if (data.page1.actionsNotes) {
+      document.getElementById('actions_notes').value = data.page1.actionsNotes;
+    }
+    
+    // Inventory Data
+    if (data.page1.inventoryData) {
+      inventoryData = data.page1.inventoryData;
+      displayEquipment();
+      displayMainInventory();
+      loadStorageContainers();
+      updateWeightDisplay();
+    } else {
+      // If no inventory data, try to load from stats page equipment
+      if (window.equipmentData && window.equipmentData.length > 0) {
+        inventoryData.equipment = window.equipmentData.map(item => ({
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          name: item.name,
+          type: item.type,
+          bonus: item.bonus,
+          weight: item.weight,
+          description: item.notes
+        }));
+        displayEquipment();
+        updateWeightDisplay();
+      }
+    }
+    
+    // Max Weight Capacity
+    if (data.page1.maxWeightCapacity) {
+      document.getElementById('max_weight_capacity').value = data.page1.maxWeightCapacity;
+      inventoryData.maxWeightCapacity = parseFloat(data.page1.maxWeightCapacity) || 0;
+    }
+    
+    // Equipment Data for Stats Page
+    if (data.page1.equipmentData) {
+      window.equipmentData = data.page1.equipmentData;
+      updateEquipmentPreviews();
     }
     
     // Proficiencies & Training
@@ -4212,9 +5206,12 @@ function loadData() {
       updateEquipmentPreviews();
     }
     
-    // Main Inventory
+    // Main Inventory - Legacy support (if old inventory table exists)
     if (data.page4.inventory) {
-      const tbody = document.getElementById('inventory_table').querySelector('tbody');
+      const inventoryTable = document.getElementById('inventory_table');
+      if (inventoryTable) {
+        const tbody = inventoryTable.querySelector('tbody');
+        if (tbody) {
       tbody.innerHTML = '';
       
       data.page4.inventory.forEach(item => {
@@ -4232,6 +5229,8 @@ function loadData() {
       });
       
       updateWeight();
+        }
+      }
     }
     
     // Containers
@@ -4240,8 +5239,10 @@ function loadData() {
       extraContainers.innerHTML = '';
       const containerDropdown = document.getElementById('item_container');
       
-      while (containerDropdown.children.length > 1) {
-        containerDropdown.removeChild(containerDropdown.lastChild);
+      if (containerDropdown) {
+        while (containerDropdown.children.length > 1) {
+          containerDropdown.removeChild(containerDropdown.lastChild);
+        }
       }
       
       data.page4.containers.forEach(containerData => {
@@ -4482,31 +5483,55 @@ function showEquipmentPopup() {
 }
 
 function addEquipment() {
-  equipmentData.push({ name: '', type: '', bonus: '', weight: 0, notes: '' });
+  if (typeof window.equipmentData === 'undefined') {
+    window.equipmentData = [];
+  }
+  window.equipmentData.push({ name: '', type: '', bonus: '', weight: 0, notes: '' });
   showEquipmentPopup();
 }
 
 function updateEquipmentPreviews() {
+  // Check if equipmentData exists, if not initialize it
+  if (typeof window.equipmentData === 'undefined') {
+    window.equipmentData = [];
+  }
 
+  // Use the global equipmentData variable
+  const equipmentData = window.equipmentData;
   
   // Clear both tables completely before rebuilding
   const popupTbody = document.getElementById('equipment_table_popup').querySelector('tbody');
-  const inventoryTbody = document.getElementById('equipment_table_inventory').querySelector('tbody');
+  const inventoryTbody = document.getElementById('equipment_table_inventory');
   const equipmentStatsPreview = document.getElementById('equipment_stats_preview');
   
   popupTbody.innerHTML = '';
-  inventoryTbody.innerHTML = '';
+  if (inventoryTbody) {
+    const tbody = inventoryTbody.querySelector('tbody');
+    if (tbody) {
+      tbody.innerHTML = '';
+    }
+  }
+  if (equipmentStatsPreview) {
   equipmentStatsPreview.innerHTML = ''; // Clear the stats page preview
+  }
   
   if (equipmentData.length === 0) {
+    if (equipmentStatsPreview) {
     equipmentStatsPreview.innerHTML = '<p>No equipment added</p>'; // Update for stats page
-    inventoryTbody.innerHTML = '<tr><td colspan="6"><p>No equipment added</p></td></tr>'; // Update for inventory page
+    }
+    if (inventoryTbody) {
+      const tbody = inventoryTbody.querySelector('tbody');
+      if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="6"><p>No equipment added</p></td></tr>'; // Update for inventory page
+      }
+    }
     updateEquipmentWeight();
     autosave();
     return;
   }
   
   // Rebuild stats page preview (simpler display)
+  if (equipmentStatsPreview) {
   const statsTable = document.createElement('table');
   const statsHeader = statsTable.createTHead();
   const statsHeaderRow = statsHeader.insertRow();
@@ -4525,10 +5550,14 @@ function updateEquipmentPreviews() {
     row.onclick = () => showItemDetails(item, 'equipment');
   });
   equipmentStatsPreview.appendChild(statsTable);
+  }
   
-  // Rebuild inventory table (with remove button)
+  // Rebuild inventory table (with remove button) - only if inventory table exists
+  if (inventoryTbody) {
+    const tbody = inventoryTbody.querySelector('tbody');
+    if (tbody) {
   equipmentData.forEach((item, index) => {
-    const row = inventoryTbody.insertRow();
+        const row = tbody.insertRow();
     row.className = 'item-row';
     row.innerHTML = `
       <td>${item.name || ''}</td>
@@ -4540,32 +5569,44 @@ function updateEquipmentPreviews() {
     `;
     row.onclick = () => showItemDetails(item, 'equipment');
   });
+    }
+  }
 
   updateEquipmentWeight();
   autosave();
 }
 
 function removeEquipmentItem(index) {
-  if (index >= 0 && index < equipmentData.length) {
-    equipmentData.splice(index, 1);
+  if (typeof window.equipmentData === 'undefined') {
+    window.equipmentData = [];
+  }
+  if (index >= 0 && index < window.equipmentData.length) {
+    window.equipmentData.splice(index, 1);
     updateEquipmentPreviews();
   }
 }
 
 function updateEquipmentWeight() {
-  let totalWeight = equipmentData.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0);
-  document.getElementById('equipment_weight_total').textContent = 
+  if (typeof window.equipmentData === 'undefined') {
+    return;
+  }
+  
+  let totalWeight = window.equipmentData.reduce((sum, item) => sum + (parseFloat(item.weight) || 0), 0);
+  const weightElement = document.getElementById('equipment_weight_total');
+  if (weightElement) {
+    weightElement.textContent = 
     `Total: ${totalWeight.toFixed(1)} lbs / ${(totalWeight * 0.453592).toFixed(1)} kg`;
+  }
 }
 
 // ========== INVENTORY FUNCTIONS ==========
 function showAddItemPopup() {
-  document.getElementById('item_name').value = '';
-  document.getElementById('item_description').value = '';
-  document.getElementById('item_notes').value = '';
-  document.getElementById('item_weight').value = '';
+  document.getElementById('old_item_name').value = '';
+  document.getElementById('old_item_description').value = '';
+  document.getElementById('old_item_notes').value = '';
+  document.getElementById('old_item_weight').value = '';
   
-  const containerDropdown = document.getElementById('item_container');
+  const containerDropdown = document.getElementById('old_item_container');
   containerDropdown.innerHTML = '<option value="main">Main Inventory</option>';
   
   document.querySelectorAll('#extra_containers .section').forEach(container => {
@@ -4579,11 +5620,11 @@ function showAddItemPopup() {
 }
 
 function addInventoryItem() {
-  const name = document.getElementById('item_name').value;
-  const description = document.getElementById('item_description').value;
-  const notes = document.getElementById('item_notes').value;
-  const weight = parseFloat(document.getElementById('item_weight').value) || 0;
-  const containerId = document.getElementById('item_container').value;
+  const name = document.getElementById('old_item_name').value;
+  const description = document.getElementById('old_item_description').value;
+  const notes = document.getElementById('old_item_notes').value;
+  const weight = parseFloat(document.getElementById('old_item_weight').value) || 0;
+  const containerId = document.getElementById('old_item_container').value;
 
   if (!name) {
     alert("Please enter an item name");
@@ -4598,7 +5639,10 @@ function addInventoryItem() {
   };
 
   if (containerId === 'main') {
-    const tbody = document.getElementById('inventory_table').querySelector('tbody');
+    const inventoryTable = document.getElementById('inventory_table');
+    if (!inventoryTable) return;
+    const tbody = inventoryTable.querySelector('tbody');
+    if (!tbody) return;
     const row = tbody.insertRow();
     row.className = 'item-row';
     row.innerHTML = `
@@ -4631,9 +5675,17 @@ function addInventoryItem() {
   autosave();
 }
 
-function addExtraContainer() {
-  const containerName = document.getElementById('container_name').value;
-  const maxWeight = document.getElementById('container_max_weight').value;
+// Show add storage popup
+function showAddStoragePopup() {
+  document.getElementById('storage_container_name').value = '';
+  document.getElementById('storage_container_weight').value = '';
+  showPopup('addStoragePopup');
+}
+
+// Add storage container from popup
+function addStorageContainer() {
+  const containerName = document.getElementById('storage_container_name').value.trim();
+  const maxWeight = parseFloat(document.getElementById('storage_container_weight').value) || 0;
   
   if (!containerName) {
     alert("Please enter a container name");
@@ -4642,43 +5694,56 @@ function addExtraContainer() {
   
   const containerId = 'container_' + Date.now();
   
+  // Add to inventoryData for persistence
+  if (!inventoryData.storageContainers) {
+    inventoryData.storageContainers = [];
+  }
+  
+  const storageData = {
+    id: containerId,
+    name: containerName,
+    maxWeight: maxWeight,
+    items: []
+  };
+  
+  inventoryData.storageContainers.push(storageData);
+  
   const containerHTML = `
-    <div class="section" id="${containerId}">
+    <div class="section storage-container-section" id="${containerId}">
       <div class="inventory-controls">
         <h3>${containerName}</h3>
-        ${maxWeight > 0 ? `<div>Max Weight: ${maxWeight} lbs</div>` : ''}
+        <div class="inventory-settings">
+          ${maxWeight > 0 ? `<span>Max Weight: ${maxWeight} lbs</span>` : '<span>Unlimited Weight</span>'}
+        </div>
         <button class="delete-container-btn" onclick="confirmContainerDeletion('${containerId}')">Delete Container</button>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Description</th>
-            <th>Notes</th>
-            <th>Weight (lbs)</th>
-            <th>Weight (kg)</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-      <button onclick="showAddContainerItemPopup('${containerId}')" style="margin-top: 10px;">+ Add Item</button>
-      <div class="weight-display">Current: 0 lbs / 0 kg</div>
+      
+      <div class="inventory-controls">
+        <button onclick="showItemForm('${containerId}')">+ Add Item</button>
+      </div>
+      
+      <div class="inventory-list-container" id="${containerId}_items">
+        <!-- Items will be populated here -->
+      </div>
+      <div class="weight-display" id="${containerId}_weight">Total: 0 lbs / 0 kg</div>
     </div>
   `;
   
   document.getElementById('extra_containers').insertAdjacentHTML('beforeend', containerHTML);
   
+  // Add to item container dropdown for the add item popup
   const containerDropdown = document.getElementById('item_container');
-  const option = document.createElement('option');
-  option.value = containerId;
-  option.textContent = containerName;
-  containerDropdown.appendChild(option);
+  if (containerDropdown) {
+    const option = document.createElement('option');
+    option.value = containerId;
+    option.textContent = containerName;
+    containerDropdown.appendChild(option);
+  }
   
-  document.getElementById('container_name').value = '';
-  document.getElementById('container_max_weight').value = '';
-  
+  // Close popup and save
+  closePopup('addStoragePopup');
+  saveInventory();
+  updateWeightDisplay();
   autosave();
 }
 
@@ -4687,21 +5752,42 @@ function confirmContainerDeletion(containerId) {
   const deleteBtn = container.querySelector('.delete-container-btn');
   
   if (deleteBtn.classList.contains('confirm')) {
-    const containerDropdown = document.getElementById('item_container');
-    const option = containerDropdown.querySelector(`option[value="${containerId}"]`);
-    if (option) containerDropdown.removeChild(option);
-    
-    container.remove();
-    autosave();
+    // Check if user typed "delete"
+    const userInput = prompt('Type "delete" to confirm deletion of this storage container and all its contents:');
+    if (userInput === 'delete') {
+      // Remove from inventoryData
+      if (inventoryData.storageContainers) {
+        inventoryData.storageContainers = inventoryData.storageContainers.filter(s => s.id !== containerId);
+      }
+      
+      // Remove from dropdown
+      const containerDropdown = document.getElementById('item_container');
+      if (containerDropdown) {
+        const option = containerDropdown.querySelector(`option[value="${containerId}"]`);
+        if (option) containerDropdown.removeChild(option);
+      }
+      
+      // Remove from DOM
+      container.remove();
+      
+      // Save and update
+      saveInventory();
+      updateWeightDisplay();
+      autosave();
+    } else {
+      // Reset button if user didn't type "delete"
+      deleteBtn.textContent = 'Delete Container';
+      deleteBtn.classList.remove('confirm');
+    }
   } else {
-    deleteBtn.textContent = 'Confirm Delete';
+    deleteBtn.textContent = 'Are you sure?';
     deleteBtn.classList.add('confirm');
     setTimeout(() => {
       if (deleteBtn) {
         deleteBtn.textContent = 'Delete Container';
         deleteBtn.classList.remove('confirm');
       }
-    }, 3000);
+    }, 5000);
   }
 }
 
@@ -4713,15 +5799,23 @@ function showAddContainerItemPopup(containerId) {
 // ========== WEIGHT CALCULATION FUNCTIONS ==========
 function updateWeight() {
   let totalWeight = 0;
-  const rows = document.querySelectorAll('#inventory_table tbody tr');
+  const inventoryTable = document.getElementById('inventory_table');
+  if (inventoryTable) {
+    const rows = inventoryTable.querySelectorAll('tbody tr');
   
   rows.forEach(row => {
     const weightCell = row.cells[3];
+      if (weightCell) {
     totalWeight += parseFloat(weightCell.textContent) || 0;
+      }
   });
+  }
   
-  document.getElementById('inventory_weight_total').textContent = 
+  const weightElement = document.getElementById('inventory_weight_total');
+  if (weightElement) {
+    weightElement.textContent = 
     `Total: ${totalWeight.toFixed(1)} lbs / ${(totalWeight * 0.453592).toFixed(1)} kg`;
+  }
 }
 
 function updateContainerWeight(containerId) {
@@ -4783,46 +5877,208 @@ function removePortrait() {
 // ========== POPUP FUNCTIONS ==========
 function showPopup(id) {
   const popup = document.getElementById(id);
-  if (!popup) return;
+  const backdrop = document.getElementById('popupBackdrop');
+  if (!popup) {
+    return;
+  }
+  if (!backdrop) {
+    return;
+  }
   
   // Reset positioning
   popup.style.top = '50%';
   popup.style.left = '50%';
-  popup.style.transform = 'translate(-50%, -50%)';
+  popup.style.transform = 'translate(-50%, -50%) scale(0.8)';
+  popup.style.opacity = '0';
   
   // Mobile adjustments
   if (window.innerWidth <= 768) {
     popup.style.width = '95vw';
+    popup.style.maxWidth = '95vw';
     popup.style.maxHeight = '85vh';
+    popup.style.top = '50%';
+    popup.style.left = '50%';
+    popup.style.transform = 'translate(-50%, -50%) scale(0.8)';
+    popup.style.position = 'fixed';
   }
   
+  // Show elements
   popup.style.display = 'block';
-  document.getElementById('popupBackdrop').style.display = 'block';
+  backdrop.style.display = 'block';
+  
+  // Force immediate visibility
+  popup.style.opacity = '1';
+  popup.style.transform = 'translate(-50%, -50%) scale(1)';
+  popup.style.pointerEvents = 'auto';
+  
+  // Trigger animations
+  requestAnimationFrame(() => {
+    popup.classList.add('show');
+    backdrop.classList.add('show');
+  });
 }
 
 function closePopup(id) {
-  document.getElementById(id).style.display = 'none';
-  document.getElementById('popupBackdrop').style.display = 'none';
+  const popup = document.getElementById(id);
+  const backdrop = document.getElementById('popupBackdrop');
+  
+  // Remove show classes to trigger close animation
+  popup.classList.remove('show');
+  backdrop.classList.remove('show');
+  
+  // Hide elements after animation completes
+  setTimeout(() => {
+    popup.style.display = 'none';
+    backdrop.style.display = 'none';
+  }, 300); // Match the CSS transition duration
 }
 
 function closeAllPopups() {
+  const backdrop = document.getElementById('popupBackdrop');
+  
+  // Remove show classes from all popups
   document.querySelectorAll('.popup').forEach(popup => {
-    popup.style.display = 'none';
+    popup.classList.remove('show');
   });
-  document.getElementById('popupBackdrop').style.display = 'none';
+  backdrop.classList.remove('show');
+  
+  // Hide elements after animation completes
+  setTimeout(() => {
+    document.querySelectorAll('.popup').forEach(popup => {
+      popup.style.display = 'none';
+    });
+    backdrop.style.display = 'none';
+  }, 300);
 }
 
 // Initialize backdrop click handler
 document.getElementById('popupBackdrop').addEventListener('click', closeAllPopups);
 
+// ========== ENHANCED ANIMATIONS ==========
+// Add smooth hover effects for cards and sections
+document.addEventListener('DOMContentLoaded', function() {
+  // Add hover effects to all sections
+  const sections = document.querySelectorAll('.section');
+  sections.forEach(section => {
+    section.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-2px)';
+      this.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.15)';
+    });
+    
+    section.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+      this.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+    });
+  });
+
+  // Add hover effects to character grid items
+  const gridItems = document.querySelectorAll('.character-manager-grid > div, .welcome-section');
+  gridItems.forEach(item => {
+    item.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-2px)';
+      this.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.15)';
+    });
+    
+    item.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+      this.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+    });
+  });
+
+  // Add smooth focus effects to all inputs
+  const inputs = document.querySelectorAll('input, textarea, select');
+  inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+      this.style.transform = 'translateY(-1px)';
+      this.style.borderColor = 'var(--accent)';
+      this.style.boxShadow = '0 0 0 2px rgba(255, 215, 0, 0.2)';
+    });
+    
+    input.addEventListener('blur', function() {
+      this.style.transform = 'translateY(0)';
+      this.style.borderColor = 'var(--accent-border)';
+      this.style.boxShadow = 'none';
+    });
+  });
+
+  // Add smooth hover effects to buttons
+  const buttons = document.querySelectorAll('button');
+  buttons.forEach(button => {
+    button.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-2px)';
+      this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+    });
+    
+    button.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+      this.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+    });
+  });
+
+  // Add smooth hover effects to portrait container
+  const portraitContainer = document.querySelector('.portrait-container');
+  if (portraitContainer) {
+    portraitContainer.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-2px)';
+      this.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.15)';
+    });
+    
+    portraitContainer.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+      this.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+    });
+  }
+
+  // Add smooth hover effects to table rows
+  const tableRows = document.querySelectorAll('tr');
+  tableRows.forEach(row => {
+    row.addEventListener('mouseenter', function() {
+      this.style.backgroundColor = 'rgba(255, 215, 0, 0.05)';
+    });
+    
+    row.addEventListener('mouseleave', function() {
+      this.style.backgroundColor = 'transparent';
+    });
+  });
+
+  // Add smooth animations for theme toggle
+  const themeToggle = document.querySelector('.switch input');
+  if (themeToggle) {
+    themeToggle.addEventListener('change', function() {
+      // Add a subtle animation to the toggle
+      const slider = this.nextElementSibling;
+      slider.style.transition = 'all 1s ease-in-out';
+    });
+  }
+});
+
 // ========== TAB SYSTEM ==========
 function switchTab(button) {
+  // Remove active classes from all tabs and pages
   document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+    page.style.display = 'none';
+    page.style.opacity = '0';
+    page.style.transform = 'translateY(10px)';
+  });
   
+  // Add active class to clicked tab
   button.classList.add('active');
+  
+  // Get target page
   const tabId = button.getAttribute('data-tab');
-  document.getElementById(tabId).classList.add('active');
+  const targetPage = document.getElementById(tabId);
+  
+  if (targetPage) {
+    // Set display first, then trigger animation
+    targetPage.style.display = 'block';
+    
+    // Trigger animation on next frame
+    requestAnimationFrame(() => {
+      targetPage.classList.add('active');
+    });
+  }
 }
 
 // ========== HEALTH SYSTEM ==========
@@ -5117,6 +6373,797 @@ function longRest() {
   alert("Long rest completed - HP fully restored, death saves reset");
 }
 
+// ========== ACTIONS SYSTEM ==========
+let actionsData = {
+  actions: []
+};
+
+// Initialize actions
+function initializeActions() {
+  loadActions();
+  displayActions('action');
+  updateFavorites();
+}
+
+// Show action form
+function showActionForm(type) {
+  document.getElementById('actionFormTitle').textContent = 'Add Action';
+  document.getElementById('action_name').value = '';
+  document.getElementById('action_category').value = 'melee';
+  document.getElementById('action_damage').value = '';
+  document.getElementById('action_range').value = '';
+  document.getElementById('action_uses').value = '';
+  document.getElementById('action_attack').value = '';
+  document.getElementById('action_description').value = '';
+  document.getElementById('saveActionBtn').textContent = 'Add Action';
+  showPopup('actionFormPopup');
+}
+
+// Update action form based on type
+function updateActionForm() {
+  const categorySelect = document.getElementById('action_category');
+  
+  // Clear existing options
+  categorySelect.innerHTML = '';
+  
+  const options = [
+    { value: 'melee', text: 'Melee' },
+    { value: 'ranged', text: 'Ranged' },
+    { value: 'spell', text: 'Spell' },
+    { value: 'other', text: 'Other' }
+  ];
+  options.forEach(option => {
+    const optionElement = document.createElement('option');
+    optionElement.value = option.value;
+    optionElement.textContent = option.text;
+    categorySelect.appendChild(optionElement);
+  });
+}
+
+// Save action
+function saveAction() {
+  const name = document.getElementById('action_name').value.trim();
+  const category = document.getElementById('action_category').value;
+  const damage = document.getElementById('action_damage').value.trim();
+  const range = document.getElementById('action_range').value.trim();
+  const uses = document.getElementById('action_uses').value.trim();
+  const attack = document.getElementById('action_attack').value.trim();
+  const description = document.getElementById('action_description').value.trim();
+  const editId = document.getElementById('saveActionBtn').getAttribute('data-edit-id');
+  
+  if (!name) {
+    alert('Please enter a name for the action.');
+    return;
+  }
+  
+  const actionData = {
+    id: editId || Date.now().toString(),
+    name: name,
+    type: 'action',
+    category: category,
+    damage: damage,
+    range: range,
+    uses: uses,
+    attack: attack,
+    description: description,
+    favorite: false
+  };
+  
+  if (editId) {
+    // Editing existing action
+    const existingAction = actionsData.actions.find(a => a.id === editId);
+    if (existingAction) {
+      actionData.favorite = existingAction.favorite; // Preserve favorite status
+      Object.assign(existingAction, actionData);
+    }
+  } else {
+    // Adding new action
+    actionsData.actions.push(actionData);
+  }
+  
+  saveActions();
+  displayActions('action');
+  updateFavorites();
+  closePopup('actionFormPopup');
+  autosave();
+}
+
+// Display actions
+function displayActions(type) {
+  const container = document.getElementById('actions_list');
+  if (!container) {
+    return;
+  }
+  
+  const data = actionsData.actions;
+  
+  container.innerHTML = '';
+  
+  if (data.length === 0) {
+    container.innerHTML = `<p style="text-align: center; color: var(--text); opacity: 0.7; grid-column: 1 / -1;">No actions added yet. Click "+ Add Action" to get started!</p>`;
+    return;
+  }
+  
+  data.forEach(action => {
+    const actionCard = createActionCard(action, 'action');
+    container.appendChild(actionCard);
+  });
+}
+
+// Create action card
+function createActionCard(action, type) {
+  const card = document.createElement('div');
+  card.className = `action-card ${action.favorite ? 'favorite' : ''}`;
+  card.innerHTML = `
+    <div class="action-header">
+      <h4 class="action-name">${action.name}</h4>
+      <span class="action-type">${action.category}</span>
+    </div>
+    <div class="action-stats">
+      ${action.damage ? `<div class="action-stat"><span class="action-stat-label">Damage/Effect:</span><span class="action-stat-value">${action.damage}</span></div>` : ''}
+      ${action.range ? `<div class="action-stat"><span class="action-stat-label">Range/Area:</span><span class="action-stat-value">${action.range}</span></div>` : ''}
+      ${action.uses ? `<div class="action-stat"><span class="action-stat-label">Uses:</span><span class="action-stat-value">${action.uses}</span></div>` : ''}
+      ${action.attack ? `<div class="action-stat"><span class="action-stat-label">Attack/Save:</span><span class="action-stat-value">${action.attack}</span></div>` : ''}
+    </div>
+    ${action.description ? `<div class="action-description">${action.description}</div>` : ''}
+    <div class="action-actions">
+      <button class="action-btn favorite-btn ${action.favorite ? 'favorited' : ''}" onclick="toggleFavorite('${action.id}', '${type}')">
+        ${action.favorite ? '❤️' : '🤍'}
+      </button>
+      <button class="action-btn edit-btn" onclick="editAction('${action.id}', '${type}')">✏️</button>
+      <button class="action-btn delete-btn" onclick="deleteAction('${action.id}', '${type}')">🗑️</button>
+    </div>
+  `;
+  return card;
+}
+
+// Toggle favorite
+function toggleFavorite(id, type) {
+  const action = actionsData.actions.find(a => a.id === id);
+  if (action) {
+    action.favorite = !action.favorite;
+    saveActions();
+    displayActions('action');
+    updateFavorites();
+    autosave();
+  }
+}
+
+// Edit action
+function editAction(id, type) {
+  const action = actionsData.actions.find(a => a.id === id);
+  if (action) {
+    document.getElementById('actionFormTitle').textContent = 'Edit Action';
+    document.getElementById('action_type').value = 'action';
+    document.getElementById('action_name').value = action.name;
+    document.getElementById('action_category').value = action.category;
+    document.getElementById('action_damage').value = action.damage;
+    document.getElementById('action_range').value = action.range;
+    document.getElementById('action_uses').value = action.uses;
+    document.getElementById('action_attack').value = action.attack;
+    document.getElementById('action_description').value = action.description;
+    document.getElementById('saveActionBtn').textContent = 'Update Action';
+    document.getElementById('saveActionBtn').setAttribute('data-edit-id', id);
+    showPopup('actionFormPopup');
+  }
+}
+
+// Delete action
+function deleteAction(id, type) {
+  if (confirm('Are you sure you want to delete this action?')) {
+    const index = actionsData.actions.findIndex(a => a.id === id);
+    if (index > -1) {
+      actionsData.actions.splice(index, 1);
+      saveActions();
+      displayActions('action');
+      updateFavorites();
+      autosave();
+    }
+  }
+}
+
+// Clear all actions
+function clearAllActions(type) {
+  if (confirm('Are you sure you want to clear all actions? This cannot be undone.')) {
+    actionsData.actions = [];
+    saveActions();
+    displayActions('action');
+    updateFavorites();
+    autosave();
+  }
+}
+
+// Filter actions
+function filterActions(type) {
+  const filter = document.getElementById('action_filter').value;
+  const data = actionsData.actions;
+  const container = document.getElementById('actions_list');
+  
+  let filteredData = data;
+  if (filter !== 'all') {
+    if (filter === 'favorites') {
+      filteredData = data.filter(action => action.favorite);
+    } else {
+      filteredData = data.filter(action => action.category === filter);
+    }
+  }
+  
+  container.innerHTML = '';
+  
+  if (filteredData.length === 0) {
+    container.innerHTML = `<p style="text-align: center; color: var(--text); opacity: 0.7; grid-column: 1 / -1;">No actions found for this filter.</p>`;
+    return;
+  }
+  
+  filteredData.forEach(action => {
+    const actionCard = createActionCard(action, 'action');
+    container.appendChild(actionCard);
+  });
+}
+
+// Update favorites display
+function updateFavorites() {
+  const favoritesActions = actionsData.actions.filter(action => action.favorite);
+  
+  const actionsContainer = document.getElementById('favorites_actions_list');
+  
+  actionsContainer.innerHTML = '';
+  
+  if (favoritesActions.length === 0) {
+    actionsContainer.innerHTML = '<p style="text-align: center; color: var(--text); opacity: 0.7;">No favorite actions yet.</p>';
+  } else {
+    favoritesActions.forEach(action => {
+      const actionCard = createActionCard(action, 'action');
+      actionsContainer.appendChild(actionCard);
+    });
+  }
+}
+
+// Save actions to localStorage
+function saveActions() {
+  localStorage.setItem('dndActions', JSON.stringify(actionsData));
+}
+
+// Load actions from localStorage
+function loadActions() {
+  const saved = localStorage.getItem('dndActions');
+  if (saved) {
+    actionsData = JSON.parse(saved);
+  }
+}
+
+// ========== INVENTORY SYSTEM ==========
+let inventoryData = {
+  equipment: [],
+  mainInventory: [],
+  storageContainers: [],
+  maxWeightCapacity: 0
+};
+
+// Initialize inventory system
+function initializeInventory() {
+  loadInventory();
+  displayEquipment();
+  displayMainInventory();
+  loadStorageContainers();
+  updateWeightDisplay();
+}
+
+// Load storage containers from saved data
+function loadStorageContainers() {
+  if (!inventoryData.storageContainers) return;
+  
+  const extraContainers = document.getElementById('extra_containers');
+  extraContainers.innerHTML = '';
+  
+  inventoryData.storageContainers.forEach(storage => {
+    const containerHTML = `
+      <div class="section storage-container-section" id="${storage.id}">
+        <div class="inventory-controls">
+          <h3>${storage.name}</h3>
+          <div class="inventory-settings">
+            ${storage.maxWeight > 0 ? `<span>Max Weight: ${storage.maxWeight} lbs</span>` : '<span>Unlimited Weight</span>'}
+          </div>
+          <button class="delete-container-btn" onclick="confirmContainerDeletion('${storage.id}')">Delete Container</button>
+        </div>
+        
+        <div class="inventory-controls">
+          <button onclick="showItemForm('${storage.id}')">+ Add Item</button>
+        </div>
+        
+        <div class="inventory-list-container" id="${storage.id}_items">
+          <!-- Items will be populated here -->
+        </div>
+        <div class="weight-display" id="${storage.id}_weight">Total: 0 lbs / 0 kg</div>
+      </div>
+    `;
+    
+    extraContainers.insertAdjacentHTML('beforeend', containerHTML);
+    
+    // Add to item container dropdown
+    const containerDropdown = document.getElementById('item_container');
+    if (containerDropdown) {
+      const option = document.createElement('option');
+      option.value = storage.id;
+      option.textContent = storage.name;
+      containerDropdown.appendChild(option);
+    }
+    
+    // Display items for this container
+    displayStorageItems(storage.id);
+  });
+}
+
+// Show equipment form
+function showEquipmentForm() {
+  document.getElementById('equipmentFormTitle').textContent = 'Add Equipment';
+  document.getElementById('equipment_name').value = '';
+  document.getElementById('equipment_type').value = 'weapon';
+  document.getElementById('equipment_bonus').value = '';
+  document.getElementById('equipment_weight').value = '';
+  document.getElementById('equipment_description').value = '';
+  document.getElementById('saveEquipmentBtn').textContent = 'Add Equipment';
+  document.getElementById('saveEquipmentBtn').removeAttribute('data-edit-id');
+  showPopup('equipmentFormPopup');
+}
+
+// Save equipment
+function saveEquipment() {
+  const name = document.getElementById('equipment_name').value.trim();
+  const type = document.getElementById('equipment_type').value;
+  const bonus = document.getElementById('equipment_bonus').value.trim();
+  const weight = parseFloat(document.getElementById('equipment_weight').value) || 0;
+  const description = document.getElementById('equipment_description').value.trim();
+  const editId = document.getElementById('saveEquipmentBtn').getAttribute('data-edit-id');
+  
+  if (!name) {
+    alert('Please enter a name for the equipment.');
+    return;
+  }
+  
+  const equipmentData = {
+    id: editId || Date.now().toString(),
+    name: name,
+    type: type,
+    bonus: bonus,
+    weight: weight,
+    description: description
+  };
+  
+  if (editId) {
+    // Editing existing equipment
+    const existingEquipment = inventoryData.equipment.find(e => e.id === editId);
+    if (existingEquipment) {
+      Object.assign(existingEquipment, equipmentData);
+    }
+  } else {
+    // Adding new equipment
+    inventoryData.equipment.push(equipmentData);
+  }
+  
+  saveInventory();
+  displayEquipment();
+  updateWeightDisplay();
+  syncEquipmentToStats();
+  closePopup('equipmentFormPopup');
+  autosave();
+}
+
+// Display equipment
+function displayEquipment() {
+  const container = document.getElementById('equipment_list');
+  const data = inventoryData.equipment;
+  
+  container.innerHTML = '';
+  
+  if (data.length === 0) {
+    container.innerHTML = `<p style="text-align: center; color: var(--text); opacity: 0.7; grid-column: 1 / -1;">No equipment added yet. Click "+ Add Equipment" to get started!</p>`;
+    return;
+  }
+  
+  data.forEach(equipment => {
+    const equipmentCard = createEquipmentCard(equipment);
+    container.appendChild(equipmentCard);
+  });
+  
+  updateEquipmentWeightDisplay();
+}
+
+// Create equipment card
+function createEquipmentCard(equipment) {
+  const card = document.createElement('div');
+  card.className = 'equipment-card';
+  card.innerHTML = `
+    <div class="equipment-header">
+      <h4 class="equipment-name">${equipment.name}</h4>
+      <span class="equipment-type">${equipment.type}</span>
+    </div>
+    <div class="equipment-stats">
+      ${equipment.bonus ? `<div class="equipment-stat"><span class="equipment-stat-label">Bonus/AC:</span><span class="equipment-stat-value">${equipment.bonus}</span></div>` : ''}
+      <div class="equipment-stat"><span class="equipment-stat-label">Weight:</span><span class="equipment-stat-value">${equipment.weight} lbs</span></div>
+    </div>
+    ${equipment.description ? `<div class="equipment-description">${equipment.description}</div>` : ''}
+    <div class="equipment-actions">
+      <button class="equipment-btn edit-btn" onclick="editEquipment('${equipment.id}')">✏️</button>
+      <button class="equipment-btn delete-btn" onclick="deleteEquipment('${equipment.id}')">🗑️</button>
+    </div>
+  `;
+  return card;
+}
+
+// Edit equipment
+function editEquipment(id) {
+  const equipment = inventoryData.equipment.find(e => e.id === id);
+  if (equipment) {
+    document.getElementById('equipmentFormTitle').textContent = 'Edit Equipment';
+    document.getElementById('equipment_name').value = equipment.name;
+    document.getElementById('equipment_type').value = equipment.type;
+    document.getElementById('equipment_bonus').value = equipment.bonus;
+    document.getElementById('equipment_weight').value = equipment.weight;
+    document.getElementById('equipment_description').value = equipment.description;
+    document.getElementById('saveEquipmentBtn').textContent = 'Update Equipment';
+    document.getElementById('saveEquipmentBtn').setAttribute('data-edit-id', id);
+    showPopup('equipmentFormPopup');
+  }
+}
+
+// Delete equipment
+function deleteEquipment(id) {
+  if (confirm('Are you sure you want to delete this equipment?')) {
+    const index = inventoryData.equipment.findIndex(e => e.id === id);
+    if (index > -1) {
+      inventoryData.equipment.splice(index, 1);
+      saveInventory();
+      displayEquipment();
+      updateWeightDisplay();
+      syncEquipmentToStats();
+      autosave();
+    }
+  }
+}
+
+
+// Show item form
+function showItemForm(container) {
+  document.getElementById('itemFormTitle').textContent = 'Add Item';
+  document.getElementById('item_name').value = '';
+  document.getElementById('item_type').value = 'consumable';
+  document.getElementById('item_weight').value = '';
+  document.getElementById('item_description').value = '';
+  document.getElementById('saveItemBtn').textContent = 'Add Item';
+  document.getElementById('saveItemBtn').setAttribute('data-container', container);
+  document.getElementById('saveItemBtn').removeAttribute('data-edit-id');
+  showPopup('itemFormPopup');
+}
+
+// Save item
+function saveItem() {
+  const nameElement = document.getElementById('item_name');
+  const typeElement = document.getElementById('item_type');
+  const weightElement = document.getElementById('item_weight');
+  const descriptionElement = document.getElementById('item_description');
+  const saveBtnElement = document.getElementById('saveItemBtn');
+  
+  // Check if elements exist
+  if (!nameElement || !typeElement || !weightElement || !descriptionElement || !saveBtnElement) {
+    console.error('Missing form elements:', { nameElement, typeElement, weightElement, descriptionElement, saveBtnElement });
+    alert('Form error: Missing required elements. Please refresh the page and try again.');
+    return;
+  }
+  
+  const name = nameElement.value.trim();
+  const type = typeElement.value;
+  const weight = parseFloat(weightElement.value) || 0;
+  const description = descriptionElement.value.trim();
+  const container = saveBtnElement.getAttribute('data-container');
+  const editId = saveBtnElement.getAttribute('data-edit-id');
+  
+  if (!name) {
+    alert('Please enter a name for the item.');
+    return;
+  }
+  
+  const itemData = {
+    id: editId || Date.now().toString(),
+    name: name,
+    type: type,
+    weight: weight,
+    description: description
+  };
+  
+  // Check weight limits
+  if (container === 'main') {
+    const currentWeight = calculateMainInventoryWeight();
+    const maxWeight = inventoryData.maxWeightCapacity;
+    if (maxWeight > 0 && currentWeight + weight > maxWeight) {
+      document.getElementById('weightWarningMessage').textContent = 'Sorry, that item won\'t fit into your main inventory.';
+      showPopup('weightWarningPopup');
+      return;
+    }
+  } else {
+    // Check storage container weight
+    const storageContainer = inventoryData.storageContainers.find(s => s.id === container);
+    if (storageContainer) {
+      const currentWeight = calculateStorageWeight(container);
+      if (storageContainer.maxWeight > 0 && currentWeight + weight > storageContainer.maxWeight) {
+        document.getElementById('weightWarningMessage').textContent = `Sorry, that item won't fit into ${storageContainer.name}.`;
+        showPopup('weightWarningPopup');
+        return;
+      }
+    }
+  }
+  
+  if (editId) {
+    // Editing existing item
+    let existingItem;
+    if (container === 'main') {
+      existingItem = inventoryData.mainInventory.find(i => i.id === editId);
+    } else {
+      const storageContainer = inventoryData.storageContainers.find(s => s.id === container);
+      if (storageContainer) {
+        existingItem = storageContainer.items.find(i => i.id === editId);
+      }
+    }
+    if (existingItem) {
+      Object.assign(existingItem, itemData);
+    }
+  } else {
+    // Adding new item
+    if (container === 'main') {
+      inventoryData.mainInventory.push(itemData);
+    } else {
+      const storageContainer = inventoryData.storageContainers.find(s => s.id === container);
+      if (storageContainer) {
+        storageContainer.items.push(itemData);
+      }
+    }
+  }
+  
+  saveInventory();
+  if (container === 'main') {
+    displayMainInventory();
+  } else {
+    displayStorageContainers();
+  }
+  updateWeightDisplay();
+  closePopup('itemFormPopup');
+  autosave();
+}
+
+// Display main inventory
+function displayMainInventory() {
+  const container = document.getElementById('main_inventory_list');
+  const data = inventoryData.mainInventory;
+  
+  container.innerHTML = '';
+  
+  if (data.length === 0) {
+    container.innerHTML = `<p style="text-align: center; color: var(--text); opacity: 0.7; grid-column: 1 / -1;">No items in main inventory. Click "+ Add Item" to get started!</p>`;
+    return;
+  }
+  
+  data.forEach(item => {
+    const itemCard = createItemCard(item, 'main');
+    container.appendChild(itemCard);
+  });
+  
+  updateMainInventoryWeightDisplay();
+}
+
+// Create item card
+function createItemCard(item, container) {
+  const card = document.createElement('div');
+  card.className = 'item-card';
+  card.innerHTML = `
+    <div class="item-header">
+      <h4 class="item-name">${item.name}</h4>
+      <span class="item-type">${item.type}</span>
+    </div>
+    <div class="item-stats">
+      <div class="item-stat"><span class="item-stat-label">Weight:</span><span class="item-stat-value">${item.weight} lbs</span></div>
+    </div>
+    ${item.description ? `<div class="item-description">${item.description}</div>` : ''}
+    <div class="item-actions">
+      <button class="item-btn edit-btn" onclick="editItem('${item.id}', '${container}')">✏️</button>
+      <button class="item-btn delete-btn" onclick="deleteItem('${item.id}', '${container}')">🗑️</button>
+    </div>
+  `;
+  return card;
+}
+
+// Edit item
+function editItem(id, container) {
+  let item;
+  if (container === 'main') {
+    item = inventoryData.mainInventory.find(i => i.id === id);
+  } else {
+    const storageContainer = inventoryData.storageContainers.find(s => s.id === container);
+    if (storageContainer) {
+      item = storageContainer.items.find(i => i.id === id);
+    }
+  }
+  
+  if (item) {
+    document.getElementById('itemFormTitle').textContent = 'Edit Item';
+    document.getElementById('item_name').value = item.name;
+    document.getElementById('item_type').value = item.type;
+    document.getElementById('item_weight').value = item.weight;
+    document.getElementById('item_description').value = item.description;
+    document.getElementById('saveItemBtn').textContent = 'Update Item';
+    document.getElementById('saveItemBtn').setAttribute('data-container', container);
+    document.getElementById('saveItemBtn').setAttribute('data-edit-id', id);
+    showPopup('itemFormPopup');
+  }
+}
+
+// Delete item
+function deleteItem(id, container) {
+  if (confirm('Are you sure you want to delete this item?')) {
+    if (container === 'main') {
+      const index = inventoryData.mainInventory.findIndex(i => i.id === id);
+      if (index > -1) {
+        inventoryData.mainInventory.splice(index, 1);
+        displayMainInventory();
+      }
+    } else {
+      const storageContainer = inventoryData.storageContainers.find(s => s.id === container);
+      if (storageContainer) {
+        const index = storageContainer.items.findIndex(i => i.id === id);
+        if (index > -1) {
+          storageContainer.items.splice(index, 1);
+          displayStorageContainers();
+        }
+      }
+    }
+    saveInventory();
+    updateWeightDisplay();
+    autosave();
+  }
+}
+
+
+
+
+
+// Display storage items
+function displayStorageItems(storageId) {
+  const storage = inventoryData.storageContainers.find(s => s.id === storageId);
+  if (!storage) return;
+  
+  const container = document.getElementById(`storage_${storageId}_items`);
+  const data = storage.items;
+  
+  container.innerHTML = '';
+  
+  if (data.length === 0) {
+    container.innerHTML = `<p style="text-align: center; color: var(--text); opacity: 0.7; grid-column: 1 / -1;">No items in this storage container. Click "+ Add Item" to get started!</p>`;
+    return;
+  }
+  
+  data.forEach(item => {
+    const itemCard = createItemCard(item, storageId);
+    container.appendChild(itemCard);
+  });
+}
+
+// Calculate main inventory weight (includes equipment + items)
+function calculateMainInventoryWeight() {
+  const equipmentWeight = inventoryData.equipment.reduce((total, item) => total + (item.weight || 0), 0);
+  const itemsWeight = inventoryData.mainInventory.reduce((total, item) => total + (item.weight || 0), 0);
+  return equipmentWeight + itemsWeight;
+}
+
+// Calculate storage weight
+function calculateStorageWeight(storageId) {
+  const storage = inventoryData.storageContainers.find(s => s.id === storageId);
+  if (!storage) return 0;
+  return storage.items.reduce((total, item) => total + (item.weight || 0), 0);
+}
+
+// Update weight display
+function updateWeightDisplay() {
+  updateEquipmentWeightDisplay();
+  updateMainInventoryWeightDisplay();
+  updateStorageWeightDisplays();
+}
+
+// Update equipment weight display
+function updateEquipmentWeightDisplay() {
+  const totalWeight = inventoryData.equipment.reduce((total, item) => total + (item.weight || 0), 0);
+  const totalWeightKg = (totalWeight * 0.453592).toFixed(2);
+  document.getElementById('equipment_weight_total').textContent = `Equipment Weight: ${totalWeight} lbs / ${totalWeightKg} kg`;
+}
+
+// Update main inventory weight display
+function updateMainInventoryWeightDisplay() {
+  const equipmentWeight = inventoryData.equipment.reduce((total, item) => total + (item.weight || 0), 0);
+  const itemsWeight = inventoryData.mainInventory.reduce((total, item) => total + (item.weight || 0), 0);
+  const totalWeight = equipmentWeight + itemsWeight;
+  const totalWeightKg = (totalWeight * 0.453592).toFixed(2);
+  const maxWeight = inventoryData.maxWeightCapacity;
+  const weightDisplay = document.getElementById('main_inventory_weight_total');
+  
+  if (maxWeight > 0) {
+    const weightStatus = totalWeight > maxWeight ? 'weight-warning' : 'weight-ok';
+    weightDisplay.className = `weight-display ${weightStatus}`;
+    weightDisplay.innerHTML = `
+      <div>Total: ${totalWeight}/${maxWeight} lbs / ${totalWeightKg} kg</div>
+      <div style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
+        Equipment: ${equipmentWeight} lbs | Items: ${itemsWeight} lbs
+      </div>
+    `;
+  } else {
+    weightDisplay.className = 'weight-display weight-ok';
+    weightDisplay.innerHTML = `
+      <div>Total: ${totalWeight} lbs / ${totalWeightKg} kg</div>
+      <div style="font-size: 0.8em; opacity: 0.8; margin-top: 5px;">
+        Equipment: ${equipmentWeight} lbs | Items: ${itemsWeight} lbs
+      </div>
+    `;
+  }
+}
+
+// Update storage weight displays
+function updateStorageWeightDisplays() {
+  if (!inventoryData.storageContainers) return;
+  
+  inventoryData.storageContainers.forEach(storage => {
+    const currentWeight = calculateStorageWeight(storage.id);
+    const totalWeightKg = (currentWeight * 0.453592).toFixed(2);
+    const weightStatus = storage.maxWeight > 0 && currentWeight > storage.maxWeight ? 'weight-warning' : 'weight-ok';
+    
+    // Update the weight display for this container
+    const weightDisplay = document.getElementById(`${storage.id}_weight`);
+    if (weightDisplay) {
+      weightDisplay.className = `weight-display ${weightStatus}`;
+      if (storage.maxWeight > 0) {
+        weightDisplay.textContent = `Total: ${currentWeight}/${storage.maxWeight} lbs / ${totalWeightKg} kg`;
+      } else {
+        weightDisplay.textContent = `Total: ${currentWeight} lbs / ${totalWeightKg} kg`;
+      }
+    }
+  });
+}
+
+// Sync equipment to stats page
+function syncEquipmentToStats() {
+  // Convert inventory equipment data to the format expected by the stats page
+  const equipmentData = inventoryData.equipment.map(item => ({
+    name: item.name,
+    type: item.type,
+    bonus: item.bonus,
+    weight: item.weight,
+    notes: item.description
+  }));
+  
+  // Update the equipment data array used by the stats page
+  window.equipmentData = equipmentData;
+  
+  // Update the equipment preview on the stats page
+  updateEquipmentPreviews();
+}
+
+// Save inventory to localStorage
+function saveInventory() {
+  localStorage.setItem('dndInventory', JSON.stringify(inventoryData));
+}
+
+// Load inventory from localStorage
+function loadInventory() {
+  const saved = localStorage.getItem('dndInventory');
+  if (saved) {
+    inventoryData = JSON.parse(saved);
+  }
+}
+
+// Update max weight capacity
+function updateMaxWeightCapacity() {
+  const maxWeight = parseFloat(document.getElementById('max_weight_capacity').value) || 0;
+  inventoryData.maxWeightCapacity = maxWeight;
+  updateWeightDisplay();
+  autosave();
+}
+
 // ========== CONDITIONS SYSTEM ==========
 function showConditionPopup() {
   document.getElementById('condition_name').value = '';
@@ -5198,13 +7245,6 @@ function resetRoundActions() {
   alert("Action counters reset for new round!");
 }
 
-function debugLocalStorage() {
-  console.log("Checking localStorage...");
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    console.log(`${key}:`, localStorage.getItem(key));
-  }
-}
 
 // ========== LAYOUT SYSTEM ==========
 const LayoutManager = {
@@ -5216,7 +7256,6 @@ const LayoutManager = {
     this.initialized = true;
     
     window.addEventListener('load', () => {
-      console.log('LayoutManager ready');
       this.ensureElementIds();
       
       // Set up save button
@@ -5295,7 +7334,6 @@ const LayoutManager = {
       if (!data) return false;
 
       const layout = JSON.parse(data);
-      console.log('Loading layout:', layout);
 
       Object.entries(layout.sections || {}).forEach(([id, style]) => {
         const el = document.getElementById(id);
@@ -13216,7 +15254,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function loadLayout() {
-  console.log("loadLayout function called.");
   // Add layout loading logic here if needed
 }
 
@@ -13431,7 +15468,6 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeFirebase();
   enableAutoSync();
 });
-
 
 </script>
 </body>
