@@ -833,21 +833,838 @@ button[onclick*="home"] {
     font-weight: bold;
   }
 
-  /* Improved death saves layout */
-  .death-saves-container {
+  /* Remastered Health Section */
+  .health-container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     gap: 10px;
+    margin-bottom: 20px;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .hp-display {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    min-width: 0;
+  }
+
+  .hp-display h3 {
+    margin: 0 0 10px 0;
+    color: var(--text);
+    font-size: 1.1em;
+  }
+
+  .hp-inputs {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .hp-input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .hp-input-group label {
+    font-weight: bold;
+    color: var(--text);
+    font-size: 0.9em;
+    text-align: center;
+  }
+
+  .hp-input-group input {
+    width: 80px;
+    text-align: center;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 6px;
+  }
+
+  .hp-controls {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .hp-controls button {
+    padding: 8px 12px;
+    font-size: 0.8em;
+    flex: 1;
+    min-width: 60px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+  }
+
+  .hp-controls button:not(.custom-hp-btn) {
+    background: var(--accent);
+    color: #000;
+    border: 2px solid var(--accent);
+  }
+
+  .hp-controls button:not(.custom-hp-btn):hover {
+    background: var(--accent);
+    opacity: 0.8;
+  }
+
+  .custom-hp-btn {
+    background: var(--accent);
+    color: #000;
+  }
+
+  .custom-hp-btn:hover {
+    background: var(--accent);
+    opacity: 0.8;
+  }
+
+  .temp-hp-display {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #333;
+    padding: 8px;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
+    display: none;
+  }
+
+  .temp-hp-display.show {
+    display: block;
+  }
+
+  /* Rest Buttons Styling */
+  .rest-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 15px;
+  }
+
+  .rest-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+  }
+
+  .rest-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  .rest-button:active {
+    transform: translateY(0);
+  }
+
+  .short-rest-btn {
+    background: var(--accent);
+    color: #000;
+    border: 2px solid var(--accent);
+  }
+
+  .short-rest-btn:hover {
+    background: var(--accent);
+    opacity: 0.8;
+  }
+
+  .long-rest-btn {
+    background: var(--accent);
+    color: #000;
+    border: 2px solid var(--accent);
+  }
+
+  .long-rest-btn:hover {
+    background: var(--accent);
+    opacity: 0.8;
+  }
+
+  /* Hit Dice Section Styling */
+  .hit-dice-section {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  .hit-dice-section h4 {
+    margin: 0 0 15px 0;
+    color: var(--text);
+    font-size: 1.1em;
+  }
+
+  .hit-dice-inputs {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+  }
+
+  .hit-dice-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .hit-dice-group label {
+    font-weight: bold;
+    color: var(--text);
+    font-size: 0.9em;
+  }
+
+  .hit-dice-group input,
+  .hit-dice-group select {
+    width: 80px;
+    text-align: center;
+    padding: 4px;
+    border: 2px solid var(--accent);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text);
+    font-weight: bold;
+  }
+
+  .hit-dice-group select {
+    background: var(--accent);
+    color: #000;
+    border: 2px solid var(--accent);
+    cursor: pointer;
+  }
+
+  .hit-dice-group select:hover {
+    background: #ffd700;
+    border-color: #ffd700;
+  }
+
+  .hit-dice-group select:focus {
+    outline: none;
+    border-color: #ffed4e;
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  }
+
+  .hit-dice-recovery {
+    margin-bottom: 15px;
+    padding: 8px;
+    background: var(--accent);
+    color: #000;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+
+  .hit-dice-btn {
+    background: #FF9800;
+    color: white;
+  }
+
+  .hit-dice-btn:hover:not(:disabled) {
+    background: #F57C00;
+  }
+
+  .hit-dice-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  /* Health Potion Section Styling */
+  .health-potion-section {
+    background: var(--card-bg);
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  .health-potion-section h4 {
+    margin: 0 0 15px 0;
+    color: var(--text);
+    font-size: 1.1em;
+  }
+
+  .potion-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .potion-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .potion-group label {
+    font-weight: bold;
+    color: var(--text);
+    font-size: 0.9em;
+  }
+
+  .potion-group select {
+    width: 300px;
+    text-align: center;
+    padding: 8px;
+    border: 2px solid var(--accent);
+    border-radius: 4px;
+    background: var(--accent);
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .potion-group select:hover {
+    background: #ffd700;
+    border-color: #ffd700;
+  }
+
+  .potion-group select:focus {
+    outline: none;
+    border-color: #ffed4e;
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  }
+
+  .potion-info {
+    padding: 8px;
+    background: var(--accent);
+    color: #000;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+
+  .potion-btn {
+    background: var(--accent);
+    color: #000;
+    padding: 12px 24px;
+    font-size: 1.1em;
+  }
+
+  .potion-btn:hover {
+    background: var(--accent);
+    opacity: 0.8;
+  }
+
+  .potion-btn:active {
+    background: var(--accent);
+    opacity: 0.6;
+  }
+
+  /* Light mode Hit Dice dropdown styling */
+  [data-theme="light"] .hit-dice-group select {
+    background: #ffd700;
+    color: #000;
+    border: 2px solid #ffd700;
+  }
+
+  [data-theme="light"] .hit-dice-group select:hover {
+    background: #ffed4e;
+    border-color: #ffed4e;
+  }
+
+  [data-theme="light"] .hit-dice-group select:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+  }
+
+  /* Remastered Death Saves */
+  .death-saves-container {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 0;
+    min-width: 0;
+  }
+
+  .death-saves-container h3 {
+    margin: 0 0 10px 0;
+    color: var(--text);
+    text-align: center;
+    font-size: 1em;
+  }
+
+  .death-save-groups {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: center;
   }
 
   .death-save-group {
-    flex: 1;
+    text-align: center;
+  }
+
+  .death-save-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: var(--text);
+    font-size: 0.9em;
   }
 
   .death-save-checks {
     display: flex;
-    gap: 5px;
-    margin-top: 5px;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .death-save-check {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #888;
+    border-radius: 4px;
+    background: #444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    position: relative;
+    margin: 0 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .death-save-check:hover {
+    border-color: var(--accent);
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+
+  .death-save-check.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .death-save-check.success.checked {
+    background: #4CAF50;
+    border-color: #4CAF50;
+  }
+
+  .death-save-check.failure.checked {
+    background: #f44336;
+    border-color: #f44336;
+  }
+
+  .death-save-check::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background: transparent;
+    transition: all 0.3s ease;
+  }
+
+  .death-save-check.checked::before {
+    background: white;
+  }
+
+  .death-save-check.success.checked::before {
+    content: '✓';
+    background: transparent;
+    color: white;
+    font-size: 1em;
+    font-weight: bold;
+  }
+
+  .death-save-check.failure.checked::before {
+    content: '✗';
+    background: transparent;
+    color: white;
+    font-size: 1em;
+    font-weight: bold;
+  }
+
+  /* Light mode death save checkboxes */
+  [data-theme="light"] .death-save-check {
+    border: 2px solid #ccc;
+    background: #f5f5f5;
+  }
+
+  [data-theme="light"] .death-save-check:hover {
+    border-color: var(--accent);
+    background: #e8e8e8;
+  }
+
+  [data-theme="light"] .death-save-check.success.checked {
+    background: #4CAF50;
+    border-color: #4CAF50;
+  }
+
+  [data-theme="light"] .death-save-check.failure.checked {
+    background: #f44336;
+    border-color: #f44336;
+  }
+
+  /* Mobile Responsive Health Section */
+  @media (max-width: 700px) {
+    .health-container {
+      gap: 8px;
+    }
+
+    .hp-display, .death-saves-container {
+      padding: 12px;
+    }
+
+    .hp-display h3, .death-saves-container h3 {
+      font-size: 1em;
+      margin-bottom: 12px;
+    }
+
+    .hp-inputs {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .hp-input-group {
+      flex-direction: row;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .hp-input-group label {
+      min-width: 60px;
+      text-align: left;
+      font-size: 0.9em;
+    }
+
+    .hp-input-group input {
+      width: 100px;
+      font-size: 1.1em;
+      padding: 8px;
+    }
+
+    .death-save-groups {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .death-save-group label {
+      font-size: 0.9em;
+      margin-bottom: 8px;
+    }
+
+    .death-save-check {
+      width: 28px;
+      height: 28px;
+      font-size: 0.9em;
+    }
+
+    .death-save-check::before {
+      width: 14px;
+      height: 14px;
+    }
+
+    .hp-controls {
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .hp-controls button {
+      flex: 1;
+      min-width: 60px;
+      padding: 10px 8px;
+      font-size: 0.85em;
+    }
+
+    .hp-controls button:not(.custom-hp-btn) {
+      background: var(--accent);
+      color: #000;
+      border: 2px solid var(--accent);
+    }
+
+    .hp-controls button:not(.custom-hp-btn):hover {
+      background: var(--accent);
+      opacity: 0.8;
+    }
+
+    .custom-hp-btn {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .custom-hp-btn:hover {
+      background: var(--accent);
+      opacity: 0.8;
+    }
+
+    .temp-hp-display {
+      font-size: 0.9em;
+      padding: 6px;
+      margin-top: 8px;
+    }
+
+    .rest-buttons {
+      gap: 8px;
+    }
+
+    .rest-button {
+      padding: 8px 16px;
+      font-size: 0.9em;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .short-rest-btn {
+      background: var(--accent);
+      color: #000;
+      border: 2px solid var(--accent);
+    }
+
+    .short-rest-btn:hover {
+      background: var(--accent);
+      opacity: 0.8;
+    }
+
+    .long-rest-btn {
+      background: var(--accent);
+      color: #000;
+      border: 2px solid var(--accent);
+    }
+
+    .long-rest-btn:hover {
+      background: var(--accent);
+      opacity: 0.8;
+    }
+
+    .hit-dice-inputs {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .hit-dice-group input,
+    .hit-dice-group select {
+      width: 100px;
+    }
+
+    .potion-group select {
+      width: 250px;
+      font-size: 0.9em;
+    }
+
+    .potion-btn {
+      padding: 10px 20px;
+      font-size: 1em;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .health-container {
+      gap: 6px;
+    }
+
+    .hp-display, .death-saves-container {
+      padding: 10px;
+    }
+
+    .hp-display h3, .death-saves-container h3 {
+      font-size: 0.95em;
+      margin-bottom: 10px;
+    }
+
+    .hp-inputs {
+      gap: 8px;
+    }
+
+    .hp-input-group input {
+      width: 80px;
+      font-size: 1em;
+      padding: 6px;
+    }
+
+    .hp-controls button {
+      padding: 8px 6px;
+      font-size: 0.8em;
+      min-width: 50px;
+    }
+
+    .hp-controls button:not(.custom-hp-btn) {
+      background: var(--accent);
+      color: #000;
+      border: 2px solid var(--accent);
+    }
+
+    .hp-controls button:not(.custom-hp-btn):hover {
+      background: var(--accent);
+      opacity: 0.8;
+    }
+
+    .custom-hp-btn {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .custom-hp-btn:hover {
+      background: var(--accent);
+      opacity: 0.8;
+    }
+
+    .death-save-groups {
+      gap: 12px;
+    }
+
+    .death-save-group label {
+      font-size: 0.85em;
+      margin-bottom: 6px;
+    }
+
+    .death-save-checks {
+      gap: 6px;
+    }
+
+    .death-save-check {
+      width: 24px;
+      height: 24px;
+      font-size: 0.8em;
+    }
+
+    .death-save-check::before {
+      width: 12px;
+      height: 12px;
+    }
+
+    .temp-hp-display {
+      font-size: 0.85em;
+      padding: 5px;
+      margin-top: 6px;
+    }
+
+    .rest-buttons {
+      gap: 6px;
+    }
+
+    .rest-button {
+      padding: 8px 12px;
+      font-size: 0.85em;
+      min-width: 100px;
+    }
+
+    .short-rest-btn {
+      background: var(--accent);
+      color: #000;
+      border: 2px solid var(--accent);
+    }
+
+    .short-rest-btn:hover {
+      background: var(--accent);
+      opacity: 0.8;
+    }
+
+    .long-rest-btn {
+      background: var(--accent);
+      color: #000;
+      border: 2px solid var(--accent);
+    }
+
+    .long-rest-btn:hover {
+      background: var(--accent);
+      opacity: 0.8;
+    }
+
+    .hit-dice-section {
+      padding: 12px;
+    }
+
+    .hit-dice-section h4 {
+      font-size: 1em;
+      margin-bottom: 12px;
+    }
+
+    .hit-dice-group input,
+    .hit-dice-group select {
+      width: 90px;
+      font-size: 0.9em;
+    }
+
+    .hit-dice-recovery {
+      font-size: 0.9em;
+      padding: 6px;
+    }
+
+    .potion-group select {
+      width: 200px;
+      font-size: 0.85em;
+    }
+
+    .potion-btn {
+      padding: 8px 16px;
+      font-size: 0.9em;
+    }
+  }
+
+  /* Tablet and larger screens - maintain vertical layout */
+  @media (min-width: 701px) {
+    .hp-inputs {
+      gap: 20px;
+    }
+
+    .hp-input-group input {
+      width: 100px;
+    }
+
+    .death-save-groups {
+      gap: 30px;
+    }
+
+    .death-save-check {
+      width: 28px;
+      height: 28px;
+    }
+
+    .death-save-check::before {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  /* Mobile Blue Text Visibility Fixes */
+  @media (max-width: 700px) {
+    /* Ensure all blue text has sufficient contrast on mobile */
+    a[style*="color: #4CAF50"] {
+      color: #2E7D32 !important; /* Darker green for better contrast */
+    }
+    
+    .condition.blue {
+      border-color: #1976D2 !important; /* Darker blue for better visibility */
+    }
+    
+    /* Fix any blue text that might be hard to read */
+    [style*="color: #666"] {
+      color: #444 !important; /* Darker gray for better readability */
+    }
+    
+    /* Ensure temp HP text is readable */
+    .temp-hp-display {
+      color: #000 !important; /* Black text on gold background for maximum contrast */
+      font-weight: bold;
+    }
+    
+    /* Fix any other blue color references for mobile */
+    [style*="color: #aaa"] {
+      color: #666 !important; /* Darker gray for better readability */
+    }
   }
 
   /* Improved notes in tables */
@@ -1854,40 +2671,116 @@ button[onclick*="home"] {
       <!-- Health -->
       <div class="section">
         <h2>Health</h2>
-        <label>Max HP</label>
-        <input id="max_hp" oninput="autosave()" type="number"/>
-        <label>Current HP</label>
-        <input id="curr_hp" oninput="autosave()" type="number"/>
         
-        <div style="margin: 10px 0; display: flex; gap: 5px;">
+        <div class="health-container">
+          <!-- HP Display -->
+          <div class="hp-display">
+            <h3>Hit Points</h3>
+            <div class="hp-inputs">
+              <div class="hp-input-group">
+                <label>Max HP:</label>
+                <input id="max_hp" oninput="updateHPDisplay(); autosave();" type="number" min="0"/>
+              </div>
+              <div class="hp-input-group">
+                <label>Current HP:</label>
+                <input id="curr_hp" oninput="updateHPDisplay(); autosave();" type="number" min="0"/>
+              </div>
+            </div>
+            
+            <div class="hp-controls">
           <button onclick="adjustHP(1)">+1</button>
           <button onclick="adjustHP(-1)">-1</button>
+              <button onclick="showCustomHPPopup()" class="custom-hp-btn">Custom</button>
         </div>
         
-        <p id="temp_hp_note" style="color: gold;"></p>
-        
-        <div style="margin-top: 10px;">
-          <button onclick="longRest()">Long Rest</button>
+            <div id="temp_hp_display" class="temp-hp-display">
+              <span id="temp_hp_text">Temporary HP: 0</span>
+            </div>
         </div>
         
         <!-- Death Saves -->
-        <h3 style="margin-top: 15px;">Death Saves</h3>
         <div class="death-saves-container">
+            <h3>Death Saves</h3>
+            <div class="death-save-groups">
           <div class="death-save-group">
             <label>Success</label>
             <div class="death-save-checks">
-              <input type="checkbox" id="death_save_success_1" oninput="autosave()"/>
-              <input type="checkbox" id="death_save_success_2" oninput="autosave()"/>
-              <input type="checkbox" id="death_save_success_3" oninput="autosave()"/>
+                  <div class="death-save-check success" id="death_save_success_1" onclick="toggleDeathSave('success', 1)"></div>
+                  <div class="death-save-check success" id="death_save_success_2" onclick="toggleDeathSave('success', 2)"></div>
+                  <div class="death-save-check success" id="death_save_success_3" onclick="toggleDeathSave('success', 3)"></div>
             </div>
+                <!-- Hidden checkboxes for data persistence -->
+                <input type="checkbox" id="death_save_success_1_checkbox" style="display: none;" oninput="autosave()"/>
+                <input type="checkbox" id="death_save_success_2_checkbox" style="display: none;" oninput="autosave()"/>
+                <input type="checkbox" id="death_save_success_3_checkbox" style="display: none;" oninput="autosave()"/>
           </div>
           <div class="death-save-group">
             <label>Failure</label>
             <div class="death-save-checks">
-              <input type="checkbox" id="death_save_failure_1" oninput="autosave()"/>
-              <input type="checkbox" id="death_save_failure_2" oninput="autosave()"/>
-              <input type="checkbox" id="death_save_failure_3" oninput="autosave()"/>
+                  <div class="death-save-check failure" id="death_save_failure_1" onclick="toggleDeathSave('failure', 1)"></div>
+                  <div class="death-save-check failure" id="death_save_failure_2" onclick="toggleDeathSave('failure', 2)"></div>
+                  <div class="death-save-check failure" id="death_save_failure_3" onclick="toggleDeathSave('failure', 3)"></div>
             </div>
+                <!-- Hidden checkboxes for data persistence -->
+                <input type="checkbox" id="death_save_failure_1_checkbox" style="display: none;" oninput="autosave()"/>
+                <input type="checkbox" id="death_save_failure_2_checkbox" style="display: none;" oninput="autosave()"/>
+                <input type="checkbox" id="death_save_failure_3_checkbox" style="display: none;" oninput="autosave()"/>
+            </div>
+          </div>
+          </div>
+        </div>
+        
+        <div class="rest-buttons">
+          <button onclick="shortRest()" class="rest-button short-rest-btn">Short Rest</button>
+          <button onclick="longRest()" class="rest-button long-rest-btn">Long Rest</button>
+        </div>
+        
+        <!-- Hit Dice Section -->
+        <div class="hit-dice-section">
+          <h4>Hit Dice Recovery</h4>
+          <div class="hit-dice-inputs">
+            <div class="hit-dice-group">
+              <label>Hit Dice to Spend:</label>
+              <input type="number" id="hit_dice_spend" min="0" max="20" value="1" oninput="calculateHitDiceRecovery()"/>
+            </div>
+            <div class="hit-dice-group">
+              <label>Constitution Modifier:</label>
+              <input type="number" id="con_modifier" value="0" oninput="calculateHitDiceRecovery()"/>
+            </div>
+            <div class="hit-dice-group">
+              <label>Hit Die Size:</label>
+              <select id="hit_die_size" onchange="calculateHitDiceRecovery()">
+                <option value="6">d6</option>
+                <option value="8" selected>d8</option>
+                <option value="10">d10</option>
+                <option value="12">d12</option>
+              </select>
+            </div>
+          </div>
+          <div class="hit-dice-recovery">
+            <span id="hit_dice_recovery_text">Potential Recovery: 1d8 + 0 = 1-8 HP</span>
+          </div>
+        </div>
+        
+        <!-- Health Potion Section -->
+        <div class="health-potion-section">
+          <h4>Health Potions</h4>
+          <div class="potion-controls">
+            <div class="potion-group">
+              <label>Potion Type:</label>
+              <select id="potion_type" onchange="updatePotionInfo()">
+                <option value="minor">Minor Healing Potion (2d4+2)</option>
+                <option value="lesser">Lesser Healing Potion (2d4+2)</option>
+                <option value="healing">Healing Potion (4d4+4)</option>
+                <option value="greater">Greater Healing Potion (4d4+4)</option>
+                <option value="superior">Superior Healing Potion (8d4+8)</option>
+                <option value="supreme">Supreme Healing Potion (10d4+20)</option>
+              </select>
+            </div>
+            <div class="potion-info">
+              <span id="potion_info_text">Heals: 2d4+2 = 4-10 HP</span>
+            </div>
+            <button onclick="useHealthPotion()" class="rest-button potion-btn" id="use_potion_btn">Use Potion</button>
           </div>
         </div>
       </div>
@@ -2290,15 +3183,15 @@ button[onclick*="home"] {
 <!-- Popups -->
 <div class="popup-backdrop" id="popupBackdrop"></div>
 
-<!-- HP Adjustment Popup -->
-<div class="popup" id="hpPopup">
-  <h3>Adjust HP</h3>
+<!-- Custom HP Adjustment Popup -->
+<div class="popup" id="customHPPopup">
+  <h3>Custom HP Adjustment</h3>
   <label>Amount:</label>
-  <input type="number" id="hp_adjust_amount" value="1"/>
-  <div style="margin-top: 15px; display: flex; justify-content: space-between;">
-    <button onclick="adjustHP(1)">Add HP</button>
-    <button onclick="adjustHP(-1)">Remove HP</button>
-    <button onclick="closePopup('hpPopup')">Cancel</button>
+  <input type="number" id="custom_hp_amount" value="1" placeholder="Enter amount"/>
+  <div style="margin-top: 15px; display: flex; justify-content: space-between; gap: 10px;">
+    <button onclick="customAdjustHP('add')" style="background: var(--accent); color: #000;">Add HP</button>
+    <button onclick="customAdjustHP('remove')" style="background: var(--accent); color: #000;">Remove HP</button>
+    <button onclick="closeCustomHPPopup()" style="background: var(--accent); color: #000;">Cancel</button>
   </div>
 </div>
 
@@ -2780,6 +3673,18 @@ window.onload = function() {
   
   // Initialize theme system
   loadThemeSettings();
+  
+  // Initialize HP display
+  updateHPDisplay();
+  
+  // Initialize death save visual states
+  initializeDeathSaves();
+  
+  // Initialize Hit Dice calculation
+  calculateHitDiceRecovery();
+  
+  // Initialize potion info
+  updatePotionInfo();
 
   // Try to load last used character or first in list; if none, auto-create one
   const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
@@ -3034,14 +3939,14 @@ function autosave() {
       }, {}),
       deathSaves: {
         success: [
-          document.getElementById('death_save_success_1').checked,
-          document.getElementById('death_save_success_2').checked,
-          document.getElementById('death_save_success_3').checked
+          document.getElementById('death_save_success_1_checkbox').checked,
+          document.getElementById('death_save_success_2_checkbox').checked,
+          document.getElementById('death_save_success_3_checkbox').checked
         ],
         failure: [
-          document.getElementById('death_save_failure_1').checked,
-          document.getElementById('death_save_failure_2').checked,
-          document.getElementById('death_save_failure_3').checked
+          document.getElementById('death_save_failure_1_checkbox').checked,
+          document.getElementById('death_save_failure_2_checkbox').checked,
+          document.getElementById('death_save_failure_3_checkbox').checked
         ]
       },
       actionsFeatures: document.getElementById('actions_features').value,
@@ -3186,13 +4091,18 @@ function loadData() {
     if (data.page1.deathSaves) {
       for (let i = 0; i < 3; i++) {
         if (data.page1.deathSaves.success[i]) {
-          document.getElementById(`death_save_success_${i+1}`).checked = true;
+          document.getElementById(`death_save_success_${i+1}_checkbox`).checked = true;
+          document.getElementById(`death_save_success_${i+1}`).classList.add('checked');
         }
         if (data.page1.deathSaves.failure[i]) {
-          document.getElementById(`death_save_failure_${i+1}`).checked = true;
+          document.getElementById(`death_save_failure_${i+1}_checkbox`).checked = true;
+          document.getElementById(`death_save_failure_${i+1}`).classList.add('checked');
         }
       }
     }
+    
+    // Initialize death save visual states after loading
+    initializeDeathSaves();
     
     // Actions & Features
     if (data.page1.actionsFeatures) {
@@ -3918,29 +4828,293 @@ function switchTab(button) {
 // ========== HEALTH SYSTEM ==========
 function adjustHP(amount) {
   const currHP = document.getElementById('curr_hp');
-  let newHP = parseInt(currHP.value) + amount;
-  if (isNaN(newHP)) newHP = 0;
-  currHP.value = Math.max(0, newHP);
+  let newTotalHP = parseInt(currHP.value) + amount;
+  if (isNaN(newTotalHP)) newTotalHP = 0;
+  currHP.value = Math.max(0, newTotalHP);
+  updateHPDisplay();
   autosave();
 }
 
-function showHPPopup() {
-  document.getElementById('hp_adjust_amount').value = 1;
-  showPopup('hpPopup');
+function updateHPDisplay() {
+  const currHP = parseInt(document.getElementById('curr_hp').value) || 0;
+  const maxHP = parseInt(document.getElementById('max_hp').value) || 0;
+  const tempHPDisplay = document.getElementById('temp_hp_display');
+  const tempHPText = document.getElementById('temp_hp_text');
+  
+  if (currHP > maxHP && maxHP > 0) {
+    const tempHP = currHP - maxHP;
+    const actualHP = maxHP;
+    tempHPText.textContent = `Current HP: ${actualHP} | Temporary HP: ${tempHP}`;
+    tempHPDisplay.classList.add('show');
+  } else {
+    tempHPDisplay.classList.remove('show');
+  }
+}
+
+// Function to get total HP including temporary HP
+function getTotalHP() {
+  const currHP = parseInt(document.getElementById('curr_hp').value) || 0;
+  const maxHP = parseInt(document.getElementById('max_hp').value) || 0;
+  return Math.max(currHP, maxHP);
+}
+
+// Function to get actual current HP (capped at max)
+function getCurrentHP() {
+  const currHP = parseInt(document.getElementById('curr_hp').value) || 0;
+  const maxHP = parseInt(document.getElementById('max_hp').value) || 0;
+  return Math.min(currHP, maxHP);
+}
+
+// Function to get temporary HP
+function getTempHP() {
+  const currHP = parseInt(document.getElementById('curr_hp').value) || 0;
+  const maxHP = parseInt(document.getElementById('max_hp').value) || 0;
+  return Math.max(0, currHP - maxHP);
+}
+
+function initializeDeathSaves() {
+  // Sync visual death save states with hidden checkboxes
+  for (let i = 1; i <= 3; i++) {
+    const successCheckbox = document.getElementById(`death_save_success_${i}_checkbox`);
+    const failureCheckbox = document.getElementById(`death_save_failure_${i}_checkbox`);
+    const successVisual = document.getElementById(`death_save_success_${i}`);
+    const failureVisual = document.getElementById(`death_save_failure_${i}`);
+    
+    if (successCheckbox && successVisual) {
+      if (successCheckbox.checked) {
+        successVisual.classList.add('checked');
+      } else {
+        successVisual.classList.remove('checked');
+      }
+    }
+    
+    if (failureCheckbox && failureVisual) {
+      if (failureCheckbox.checked) {
+        failureVisual.classList.add('checked');
+      } else {
+        failureVisual.classList.remove('checked');
+      }
+    }
+  }
+}
+
+function toggleDeathSave(type, index) {
+  const element = document.getElementById(`death_save_${type}_${index}`);
+  const isChecked = element.classList.contains('checked');
+  
+  // Toggle the visual state
+  element.classList.toggle('checked');
+  
+  // Update the hidden checkbox for data persistence
+  const checkbox = document.getElementById(`death_save_${type}_${index}_checkbox`);
+  if (checkbox) {
+    checkbox.checked = !isChecked;
+  }
+  
+  autosave();
+}
+
+function showCustomHPPopup() {
+  document.getElementById('custom_hp_amount').value = 1;
+  showPopup('customHPPopup');
+}
+
+function customAdjustHP(action) {
+  const amount = parseInt(document.getElementById('custom_hp_amount').value) || 0;
+  if (amount <= 0) {
+    alert('Please enter a valid amount greater than 0');
+    return;
+  }
+  
+  const adjustment = action === 'add' ? amount : -amount;
+  adjustHP(adjustment);
+  closeCustomHPPopup();
+}
+
+function closeCustomHPPopup() {
+  closePopup('customHPPopup');
+  // Reset the input for next time
+  document.getElementById('custom_hp_amount').value = 1;
+}
+
+function shortRest() {
+  // Get hit dice inputs
+  const hitDiceSpend = parseInt(document.getElementById('hit_dice_spend').value) || 0;
+  const conMod = parseInt(document.getElementById('con_mod').value) || 0;
+  const hitDieSize = parseInt(document.getElementById('hit_die_size').value) || 6;
+  
+  if (hitDiceSpend <= 0) {
+    alert("Please enter how many Hit Dice you want to spend (minimum 1)");
+    return;
+  }
+  
+  // Roll hit dice
+  let totalRecovery = 0;
+  const rollDetails = [];
+  
+  for (let i = 0; i < hitDiceSpend; i++) {
+    const roll = Math.floor(Math.random() * hitDieSize) + 1;
+    const withConMod = roll + conMod;
+    totalRecovery += withConMod;
+    rollDetails.push(`d${hitDieSize}: ${roll} + ${conMod} = ${withConMod}`);
+  }
+  
+  // Apply recovery to current HP
+  const currHP = document.getElementById('curr_hp');
+  const maxHP = document.getElementById('max_hp');
+  const currentTotalHP = parseInt(currHP.value) || 0;
+  const maxHPValue = parseInt(maxHP.value) || 0;
+  
+  const newTotalHP = currentTotalHP + totalRecovery;
+  
+  currHP.value = newTotalHP;
+  updateHPDisplay();
+  autosave();
+  
+  // Show results
+  const rollSummary = rollDetails.join(', ');
+  const newCurrentHP = getCurrentHP();
+  const newTempHP = getTempHP();
+  const hpDisplay = newTempHP > 0 ? `${newCurrentHP} + ${newTempHP} temp` : `${newCurrentHP}`;
+  alert(`Short Rest Completed!\n\nHit Dice Rolls: ${rollSummary}\nTotal Recovery: ${totalRecovery} HP\n\nNew HP: ${hpDisplay}/${maxHPValue}`);
+  
+  // Reset inputs
+  document.getElementById('hit_dice_spend').value = 1;
+  calculateHitDiceRecovery();
+}
+
+function calculateHitDiceRecovery() {
+  const hitDiceSpend = parseInt(document.getElementById('hit_dice_spend').value) || 0;
+  const conMod = parseInt(document.getElementById('con_modifier').value) || 0;
+  const hitDieSize = parseInt(document.getElementById('hit_die_size').value) || 8;
+  
+  const recoveryText = document.getElementById('hit_dice_recovery_text');
+  
+  if (hitDiceSpend <= 0) {
+    recoveryText.textContent = 'Enter number of Hit Dice to spend';
+    return;
+  }
+  
+  const minRecovery = hitDiceSpend + (conMod * hitDiceSpend);
+  const maxRecovery = (hitDieSize * hitDiceSpend) + (conMod * hitDiceSpend);
+  
+  recoveryText.textContent = `Potential Recovery: ${hitDiceSpend}d${hitDieSize} + ${conMod * hitDiceSpend} = ${minRecovery}-${maxRecovery} HP`;
+}
+
+
+// Health Potion System
+function updatePotionInfo() {
+  const potionType = document.getElementById('potion_type').value;
+  const potionInfo = document.getElementById('potion_info_text');
+  
+  const potionData = {
+    minor: { dice: '2d4', bonus: 2, min: 4, max: 10 },
+    lesser: { dice: '2d4', bonus: 2, min: 4, max: 10 },
+    healing: { dice: '4d4', bonus: 4, min: 8, max: 20 },
+    greater: { dice: '4d4', bonus: 4, min: 8, max: 20 },
+    superior: { dice: '8d4', bonus: 8, min: 16, max: 40 },
+    supreme: { dice: '10d4', bonus: 20, min: 30, max: 60 }
+  };
+  
+  const data = potionData[potionType];
+  potionInfo.textContent = `Heals: ${data.dice}+${data.bonus} = ${data.min}-${data.max} HP`;
+}
+
+let potionConfirmCount = 0;
+
+function useHealthPotion() {
+  potionConfirmCount++;
+  
+  if (potionConfirmCount === 1) {
+    document.getElementById('use_potion_btn').textContent = 'Click Again to Confirm';
+    document.getElementById('use_potion_btn').style.background = '#FF5722';
+    setTimeout(() => {
+      if (potionConfirmCount === 1) {
+        potionConfirmCount = 0;
+        document.getElementById('use_potion_btn').textContent = 'Use Potion';
+        document.getElementById('use_potion_btn').style.background = '#9C27B0';
+      }
+    }, 3000);
+    return;
+  }
+  
+  if (potionConfirmCount === 2) {
+    document.getElementById('use_potion_btn').textContent = 'Final Click to Use!';
+    document.getElementById('use_potion_btn').style.background = '#D32F2F';
+    return;
+  }
+  
+  if (potionConfirmCount >= 3) {
+    // Actually use the potion
+    const potionType = document.getElementById('potion_type').value;
+    const potionData = {
+      minor: { dice: 2, sides: 4, bonus: 2 },
+      lesser: { dice: 2, sides: 4, bonus: 2 },
+      healing: { dice: 4, sides: 4, bonus: 4 },
+      greater: { dice: 4, sides: 4, bonus: 4 },
+      superior: { dice: 8, sides: 4, bonus: 8 },
+      supreme: { dice: 10, sides: 4, bonus: 20 }
+    };
+    
+    const data = potionData[potionType];
+    let totalHealing = 0;
+    let rollDetails = [];
+    
+    // Roll the dice
+    for (let i = 0; i < data.dice; i++) {
+      const roll = Math.floor(Math.random() * data.sides) + 1;
+      totalHealing += roll;
+      rollDetails.push(roll);
+    }
+    
+    totalHealing += data.bonus;
+    
+    // Apply healing to current HP
+    const currHP = document.getElementById('curr_hp');
+    const maxHP = document.getElementById('max_hp');
+    const currentTotalHP = parseInt(currHP.value) || 0;
+    const maxHPValue = parseInt(maxHP.value) || 0;
+    
+    const newTotalHP = currentTotalHP + totalHealing;
+    
+    currHP.value = newTotalHP;
+    updateHPDisplay();
+    autosave();
+    
+    // Show results
+    const rollSummary = rollDetails.join(', ');
+    const newCurrentHP = getCurrentHP();
+    const newTempHP = getTempHP();
+    const hpDisplay = newTempHP > 0 ? `${newCurrentHP} + ${newTempHP} temp` : `${newCurrentHP}`;
+    alert(`Health Potion Used!\n\nRolls: ${rollSummary}\nBonus: +${data.bonus}\nTotal Healing: ${totalHealing} HP\n\nNew HP: ${hpDisplay}/${maxHPValue}`);
+    
+    // Reset button
+    potionConfirmCount = 0;
+    document.getElementById('use_potion_btn').textContent = 'Use Potion';
+    document.getElementById('use_potion_btn').style.background = '#9C27B0';
+  }
 }
 
 function longRest() {
   const currHP = document.getElementById('curr_hp');
   const maxHP = document.getElementById('max_hp');
-  currHP.value = maxHP.value;
+  currHP.value = maxHP.value; // This sets total HP to max HP (no temp HP)
   
+  // Reset death saves
   for (let i = 1; i <= 3; i++) {
-    document.getElementById(`death_save_success_${i}`).checked = false;
-    document.getElementById(`death_save_failure_${i}`).checked = false;
+    document.getElementById(`death_save_success_${i}`).classList.remove('checked');
+    document.getElementById(`death_save_failure_${i}`).classList.remove('checked');
+    
+    // Also reset hidden checkboxes
+    const successCheckbox = document.getElementById(`death_save_success_${i}_checkbox`);
+    const failureCheckbox = document.getElementById(`death_save_failure_${i}_checkbox`);
+    if (successCheckbox) successCheckbox.checked = false;
+    if (failureCheckbox) failureCheckbox.checked = false;
   }
   
+  updateHPDisplay();
   autosave();
-  alert("Long rest completed - HP restored, death saves reset");
+  alert("Long rest completed - HP fully restored, death saves reset");
 }
 
 // ========== CONDITIONS SYSTEM ==========
