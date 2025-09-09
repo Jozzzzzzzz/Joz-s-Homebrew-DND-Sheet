@@ -1914,9 +1914,33 @@ button[onclick*="home"] {
       color: var(--text) !important;
     }
     
+    /* Fix inventory button text colors */
+    .inventory-controls button,
+    .equipment-controls button,
+    .storage-controls button,
+    .equipment-actions button,
+    .item-actions button,
+    .storage-actions button,
+    .action-btn,
+    .favorite-btn,
+    .edit-btn,
+    .delete-btn {
+      color: #000 !important;
+    }
+    
+    /* Fix delete container buttons */
+    .delete-container-btn {
+      color: white !important;
+    }
+    
     /* Override any remaining inline styles */
     [style*="color:"] {
       color: var(--text) !important;
+    }
+    
+    /* Override any button with inline color styles */
+    button[style*="color:"] {
+      color: #000 !important;
     }
   }
 
@@ -3046,6 +3070,30 @@ button[onclick*="home"] {
     a, a:link, a:visited, a:hover, a:active {
       color: var(--text) !important;
     }
+    
+    /* Fix inventory button text colors */
+    .inventory-controls button,
+    .equipment-controls button,
+    .storage-controls button,
+    .equipment-actions button,
+    .item-actions button,
+    .storage-actions button,
+    .action-btn,
+    .favorite-btn,
+    .edit-btn,
+    .delete-btn {
+      color: #000 !important;
+    }
+    
+    /* Fix delete container buttons */
+    .delete-container-btn {
+      color: white !important;
+    }
+    
+    /* Override any button with inline color styles */
+    button[style*="color:"] {
+      color: #000 !important;
+    }
   }
   
   @media (max-width: 768px) and (orientation: portrait) {
@@ -3068,6 +3116,38 @@ button[onclick*="home"] {
     
     .spell-detail-label {
       margin-bottom: 5px;
+    }
+  }
+  
+  @media (max-width: 768px) and (orientation: landscape) {
+    /* Mobile landscape mode - fix scaling issues */
+    .potion-group select {
+      width: 100% !important;
+      max-width: 250px;
+      font-size: 0.85em;
+    }
+    
+    .health-potion-section {
+      padding: 10px;
+      margin-top: 10px;
+    }
+    
+    .potion-controls {
+      gap: 10px;
+    }
+    
+    .potion-group {
+      gap: 5px;
+    }
+    
+    .potion-info {
+      font-size: 0.9em;
+      padding: 6px;
+    }
+    
+    .potion-btn {
+      padding: 8px 16px;
+      font-size: 0.9em;
     }
   }
 
