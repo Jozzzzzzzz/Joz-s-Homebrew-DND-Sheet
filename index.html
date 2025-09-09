@@ -3281,11 +3281,11 @@ button[onclick*="home"] {
   @media (max-width: 1024px) and (orientation: landscape) {
     /* iPad and mobile landscape mode - fix scaling issues */
     .potion-group select {
-      width: 120px !important;
-      max-width: 120px !important;
-      font-size: 0.65em !important;
+      width: 100px !important;
+      max-width: 100px !important;
+      font-size: 0.6em !important;
       box-sizing: border-box;
-      padding: 3px 4px;
+      padding: 2px 3px;
       margin: 0 auto;
     }
     
@@ -6518,7 +6518,7 @@ function closeCustomHPPopup() {
 function shortRest() {
   // Get hit dice inputs
   const hitDiceSpend = parseInt(document.getElementById('hit_dice_spend').value) || 0;
-  const conMod = parseInt(document.getElementById('con_mod').value) || 0;
+  const conMod = parseInt(document.getElementById('con_modifier').value) || 0;
   const hitDieSize = parseInt(document.getElementById('hit_die_size').value) || 6;
   
   if (hitDiceSpend <= 0) {
