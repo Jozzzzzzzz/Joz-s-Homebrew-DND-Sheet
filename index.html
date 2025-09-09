@@ -2,8 +2,42 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=0.85, maximum-scale=0.85, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Joz's Homebrew DND Sheet</title>
+
+<!-- PWA Meta Tags -->
+<meta name="description" content="Professional D&D 5e Character Sheet with auto-save, mobile support, and cloud sync">
+<meta name="theme-color" content="#4a90e2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="D&D Character Sheet">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="msapplication-TileColor" content="#4a90e2">
+<meta name="msapplication-tap-highlight" content="no">
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="data:application/json,{
+  &quot;name&quot;: &quot;D&D Character Sheet&quot;,
+  &quot;short_name&quot;: &quot;D&D Sheet&quot;,
+  &quot;description&quot;: &quot;Professional D&D 5e Character Sheet with auto-save and mobile support&quot;,
+  &quot;start_url&quot;: &quot;.&quot;,
+  &quot;display&quot;: &quot;standalone&quot;,
+  &quot;background_color&quot;: &quot;#1a1a2e&quot;,
+  &quot;theme_color&quot;: &quot;#4a90e2&quot;,
+  &quot;orientation&quot;: &quot;portrait-primary&quot;,
+  &quot;icons&quot;: [
+    {
+      &quot;src&quot;: &quot;data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiM0YTkwZTIiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+&quot;,
+      &quot;sizes&quot;: &quot;192x192&quot;,
+      &quot;type&quot;: &quot;image/svg+xml&quot;
+    },
+    {
+      &quot;src&quot;: &quot;data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iNjQiIGZpbGw9IiM0YTkwZTIiLz4KPHN2ZyB4PSIxMjgiIHk9IjEyOCIgd2lkdGg9IjI1NiIgaGVpZ2h0PSIyNTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSI+CjxwYXRoIGQ9Ik0xMiAyTDEzLjA5IDguMjZMMjAgOUwxMy4wOSAxNS43NEwxMiAyMkwxMC45MSAxNS43NEw0IDlMMTAuOTEgOC4yNkwxMiAyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cjwvc3ZnPg==&quot;,
+      &quot;sizes&quot;: &quot;512x512&quot;,
+      &quot;type&quot;: &quot;image/svg+xml&quot;
+    }
+  ]
+}">
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -437,6 +471,12 @@ button[onclick*="home"] {
     color: var(--text-light);
     transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-x: hidden;
+    /* Web app specific styles */
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for web apps */
+    height: calc(var(--vh, 1vh) * 100); /* Fallback for web app mode */
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Global smooth transitions for theme changes */
@@ -501,7 +541,41 @@ button[onclick*="home"] {
     box-sizing: border-box;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for web apps */
+    min-height: calc(var(--vh, 1vh) * 100); /* Fallback for web app mode */
     padding: 0;
+  }
+  
+  /* Web App / PWA Specific Styles */
+  @media (display-mode: standalone) {
+    body {
+      /* Handle iOS status bar */
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+    
+    #home {
+      min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    }
+    
+    .hero-section {
+      padding-top: calc(60px + env(safe-area-inset-top));
+    }
+  }
+  
+  /* iOS Safari specific fixes */
+  @supports (-webkit-touch-callout: none) {
+    body {
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .home-card {
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
   }
   
   /* Hero Section */
@@ -6187,7 +6261,68 @@ ${userEmail}`;
     }
   }
 
+// Web App / PWA Initialization
+function initializeWebApp() {
+  // Prevent zoom on double tap
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function (event) {
+    const now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, false);
+  
+  // Prevent context menu on long press
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+  
+  // Handle orientation changes
+  window.addEventListener('orientationchange', function() {
+    setTimeout(function() {
+      // Force a reflow to fix layout issues
+      document.body.style.height = '100vh';
+      setTimeout(function() {
+        document.body.style.height = '';
+      }, 100);
+    }, 500);
+  });
+  
+  // Prevent pull-to-refresh
+  document.addEventListener('touchstart', function(e) {
+    if (e.touches.length !== 1) return;
+    const startY = e.touches[0].clientY;
+    const startX = e.touches[0].clientX;
+    
+    document.addEventListener('touchmove', function(e) {
+      const currentY = e.touches[0].clientY;
+      const currentX = e.touches[0].clientX;
+      const diffY = startY - currentY;
+      const diffX = startX - currentX;
+      
+      // If vertical scroll is greater than horizontal, prevent default
+      if (Math.abs(diffY) > Math.abs(diffX) && diffY < 0) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  });
+  
+  // Handle viewport changes for web app mode
+  function handleViewportChange() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+  
+  window.addEventListener('resize', handleViewportChange);
+  window.addEventListener('orientationchange', handleViewportChange);
+  handleViewportChange();
+}
+
 window.onload = function() {
+  // Initialize web app features first
+  initializeWebApp();
+  
   // Initialize character system
   loadCharacterList();
   
@@ -17632,6 +17767,26 @@ autosave = function() {
 document.addEventListener('DOMContentLoaded', function() {
   initializeFirebase();
   enableAutoSync();
+  
+  // Register service worker for PWA functionality
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+      self.addEventListener('install', function(event) {
+        event.waitUntil(self.skipWaiting());
+      });
+      
+      self.addEventListener('activate', function(event) {
+        event.waitUntil(self.clients.claim());
+      });
+      
+      self.addEventListener('fetch', function(event) {
+        // Let the browser handle all requests normally
+        return;
+      });
+    `)).catch(function(error) {
+      console.log('Service Worker registration failed:', error);
+    });
+  }
 });
 
 </script>
