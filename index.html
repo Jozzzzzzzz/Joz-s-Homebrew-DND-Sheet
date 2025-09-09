@@ -475,8 +475,12 @@ button[onclick*="home"] {
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for web apps */
     height: calc(var(--vh, 1vh) * 100); /* Fallback for web app mode */
-    overscroll-behavior: none;
+    /* Improved touch scrolling - prevent pull-to-refresh with CSS */
+    overscroll-behavior-y: contain;
+    overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    scroll-behavior: smooth;
   }
 
   /* Global smooth transitions for theme changes */
@@ -570,11 +574,67 @@ button[onclick*="home"] {
   @supports (-webkit-touch-callout: none) {
     body {
       -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
     }
     
     .home-card {
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
+    }
+    
+    /* Ensure all containers allow scrolling */
+    #pages, .page, #home {
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      overflow-y: auto;
+    }
+  }
+  
+  /* Disable hover effects on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .home-card:hover {
+      transform: none !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+      border-color: var(--accent-border) !important;
+    }
+    
+    .feature-item:hover {
+      background: rgba(0, 0, 0, 0.2) !important;
+      transform: none !important;
+    }
+    
+    .tip-category:hover {
+      transform: none !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+      border-color: var(--accent-border) !important;
+    }
+    
+    .character-manager-grid > div:hover {
+      transform: none !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .create-btn:hover, .load-btn:hover {
+      background: var(--accent) !important;
+      transform: none !important;
+    }
+    
+    .delete-btn:hover {
+      background: #e74c3c !important;
+      transform: none !important;
+    }
+    
+    .submit-btn:hover {
+      background: var(--accent) !important;
+      transform: none !important;
+    }
+    
+    .step-number:hover {
+      transform: none !important;
+    }
+    
+    .feature-badge:hover {
+      transform: none !important;
     }
   }
   
@@ -1052,6 +1112,43 @@ button[onclick*="home"] {
     .character-info-section > div {
       grid-template-columns: 1fr !important;
       gap: 8px !important;
+    }
+    
+    /* Disable ALL hover effects on mobile */
+    *:hover {
+      transform: none !important;
+      box-shadow: inherit !important;
+      background: inherit !important;
+      border-color: inherit !important;
+    }
+    
+    /* Re-enable specific hover effects that should work on mobile */
+    button:hover {
+      opacity: 0.8;
+    }
+    
+    input:hover, textarea:hover, select:hover {
+      border-color: var(--accent) !important;
+    }
+    
+    /* Improved touch scrolling for mobile */
+    body {
+      touch-action: pan-y !important;
+      -webkit-overflow-scrolling: touch !important;
+      overscroll-behavior-y: contain !important;
+      overscroll-behavior-x: none !important;
+    }
+    
+    /* Ensure all scrollable elements work properly */
+    .page, #pages, #home {
+      touch-action: pan-y !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Remove any transform that might interfere with scrolling */
+    .home-card, .feature-item, .tip-category {
+      will-change: auto !important;
+      transform: none !important;
     }
   }
     
@@ -6263,11 +6360,19 @@ ${userEmail}`;
 
 // Web App / PWA Initialization
 function initializeWebApp() {
-  // Prevent zoom on double tap
+  // Improved double-tap handling - only prevent zoom on form elements
   let lastTouchEnd = 0;
   document.addEventListener('touchend', function (event) {
     const now = (new Date()).getTime();
-    if (now - lastTouchEnd <= 300) {
+    const target = event.target;
+    
+    // Only prevent zoom on form elements, not on scrollable content
+    if (now - lastTouchEnd <= 300 && 
+        (target.tagName === 'INPUT' || 
+         target.tagName === 'TEXTAREA' || 
+         target.tagName === 'SELECT' ||
+         target.classList.contains('button') ||
+         target.classList.contains('btn'))) {
       event.preventDefault();
     }
     lastTouchEnd = now;
@@ -6289,24 +6394,8 @@ function initializeWebApp() {
     }, 500);
   });
   
-  // Prevent pull-to-refresh
-  document.addEventListener('touchstart', function(e) {
-    if (e.touches.length !== 1) return;
-    const startY = e.touches[0].clientY;
-    const startX = e.touches[0].clientX;
-    
-    document.addEventListener('touchmove', function(e) {
-      const currentY = e.touches[0].clientY;
-      const currentX = e.touches[0].clientX;
-      const diffY = startY - currentY;
-      const diffX = startX - currentX;
-      
-      // If vertical scroll is greater than horizontal, prevent default
-      if (Math.abs(diffY) > Math.abs(diffX) && diffY < 0) {
-        e.preventDefault();
-      }
-    }, { passive: false });
-  });
+  // Minimal touch handling - rely on CSS overscroll-behavior for pull-to-refresh prevention
+  // No JavaScript touch event prevention to avoid console errors
   
   // Handle viewport changes for web app mode
   function handleViewportChange() {
