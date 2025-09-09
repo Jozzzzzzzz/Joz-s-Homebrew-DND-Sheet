@@ -1654,11 +1654,30 @@ button[onclick*="home"] {
     }
 
     .potion-group select {
-      width: 250px;
-      font-size: 0.9em;
+      width: 150px !important;
+      max-width: 150px !important;
+      font-size: 0.8em;
       background: #2a2a2a;
       color: #fff;
       border: 2px solid var(--accent-border);
+      box-sizing: border-box;
+      padding: 6px 8px;
+      margin: 0 auto;
+    }
+    
+    .potion-group {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding: 0 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .health-potion-section {
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
     .potion-btn {
@@ -1801,11 +1820,30 @@ button[onclick*="home"] {
     }
 
     .potion-group select {
-      width: 200px;
-      font-size: 0.85em;
+      width: 140px !important;
+      max-width: 140px !important;
+      font-size: 0.75em;
       background: #2a2a2a;
       color: #fff;
       border: 2px solid var(--accent-border);
+      box-sizing: border-box;
+      padding: 4px 6px;
+      margin: 0 auto;
+    }
+    
+    .potion-group {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding: 0 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .health-potion-section {
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
     .potion-btn {
@@ -3122,32 +3160,60 @@ button[onclick*="home"] {
   @media (max-width: 768px) and (orientation: landscape) {
     /* Mobile landscape mode - fix scaling issues */
     .potion-group select {
-      width: 100% !important;
-      max-width: 250px;
-      font-size: 0.85em;
-    }
-    
-    .health-potion-section {
-      padding: 10px;
-      margin-top: 10px;
-    }
-    
-    .potion-controls {
-      gap: 10px;
+      width: 125px !important;
+      max-width: 125px !important;
+      font-size: 0.7em !important;
+      box-sizing: border-box;
+      padding: 4px 6px;
+      margin: 0 auto;
     }
     
     .potion-group {
-      gap: 5px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding: 0 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .health-potion-section {
+      padding: 8px;
+      margin-top: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    
+    .potion-controls {
+      gap: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0;
+    }
+    
+    .potion-group {
+      gap: 3px;
+    }
+    
+    .potion-group label {
+      font-size: 0.75em;
     }
     
     .potion-info {
-      font-size: 0.9em;
-      padding: 6px;
+      font-size: 0.75em;
+      padding: 4px 6px;
+      width: 100%;
+      box-sizing: border-box;
     }
     
     .potion-btn {
-      padding: 8px 16px;
-      font-size: 0.9em;
+      padding: 6px 12px;
+      font-size: 0.8em;
+      width: 100%;
+      max-width: 150px;
+      box-sizing: border-box;
     }
   }
 
