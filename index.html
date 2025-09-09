@@ -402,8 +402,8 @@ button[onclick*="home"] {
   }
 
   .tabs button {
-    background: var(--panel-bg);
-    color: white;
+    background: var(--accent);
+    color: #000;
     border: 2px solid var(--accent-border);
     padding: 8px 16px;
     cursor: pointer;
@@ -411,6 +411,11 @@ button[onclick*="home"] {
     border-radius: 4px;
     transform: translateY(0);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tabs button.active {
+    background: var(--accent);
+    color: #000;
   }
 
   .tabs button:hover {
@@ -678,6 +683,7 @@ button[onclick*="home"] {
 
   button {
     background: var(--accent);
+    color: #000;
     border: none;
     padding: 8px 16px;
     border-radius: 4px;
@@ -790,8 +796,8 @@ button[onclick*="home"] {
 
   .portrait-container {
     width: 200px;
-    height: 250px;
-    border: 2px solid var(--accent-border);
+    height: 200px;
+    border: 3px solid var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -800,7 +806,8 @@ button[onclick*="home"] {
     background: #2a2a2a;
     transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
   }
 
   .portrait-container:hover {
@@ -809,10 +816,12 @@ button[onclick*="home"] {
   }
 
   .portrait-container img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
   }
+  
 
   .skill-row {
     display: flex;
@@ -1246,7 +1255,7 @@ button[onclick*="home"] {
 
   /* Health Potion Section Styling */
   .health-potion-section {
-    background: var(--accent);
+    background: var(--card-bg);
     border: 2px solid var(--accent-border);
     border-radius: 8px;
     padding: 15px;
@@ -1256,7 +1265,7 @@ button[onclick*="home"] {
 
   .health-potion-section h4 {
     margin: 0 0 15px 0;
-    color: #000;
+    color: var(--text);
     font-size: 1.1em;
     font-weight: bold;
   }
@@ -1277,7 +1286,7 @@ button[onclick*="home"] {
 
   .potion-group label {
     font-weight: bold;
-    color: #000;
+    color: var(--text);
     font-size: 0.9em;
   }
 
@@ -1324,10 +1333,16 @@ button[onclick*="home"] {
 
   .potion-info {
     padding: 8px;
-    background: #000;
-    color: var(--accent);
+    background: var(--accent);
+    color: #000;
     border-radius: 4px;
     font-weight: bold;
+    font-size: 1em;
+    text-align: center;
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .potion-btn {
@@ -1694,6 +1709,7 @@ button[onclick*="home"] {
     .potion-info {
       font-size: 0.9em;
       padding: 8px 10px;
+      min-height: 18px;
     }
 
     .potion-btn {
@@ -1875,6 +1891,7 @@ button[onclick*="home"] {
     .potion-info {
       font-size: 0.85em;
       padding: 6px 8px;
+      min-height: 16px;
     }
 
     .potion-btn {
@@ -1950,10 +1967,7 @@ button[onclick*="home"] {
       color: var(--text) !important;
     }
     
-    /* Ensure all text uses theme colors */
-    * {
-      color: var(--text) !important;
-    }
+    /* Let theme colors work naturally without forcing */
     
     /* Override specific elements that should have different colors */
     .temp-hp-display, .temp-hp-display * {
@@ -2149,8 +2163,9 @@ button[onclick*="home"] {
     
     .portrait-container {
       width: 150px;
-      height: 200px;
+      height: 150px;
       margin: 0 auto;
+      border-radius: 12px;
     }
   }
   #notesPopupTextarea {
@@ -2272,19 +2287,31 @@ button[onclick*="home"] {
   }
 
   /* Ensure all top buttons have consistent styling */
-  #saveDataBtn, #saveLayoutBtn, #resetLayoutBtn {
+  #saveDataBtn, #saveLayoutBtn, #resetLayoutBtn, #settingsBtn {
     vertical-align: middle;
+    background: var(--accent) !important;
+    color: #000 !important;
+  }
+  
+  #saveDataBtn:hover, #saveLayoutBtn:hover, #resetLayoutBtn:hover, #settingsBtn:hover {
+    background: var(--accent) !important;
+    color: #000 !important;
+    filter: brightness(1.1);
   }
 
   /* Fix for save buttons in light mode */
   [data-theme="light"] #saveDataBtn,
-  [data-theme="light"] #saveLayoutBtn {
+  [data-theme="light"] #saveLayoutBtn,
+  [data-theme="light"] #resetLayoutBtn,
+  [data-theme="light"] #settingsBtn {
     background: var(--accent) !important;
     color: #000000 !important;
   }
 
   [data-theme="light"] #saveDataBtn:hover,
-  [data-theme="light"] #saveLayoutBtn:hover {
+  [data-theme="light"] #saveLayoutBtn:hover,
+  [data-theme="light"] #resetLayoutBtn:hover,
+  [data-theme="light"] #settingsBtn:hover {
     background: #ffd700 !important;
     color: #000000 !important;
   }
@@ -3103,42 +3130,7 @@ button[onclick*="home"] {
       grid-template-columns: 1fr;
     }
     
-    /* Mobile text color fixes */
-    input, textarea, select {
-      color: white !important;
-      -webkit-text-fill-color: white !important;
-    }
-    
-    [data-theme="light"] input, 
-    [data-theme="light"] textarea, 
-    [data-theme="light"] select {
-      color: #333 !important;
-      -webkit-text-fill-color: #333 !important;
-    }
-    
-    /* Mobile text color fixes - more targeted approach */
-    input, textarea, select {
-      color: var(--text) !important;
-    }
-    
-    /* Override any inline color styles for inputs */
-    input[style*="color:"], textarea[style*="color:"], select[style*="color:"] {
-      color: var(--text) !important;
-    }
-    
-    /* Specific overrides for elements that should have different colors */
-    .temp-hp-display, .temp-hp-display * {
-      color: #000 !important;
-    }
-    
-    button {
-      color: #000 !important;
-    }
-    
-    /* Fix any links that might appear blue */
-    a, a:link, a:visited, a:hover, a:active {
-      color: var(--text) !important;
-    }
+    /* No mobile text color overrides - let theme work naturally */
     
     /* Fix inventory button text colors */
     .inventory-controls button,
@@ -3164,39 +3156,91 @@ button[onclick*="home"] {
       color: #000 !important;
     }
     
-    /* Fix potion section text visibility with accent background */
+    /* Fix potion section text visibility */
     .potion-group label {
-      color: #000 !important;
+      color: var(--text) !important;
     }
     
     .potion-info {
       color: #000 !important;
+      background: var(--accent) !important;
     }
     
     .potion-group select {
-      color: #000 !important;
-      background: #fff !important;
-      border: 2px solid #000 !important;
+      color: #fff !important;
+      background: #2a2a2a !important;
+      border: 2px solid var(--accent-border) !important;
     }
     
     .potion-group select option {
-      color: #000 !important;
-      background: #fff !important;
+      color: #fff !important;
+      background: #2a2a2a !important;
+    }
+  }
+  
+  @media (max-width: 1024px) and (orientation: portrait) {
+    /* iPad portrait mode - better scaling */
+    .potion-group select {
+      width: 200px !important;
+      max-width: 200px !important;
+      font-size: 0.8em;
+      padding: 6px 8px;
+    }
+    
+    .health-potion-section {
+      padding: 12px;
+    }
+    
+    .potion-controls {
+      gap: 10px;
+    }
+    
+    .potion-group label {
+      font-size: 0.9em;
+    }
+    
+    .potion-info {
+      font-size: 0.9em;
+      padding: 6px 8px;
     }
   }
   
   @media (max-width: 768px) and (orientation: portrait) {
-    /* Mobile portrait mode - zoom out 10% for better fit */
+    /* Mobile portrait mode - single column layout without scaling */
     body {
-      transform: scale(0.9);
-      transform-origin: top left;
-      width: 111.11%; /* Compensate for the scale to prevent horizontal scroll */
-      height: 111.11%;
+      transform: none;
+      width: 100%;
+      height: auto;
     }
     
     html {
       overflow-x: hidden;
     }
+    
+    /* Single column layout for mobile portrait */
+    .background-grid {
+      grid-template-columns: 1fr !important;
+      gap: 10px;
+    }
+    
+    .background-textareas {
+      grid-template-columns: 1fr !important;
+      gap: 10px;
+    }
+    
+    .horizontal-sections {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 10px;
+    }
+    
+    .section {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-bottom: 10px;
+    }
+    
+    /* No text color overrides - let theme colors work naturally */
     
     .spell-detail-row {
       flex-direction: column;
@@ -3205,6 +3249,32 @@ button[onclick*="home"] {
     
     .spell-detail-label {
       margin-bottom: 5px;
+    }
+    
+    /* Better potion scaling for mobile portrait */
+    .potion-group select {
+      width: 100% !important;
+      max-width: 100% !important;
+      font-size: 0.9em;
+      padding: 8px 10px;
+    }
+    
+    .health-potion-section {
+      padding: 15px;
+    }
+    
+    .potion-controls {
+      gap: 12px;
+    }
+    
+    .potion-group label {
+      font-size: 0.9em;
+    }
+    
+    .potion-info {
+      font-size: 0.9em;
+      padding: 8px 10px;
+      min-height: 18px;
     }
   }
   
@@ -3257,6 +3327,7 @@ button[onclick*="home"] {
       padding: 3px 4px;
       width: 100%;
       box-sizing: border-box;
+      min-height: 14px;
     }
     
     .potion-btn {
@@ -3934,6 +4005,7 @@ button[onclick*="home"] {
   <input type="file" id="portraitUpload" accept="image/*" style="width: 100%; margin-bottom: 10px;"/>
   <button onclick="removePortrait()" style="width: 100%;">Remove Portrait</button>
 </div>
+
       <!-- Updated Background Sections with Direct Textareas -->
       <div class="section">
         <h2>Backstory</h2>
@@ -5366,8 +5438,10 @@ function loadData() {
     if (data.page2.portrait) {
       const img = document.createElement('img');
       img.src = data.page2.portrait;
-      img.style.maxWidth = '100%';
-      img.style.maxHeight = '100%';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '12px';
       document.getElementById('portraitPreview').innerHTML = '';
       document.getElementById('portraitPreview').appendChild(img);
     }
@@ -6105,8 +6179,10 @@ function handlePortraitUpload(event) {
     portraitPreview.innerHTML = '';
     const img = document.createElement('img');
     img.src = e.target.result;
-    img.style.maxWidth = '100%';
-    img.style.maxHeight = '100%';
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '12px';
     portraitPreview.appendChild(img);
     autosave();
   };
