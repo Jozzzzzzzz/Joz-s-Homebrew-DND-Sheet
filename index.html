@@ -4297,27 +4297,74 @@ button[onclick*="home"] {
       min-height: 18px;
     }
     
-    /* Disable ALL hover effects on mobile portrait */
-    *:hover {
-      transform: none !important;
-      box-shadow: inherit !important;
-      background: inherit !important;
-      border-color: inherit !important;
-    }
-    
-    /* Disable ALL active/tap effects on mobile portrait */
-    *:active {
+    /* Disable ALL interaction effects on mobile portrait */
+    *:hover,
+    *:active,
+    *:focus,
+    *:focus-visible,
+    *:focus-within {
       transform: none !important;
       box-shadow: inherit !important;
       background: inherit !important;
       border-color: inherit !important;
       opacity: inherit !important;
+      outline: none !important;
       -webkit-tap-highlight-color: transparent !important;
       -webkit-touch-callout: none !important;
       -webkit-user-select: none !important;
       -moz-user-select: none !important;
       -ms-user-select: none !important;
       user-select: none !important;
+    }
+    
+    /* Disable all pseudo-class effects */
+    *:before,
+    *:after {
+      display: none !important;
+    }
+    
+    /* Disable all transition effects */
+    * {
+      transition: none !important;
+      animation: none !important;
+      -webkit-transition: none !important;
+      -webkit-animation: none !important;
+    }
+    
+    /* Disable all visual feedback */
+    *:visited,
+    *:link {
+      color: inherit !important;
+      text-decoration: inherit !important;
+    }
+    
+    /* Disable any remaining visual effects */
+    .section,
+    .home-card,
+    .tip-category,
+    .feature-item,
+    .character-manager-grid > div,
+    .create-btn,
+    .load-btn,
+    .delete-btn,
+    .submit-btn,
+    .step-number,
+    .feature-badge {
+      pointer-events: auto !important;
+    }
+    
+    /* Ensure no background changes on interaction */
+    .section:hover,
+    .section:active,
+    .section:focus,
+    .home-card:hover,
+    .home-card:active,
+    .home-card:focus,
+    .tip-category:hover,
+    .tip-category:active,
+    .tip-category:focus {
+      background: inherit !important;
+      background-color: inherit !important;
     }
     
     /* Additional mobile tap fixes */
@@ -4369,14 +4416,7 @@ button[onclick*="home"] {
       user-select: none !important;
     }
     
-    /* Re-enable specific hover effects that should work on mobile portrait */
-    button:hover {
-      opacity: 0.8;
-    }
-    
-    input:hover, textarea:hover, select:hover {
-      border-color: var(--accent) !important;
-    }
+    /* All interaction effects disabled on mobile portrait - no exceptions */
   }
   
   @media (max-width: 1024px) and (orientation: landscape) {
