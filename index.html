@@ -4396,8 +4396,6 @@ button[onclick*="home"] {
       -ms-box-shadow: none !important;
       -o-box-shadow: none !important;
       border: inherit !important;
-      background: inherit !important;
-      background-color: inherit !important;
       -webkit-appearance: none !important;
       -moz-appearance: none !important;
       appearance: none !important;
@@ -4541,7 +4539,7 @@ button[onclick*="home"] {
       border-color: var(--accent) !important;
     }
     
-    /* FINAL OVERRIDE: Force remove any remaining white outlines */
+    /* FINAL OVERRIDE: Force remove only white outlines, preserve backgrounds */
     * {
       outline: none !important;
       outline-offset: 0 !important;
@@ -4566,6 +4564,21 @@ button[onclick*="home"] {
       -moz-box-shadow: none !important;
       -ms-box-shadow: none !important;
       -o-box-shadow: none !important;
+    }
+    
+    /* Ensure input backgrounds are preserved */
+    input,
+    textarea,
+    select {
+      background: var(--input-bg) !important;
+      background-color: var(--input-bg) !important;
+    }
+    
+    input:focus,
+    textarea:focus,
+    select:focus {
+      background: var(--input-bg) !important;
+      background-color: var(--input-bg) !important;
     }
   }
   
