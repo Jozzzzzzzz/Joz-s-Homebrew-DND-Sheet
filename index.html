@@ -4220,20 +4220,20 @@ button[onclick*="home"] {
       overflow-x: hidden;
     }
     
-    /* Single column layout for mobile portrait */
+    /* 2-column layout for mobile portrait */
     .background-grid {
-      grid-template-columns: 1fr !important;
+      grid-template-columns: 1fr 1fr !important;
       gap: 10px;
     }
     
     .background-textareas {
-      grid-template-columns: 1fr !important;
+      grid-template-columns: 1fr 1fr !important;
       gap: 10px;
     }
     
     .horizontal-sections {
-      display: flex !important;
-      flex-direction: column !important;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
       gap: 10px;
     }
     
@@ -4243,11 +4243,37 @@ button[onclick*="home"] {
       margin-bottom: 10px;
     }
     
-    /* Fix weapons and equipment sections on mobile */
+    /* Fix input fields in 2-column layout - prevent white outline */
+    .section input,
+    .section textarea,
+    .section select,
+    .horizontal-sections input,
+    .horizontal-sections textarea,
+    .horizontal-sections select {
+      outline: none !important;
+      -webkit-tap-highlight-color: transparent !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      appearance: none !important;
+    }
+    
+    .section input:focus,
+    .section textarea:focus,
+    .section select:focus,
+    .horizontal-sections input:focus,
+    .horizontal-sections textarea:focus,
+    .horizontal-sections select:focus {
+      outline: none !important;
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2) !important;
+      transform: translateY(-1px) !important;
+    }
+    
+    /* Fix sections for 2-column layout on mobile */
     .horizontal-sections .section {
-      flex: 1 1 100% !important;
-      min-width: unset !important;
       width: 100% !important;
+      min-width: unset !important;
+      max-width: 100% !important;
     }
     
     .horizontal-sections .section h2 {
@@ -4332,171 +4358,6 @@ button[onclick*="home"] {
       -webkit-touch-callout: none !important;
     }
     
-    /* Remove focus outline and colored popup effects */
-    .section:focus,
-    .section:focus-visible,
-    .section:focus-within,
-    .home-card:focus,
-    .home-card:focus-visible,
-    .home-card:focus-within,
-    .tip-category:focus,
-    .tip-category:focus-visible,
-    .tip-category:focus-within,
-    .feature-item:focus,
-    .feature-item:focus-visible,
-    .feature-item:focus-within,
-    .character-manager-grid > div:focus,
-    .character-manager-grid > div:focus-visible,
-    .character-manager-grid > div:focus-within {
-      outline: none !important;
-      box-shadow: none !important;
-      border: inherit !important;
-      background: inherit !important;
-    }
-    
-    /* Disable all focus effects on mobile portrait */
-    *:focus,
-    *:focus-visible,
-    *:focus-within {
-      outline: none !important;
-      box-shadow: none !important;
-    }
-    
-    /* AGGRESSIVE: Remove ALL possible white outline sources */
-    input,
-    input:focus,
-    input:focus-visible,
-    input:focus-within,
-    input:active,
-    input:hover,
-    textarea,
-    textarea:focus,
-    textarea:focus-visible,
-    textarea:focus-within,
-    textarea:active,
-    textarea:hover,
-    select,
-    select:focus,
-    select:focus-visible,
-    select:focus-within,
-    select:active,
-    select:hover {
-      outline: none !important;
-      outline-offset: 0 !important;
-      outline-width: 0 !important;
-      outline-style: none !important;
-      outline-color: transparent !important;
-      -webkit-outline: none !important;
-      -moz-outline: none !important;
-      -ms-outline: none !important;
-      -o-outline: none !important;
-      box-shadow: none !important;
-      -webkit-box-shadow: none !important;
-      -moz-box-shadow: none !important;
-      -ms-box-shadow: none !important;
-      -o-box-shadow: none !important;
-      border: inherit !important;
-      background: inherit !important;
-      background-color: inherit !important;
-      -webkit-appearance: none !important;
-      -moz-appearance: none !important;
-      appearance: none !important;
-    }
-    
-    /* Force remove any remaining outline with maximum specificity */
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus,
-    textarea:focus,
-    select:focus {
-      outline: none !important;
-      outline-offset: 0 !important;
-      box-shadow: none !important;
-      border: inherit !important;
-    }
-    
-    /* Disable all pseudo-elements that might create outlines */
-    input::before,
-    input::after,
-    input::before:focus,
-    input::after:focus,
-    textarea::before,
-    textarea::after,
-    textarea::before:focus,
-    textarea::after:focus,
-    select::before,
-    select::after,
-    select::before:focus,
-    select::after:focus {
-      outline: none !important;
-      box-shadow: none !important;
-      display: none !important;
-    }
-    
-    /* Remove all possible outline sources */
-    .section,
-    .home-card,
-    .tip-category,
-    .feature-item,
-    .character-manager-grid > div,
-    .create-btn,
-    .load-btn,
-    .delete-btn,
-    .submit-btn,
-    .step-number,
-    .feature-badge {
-      outline: none !important;
-      outline-offset: 0 !important;
-      -webkit-outline: none !important;
-      -moz-outline: none !important;
-      -ms-outline: none !important;
-      -o-outline: none !important;
-      box-shadow: none !important;
-      -webkit-box-shadow: none !important;
-      -moz-box-shadow: none !important;
-      -ms-box-shadow: none !important;
-      -o-box-shadow: none !important;
-    }
-    
-    /* Disable all pseudo-element outlines */
-    .section::before,
-    .section::after,
-    .home-card::before,
-    .home-card::after,
-    .tip-category::before,
-    .tip-category::after,
-    .feature-item::before,
-    .feature-item::after {
-      outline: none !important;
-      box-shadow: none !important;
-    }
-    
-    /* Remove any remaining visual feedback */
-    .section:active,
-    .section:focus,
-    .section:focus-visible,
-    .section:focus-within,
-    .home-card:active,
-    .home-card:focus,
-    .home-card:focus-visible,
-    .home-card:focus-within,
-    .tip-category:active,
-    .tip-category:focus,
-    .tip-category:focus-visible,
-    .tip-category:focus-within,
-    .feature-item:active,
-    .feature-item:focus,
-    .feature-item:focus-visible,
-    .feature-item:focus-within {
-      outline: none !important;
-      outline-offset: 0 !important;
-      box-shadow: none !important;
-      border: inherit !important;
-      background: inherit !important;
-      background-color: inherit !important;
-    }
-    
     /* Disable resize functionality on mobile portrait */
     .section {
       resize: none !important;
@@ -4539,6 +4400,78 @@ button[onclick*="home"] {
     
     input:hover, textarea:hover, select:hover {
       border-color: var(--accent) !important;
+    }
+    
+    /* Apply same focus effect as landscape mode to portrait mode */
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none !important;
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2) !important;
+      transform: translateY(-1px) !important;
+    }
+    
+    /* Remove white outline but keep normal styling */
+    input,
+    textarea,
+    select {
+      -webkit-tap-highlight-color: transparent !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      appearance: none !important;
+    }
+    
+    /* Remove all hover effects on mobile portrait */
+    .section:hover,
+    .home-card:hover,
+    .tip-category:hover,
+    .feature-item:hover,
+    .character-manager-grid > div:hover,
+    .create-btn:hover,
+    .load-btn:hover,
+    .delete-btn:hover,
+    .submit-btn:hover,
+    .step-number:hover,
+    .feature-badge:hover {
+      transform: none !important;
+      box-shadow: inherit !important;
+      background: inherit !important;
+      border-color: inherit !important;
+      opacity: inherit !important;
+    }
+    
+    /* Remove all active effects on mobile portrait */
+    .section:active,
+    .home-card:active,
+    .tip-category:active,
+    .feature-item:active,
+    .character-manager-grid > div:active,
+    .create-btn:active,
+    .load-btn:active,
+    .delete-btn:active,
+    .submit-btn:active,
+    .step-number:active,
+    .feature-badge:active {
+      transform: none !important;
+      box-shadow: inherit !important;
+      background: inherit !important;
+      border-color: inherit !important;
+      opacity: inherit !important;
+    }
+    
+    /* Disable all transitions and animations on mobile portrait */
+    * {
+      transition: none !important;
+      animation: none !important;
+      -webkit-transition: none !important;
+      -webkit-animation: none !important;
+      -moz-transition: none !important;
+      -moz-animation: none !important;
+      -ms-transition: none !important;
+      -ms-animation: none !important;
+      -o-transition: none !important;
+      -o-animation: none !important;
     }
   }
   
