@@ -1125,22 +1125,6 @@ button[onclick*="home"] {
       gap: 8px !important;
     }
     
-    /* Disable ALL hover effects on mobile */
-    *:hover {
-      transform: none !important;
-      box-shadow: inherit !important;
-      background: inherit !important;
-      border-color: inherit !important;
-    }
-    
-    /* Re-enable specific hover effects that should work on mobile */
-    button:hover {
-      opacity: 0.8;
-    }
-    
-    input:hover, textarea:hover, select:hover {
-      border-color: var(--accent) !important;
-    }
     
     /* Improved touch scrolling for mobile */
     body {
@@ -4311,6 +4295,23 @@ button[onclick*="home"] {
       font-size: 0.9em;
       padding: 8px 10px;
       min-height: 18px;
+    }
+    
+    /* Disable ALL hover effects on mobile portrait */
+    *:hover {
+      transform: none !important;
+      box-shadow: inherit !important;
+      background: inherit !important;
+      border-color: inherit !important;
+    }
+    
+    /* Re-enable specific hover effects that should work on mobile portrait */
+    button:hover {
+      opacity: 0.8;
+    }
+    
+    input:hover, textarea:hover, select:hover {
+      border-color: var(--accent) !important;
     }
   }
   
