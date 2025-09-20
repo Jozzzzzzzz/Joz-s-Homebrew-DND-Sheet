@@ -4396,6 +4396,8 @@ button[onclick*="home"] {
       -ms-box-shadow: none !important;
       -o-box-shadow: none !important;
       border: inherit !important;
+      background: inherit !important;
+      background-color: inherit !important;
       -webkit-appearance: none !important;
       -moz-appearance: none !important;
       appearance: none !important;
@@ -4537,48 +4539,6 @@ button[onclick*="home"] {
     
     input:hover, textarea:hover, select:hover {
       border-color: var(--accent) !important;
-    }
-    
-    /* FINAL OVERRIDE: Force remove only white outlines, preserve backgrounds */
-    * {
-      outline: none !important;
-      outline-offset: 0 !important;
-      outline-width: 0 !important;
-      outline-style: none !important;
-      outline-color: transparent !important;
-      -webkit-outline: none !important;
-      -moz-outline: none !important;
-      -ms-outline: none !important;
-      -o-outline: none !important;
-    }
-    
-    *:focus,
-    *:focus-visible,
-    *:focus-within,
-    *:active,
-    *:hover {
-      outline: none !important;
-      outline-offset: 0 !important;
-      box-shadow: none !important;
-      -webkit-box-shadow: none !important;
-      -moz-box-shadow: none !important;
-      -ms-box-shadow: none !important;
-      -o-box-shadow: none !important;
-    }
-    
-    /* Ensure input backgrounds are preserved */
-    input,
-    textarea,
-    select {
-      background: var(--input-bg) !important;
-      background-color: var(--input-bg) !important;
-    }
-    
-    input:focus,
-    textarea:focus,
-    select:focus {
-      background: var(--input-bg) !important;
-      background-color: var(--input-bg) !important;
     }
   }
   
