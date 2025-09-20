@@ -4297,31 +4297,37 @@ button[onclick*="home"] {
       min-height: 18px;
     }
     
-    /* Disable ALL hover effects on mobile portrait */
-    *:hover {
+    /* Disable hover effects on specific elements that cause white-out */
+    .section:hover,
+    .home-card:hover,
+    .tip-category:hover,
+    .feature-item:hover,
+    .character-manager-grid > div:hover {
       transform: none !important;
       box-shadow: inherit !important;
       background: inherit !important;
       border-color: inherit !important;
     }
     
-    /* Disable ALL active/tap effects on mobile portrait */
-    *:active {
+    /* Disable active/tap effects on specific elements */
+    .section:active,
+    .home-card:active,
+    .tip-category:active,
+    .feature-item:active,
+    .character-manager-grid > div:active {
       transform: none !important;
       box-shadow: inherit !important;
       background: inherit !important;
       border-color: inherit !important;
       opacity: inherit !important;
-      -webkit-tap-highlight-color: transparent !important;
-      -webkit-touch-callout: none !important;
-      -webkit-user-select: none !important;
-      -moz-user-select: none !important;
-      -ms-user-select: none !important;
-      user-select: none !important;
     }
     
-    /* Additional mobile tap fixes */
-    * {
+    /* Disable tap highlights on mobile */
+    .section,
+    .home-card,
+    .tip-category,
+    .feature-item,
+    .character-manager-grid > div {
       -webkit-tap-highlight-color: transparent !important;
       -webkit-touch-callout: none !important;
     }
@@ -4352,21 +4358,13 @@ button[onclick*="home"] {
       display: none !important;
     }
     
-    /* Disable all drag-related effects */
-    * {
+    /* Disable drag-related effects on sections only */
+    .section {
       -webkit-user-drag: none !important;
       -khtml-user-drag: none !important;
       -moz-user-drag: none !important;
       -o-user-drag: none !important;
       user-drag: none !important;
-    }
-    
-    /* Prevent text selection during drag */
-    .section {
-      -webkit-user-select: none !important;
-      -moz-user-select: none !important;
-      -ms-user-select: none !important;
-      user-select: none !important;
     }
     
     /* Re-enable specific hover effects that should work on mobile portrait */
