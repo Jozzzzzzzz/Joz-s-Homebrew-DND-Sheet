@@ -4332,6 +4332,36 @@ button[onclick*="home"] {
       -webkit-touch-callout: none !important;
     }
     
+    /* Remove focus outline and colored popup effects */
+    .section:focus,
+    .section:focus-visible,
+    .section:focus-within,
+    .home-card:focus,
+    .home-card:focus-visible,
+    .home-card:focus-within,
+    .tip-category:focus,
+    .tip-category:focus-visible,
+    .tip-category:focus-within,
+    .feature-item:focus,
+    .feature-item:focus-visible,
+    .feature-item:focus-within,
+    .character-manager-grid > div:focus,
+    .character-manager-grid > div:focus-visible,
+    .character-manager-grid > div:focus-within {
+      outline: none !important;
+      box-shadow: none !important;
+      border: inherit !important;
+      background: inherit !important;
+    }
+    
+    /* Disable all focus effects on mobile portrait */
+    *:focus,
+    *:focus-visible,
+    *:focus-within {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    
     /* Disable resize functionality on mobile portrait */
     .section {
       resize: none !important;
