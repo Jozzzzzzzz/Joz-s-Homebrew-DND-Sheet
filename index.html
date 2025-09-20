@@ -4362,6 +4362,38 @@ button[onclick*="home"] {
       box-shadow: none !important;
     }
     
+    /* Specifically target input fields to remove white outline */
+    input,
+    input:focus,
+    input:focus-visible,
+    input:focus-within,
+    input:active,
+    textarea,
+    textarea:focus,
+    textarea:focus-visible,
+    textarea:focus-within,
+    textarea:active,
+    select,
+    select:focus,
+    select:focus-visible,
+    select:focus-within,
+    select:active {
+      outline: none !important;
+      outline-offset: 0 !important;
+      -webkit-outline: none !important;
+      -moz-outline: none !important;
+      -ms-outline: none !important;
+      -o-outline: none !important;
+      box-shadow: none !important;
+      -webkit-box-shadow: none !important;
+      -moz-box-shadow: none !important;
+      -ms-box-shadow: none !important;
+      -o-box-shadow: none !important;
+      border: inherit !important;
+      background: inherit !important;
+      background-color: inherit !important;
+    }
+    
     /* Remove all possible outline sources */
     .section,
     .home-card,
