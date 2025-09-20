@@ -4362,6 +4362,69 @@ button[onclick*="home"] {
       box-shadow: none !important;
     }
     
+    /* Remove all possible outline sources */
+    .section,
+    .home-card,
+    .tip-category,
+    .feature-item,
+    .character-manager-grid > div,
+    .create-btn,
+    .load-btn,
+    .delete-btn,
+    .submit-btn,
+    .step-number,
+    .feature-badge {
+      outline: none !important;
+      outline-offset: 0 !important;
+      -webkit-outline: none !important;
+      -moz-outline: none !important;
+      -ms-outline: none !important;
+      -o-outline: none !important;
+      box-shadow: none !important;
+      -webkit-box-shadow: none !important;
+      -moz-box-shadow: none !important;
+      -ms-box-shadow: none !important;
+      -o-box-shadow: none !important;
+    }
+    
+    /* Disable all pseudo-element outlines */
+    .section::before,
+    .section::after,
+    .home-card::before,
+    .home-card::after,
+    .tip-category::before,
+    .tip-category::after,
+    .feature-item::before,
+    .feature-item::after {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    
+    /* Remove any remaining visual feedback */
+    .section:active,
+    .section:focus,
+    .section:focus-visible,
+    .section:focus-within,
+    .home-card:active,
+    .home-card:focus,
+    .home-card:focus-visible,
+    .home-card:focus-within,
+    .tip-category:active,
+    .tip-category:focus,
+    .tip-category:focus-visible,
+    .tip-category:focus-within,
+    .feature-item:active,
+    .feature-item:focus,
+    .feature-item:focus-visible,
+    .feature-item:focus-within {
+      outline: none !important;
+      outline-offset: 0 !important;
+      box-shadow: none !important;
+      border: inherit !important;
+      background: inherit !important;
+      background-color: inherit !important;
+    }
+    
     /* Disable resize functionality on mobile portrait */
     .section {
       resize: none !important;
