@@ -4326,6 +4326,49 @@ button[onclick*="home"] {
       -webkit-touch-callout: none !important;
     }
     
+    /* Disable resize functionality on mobile portrait */
+    .section {
+      resize: none !important;
+    }
+    
+    textarea {
+      resize: none !important;
+    }
+    
+    .basic-textarea {
+      resize: none !important;
+    }
+    
+    .resizable {
+      resize: none !important;
+    }
+    
+    /* Disable resize handles */
+    .section::-webkit-resizer {
+      display: none !important;
+    }
+    
+    textarea::-webkit-resizer {
+      display: none !important;
+    }
+    
+    /* Disable all drag-related effects */
+    * {
+      -webkit-user-drag: none !important;
+      -khtml-user-drag: none !important;
+      -moz-user-drag: none !important;
+      -o-user-drag: none !important;
+      user-drag: none !important;
+    }
+    
+    /* Prevent text selection during drag */
+    .section {
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+      user-select: none !important;
+    }
+    
     /* Re-enable specific hover effects that should work on mobile portrait */
     button:hover {
       opacity: 0.8;
