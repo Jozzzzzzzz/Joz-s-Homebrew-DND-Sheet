@@ -4362,24 +4362,30 @@ button[onclick*="home"] {
       box-shadow: none !important;
     }
     
-    /* Specifically target input fields to remove white outline */
+    /* AGGRESSIVE: Remove ALL possible white outline sources */
     input,
     input:focus,
     input:focus-visible,
     input:focus-within,
     input:active,
+    input:hover,
     textarea,
     textarea:focus,
     textarea:focus-visible,
     textarea:focus-within,
     textarea:active,
+    textarea:hover,
     select,
     select:focus,
     select:focus-visible,
     select:focus-within,
-    select:active {
+    select:active,
+    select:hover {
       outline: none !important;
       outline-offset: 0 !important;
+      outline-width: 0 !important;
+      outline-style: none !important;
+      outline-color: transparent !important;
       -webkit-outline: none !important;
       -moz-outline: none !important;
       -ms-outline: none !important;
@@ -4392,6 +4398,40 @@ button[onclick*="home"] {
       border: inherit !important;
       background: inherit !important;
       background-color: inherit !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      appearance: none !important;
+    }
+    
+    /* Force remove any remaining outline with maximum specificity */
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none !important;
+      outline-offset: 0 !important;
+      box-shadow: none !important;
+      border: inherit !important;
+    }
+    
+    /* Disable all pseudo-elements that might create outlines */
+    input::before,
+    input::after,
+    input::before:focus,
+    input::after:focus,
+    textarea::before,
+    textarea::after,
+    textarea::before:focus,
+    textarea::after:focus,
+    select::before,
+    select::after,
+    select::before:focus,
+    select::after:focus {
+      outline: none !important;
+      box-shadow: none !important;
+      display: none !important;
     }
     
     /* Remove all possible outline sources */
@@ -4499,6 +4539,33 @@ button[onclick*="home"] {
     
     input:hover, textarea:hover, select:hover {
       border-color: var(--accent) !important;
+    }
+    
+    /* FINAL OVERRIDE: Force remove any remaining white outlines */
+    * {
+      outline: none !important;
+      outline-offset: 0 !important;
+      outline-width: 0 !important;
+      outline-style: none !important;
+      outline-color: transparent !important;
+      -webkit-outline: none !important;
+      -moz-outline: none !important;
+      -ms-outline: none !important;
+      -o-outline: none !important;
+    }
+    
+    *:focus,
+    *:focus-visible,
+    *:focus-within,
+    *:active,
+    *:hover {
+      outline: none !important;
+      outline-offset: 0 !important;
+      box-shadow: none !important;
+      -webkit-box-shadow: none !important;
+      -moz-box-shadow: none !important;
+      -ms-box-shadow: none !important;
+      -o-box-shadow: none !important;
     }
   }
   
