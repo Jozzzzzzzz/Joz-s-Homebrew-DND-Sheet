@@ -21,6 +21,7 @@
 
 <!-- PWA Manifest -->
 <link rel="manifest" href="data:application/json,{
+  <link rel="manifest" href="data:application/json,
   &quot;name&quot;: &quot;D&D Character Sheet&quot;,
   &quot;short_name&quot;: &quot;D&D Sheet&quot;,
   &quot;description&quot;: &quot;Professional D&D 5e Character Sheet with auto-save and mobile support&quot;,
@@ -3019,6 +3020,49 @@ button[onclick*="home"] {
       padding: 6px 4px;
     }
     
+    /* Mobile popout content styling */
+    .popout-content {
+      width: 95vw !important;
+      max-width: 95vw !important;
+      max-height: 80vh !important;
+      padding: 10px !important;
+      font-size: 0.85em !important;
+    }
+    
+    .popout-content table {
+      font-size: 0.8em !important;
+    }
+    
+    .popout-content .section {
+      margin-bottom: 10px !important;
+      padding: 8px !important;
+    }
+    
+    /* Optimize existing popups for mobile portrait */
+    .popup {
+      font-size: 0.9em !important;
+      line-height: 1.4 !important;
+    }
+    
+    .popup h3 {
+      font-size: 1.1em !important;
+      margin-bottom: 10px !important;
+    }
+    
+    .popup button {
+      font-size: 0.8em !important;
+      padding: 6px 12px !important;
+      margin: 2px !important;
+    }
+    
+    .popup input,
+    .popup textarea,
+    .popup select {
+      font-size: 0.9em !important;
+      padding: 6px 8px !important;
+      margin: 2px 0 !important;
+    }
+    
     /* Prevent blue text on mobile inputs */
     input[type="text"], 
     input[type="number"], 
@@ -3087,21 +3131,23 @@ button[onclick*="home"] {
   }
 
   @media (max-width: 768px) {
+    /* Only apply single column for landscape mode */
+    @media (orientation: landscape) {
+      .section div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+      }
 
-     .section div[style*="grid-template-columns"] {
-      grid-template-columns: 1fr !important;
-    }
-
-    .background-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .background-textareas {
-      grid-template-columns: 1fr;
-    }
-    
-    .flex-wrap .section {
-      flex: 1 1 100%;
+      .background-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .background-textareas {
+        grid-template-columns: 1fr;
+      }
+      
+      .flex-wrap .section {
+        flex: 1 1 100%;
+      }
     }
     
     .horizontal-sections {
@@ -4214,7 +4260,7 @@ button[onclick*="home"] {
   }
   
   @media (max-width: 768px) and (orientation: portrait) {
-    /* Mobile portrait mode - single column layout without scaling */
+    /* Mobile portrait mode - optimized 2-column layout */
     body {
       transform: none;
       width: 100%;
@@ -4225,27 +4271,97 @@ button[onclick*="home"] {
       overflow-x: hidden;
     }
     
-    /* 2-column layout for mobile portrait */
+    /* Universal 2-column layout for all pages */
+    .page {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+      padding: 5px !important;
+    }
+    
+    /* Optimized 2-column layout for mobile portrait */
     .background-grid {
       grid-template-columns: 1fr 1fr !important;
-      gap: 10px;
+      gap: 8px;
+      padding: 5px;
     }
     
     .background-textareas {
       grid-template-columns: 1fr 1fr !important;
-      gap: 10px;
+      gap: 8px;
     }
     
     .horizontal-sections {
       display: grid !important;
       grid-template-columns: 1fr 1fr !important;
-      gap: 10px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
     
+    /* All sections in 2-column layout */
     .section {
       width: 100% !important;
       max-width: 100% !important;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      padding: 8px;
+      font-size: 0.9em;
+      min-height: fit-content;
+    }
+    
+    .section h2 {
+      font-size: 1.1em !important;
+      margin-bottom: 8px !important;
+    }
+    
+    .section h3 {
+      font-size: 1em !important;
+      margin-bottom: 6px !important;
+    }
+    
+    /* Popout button styling for space-saving */
+    .popout-btn {
+      background: var(--accent) !important;
+      color: black !important;
+      border: none !important;
+      padding: 4px 8px !important;
+      border-radius: 4px !important;
+      font-size: 0.7rem !important;
+      cursor: pointer !important;
+      margin: 2px !important;
+      display: inline-block !important;
+    }
+    
+    .popout-btn:hover {
+      background: var(--accent-hover) !important;
+      transform: translateY(-1px) !important;
+    }
+    
+    /* Compact table styling for mobile */
+    .section table {
+      font-size: 0.8em !important;
+      width: 100% !important;
+    }
+    
+    .section table th,
+    .section table td {
+      padding: 4px 2px !important;
+      white-space: nowrap !important;
+    }
+    
+    /* Compact form elements */
+    .section input[type="text"],
+    .section input[type="number"],
+    .section select {
+      font-size: 0.8em !important;
+      padding: 3px 5px !important;
+      margin: 1px 0 !important;
+    }
+    
+    /* Compact buttons */
+    .section button {
+      font-size: 0.7rem !important;
+      padding: 3px 6px !important;
+      margin: 1px !important;
     }
     
     /* Fix input fields in 2-column layout - prevent white outline */
@@ -4274,21 +4390,222 @@ button[onclick*="home"] {
       transform: translateY(-1px) !important;
     }
     
-    /* Fix sections for 2-column layout on mobile */
+    /* Optimize sections for 2-column layout on mobile */
     .horizontal-sections .section {
       width: 100% !important;
       min-width: unset !important;
       max-width: 100% !important;
+      padding: 6px;
     }
     
     .horizontal-sections .section h2 {
-      font-size: 1.2em !important;
-      margin-bottom: 10px !important;
+      font-size: 1em !important;
+      margin-bottom: 6px !important;
+    }
+    
+    .horizontal-sections .section h3 {
+      font-size: 0.9em !important;
+      margin-bottom: 4px !important;
     }
     
     .horizontal-sections .section button {
       font-size: 0.7rem !important;
-      padding: 4px 8px !important;
+      padding: 3px 6px !important;
+      margin: 2px;
+    }
+    
+    /* Better input sizing for 2-column layout */
+    .section input,
+    .section textarea,
+    .section select {
+      font-size: 0.85em !important;
+      padding: 4px 6px !important;
+      margin: 2px 0 !important;
+    }
+    
+    /* Ensure all grid layouts work in 2-column mode */
+    .character-info-section > div {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    
+    .notes-grid {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    
+    .favorites-grid {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    
+    /* Force all sections with grid layouts to use 2 columns */
+    .section div[style*="grid-template-columns"] {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    
+    /* Special handling for single-column content that should span both columns */
+    .section.full-width {
+      grid-column: 1 / -1 !important;
+    }
+    
+    /* Compact health section for mobile */
+    .health-container {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    
+    /* Compact ability scores */
+    .ability-row {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 4px !important;
+    }
+    
+    /* Compact spell slots */
+    .spell-slots-container {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    
+    /* Compact equipment and inventory */
+    .equipment-grid,
+    .inventory-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    
+    /* Ensure all flex layouts work in 2-column mode */
+    .flex-wrap {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    
+    /* Force all horizontal sections to use 2-column grid */
+    .horizontal-sections {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+      margin-bottom: 10px !important;
+    }
+    
+    /* Ensure character info sections work in 2-column mode */
+    .character-info-section {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    
+    /* Force all divs with inline grid styles to use 2-column */
+    div[style*="grid-template-columns"] {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    
+    /* Special handling for single-column content that should span both columns */
+    .full-width-mobile {
+      grid-column: 1 / -1 !important;
+    }
+    
+    /* Compact table styling for 2-column layout */
+    table {
+      font-size: 0.8em !important;
+    }
+    
+    /* Popout content styling */
+    .popout-content {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--popup-bg);
+      border: 2px solid var(--accent-border);
+      border-radius: 8px;
+      padding: 15px;
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .popout-content.show {
+      display: block !important;
+    }
+    
+    .popout-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+    
+    .popout-backdrop.show {
+      display: block !important;
+    }
+    
+    /* Compact text areas for mobile */
+    .section textarea {
+      min-height: 60px !important;
+      max-height: 120px !important;
+      resize: vertical !important;
+    }
+    
+    /* Hide less important content on mobile to save space */
+    .section .optional-content {
+      display: none !important;
+    }
+    
+    /* Show popout buttons for detailed content */
+    .section .show-details {
+      display: inline-block !important;
+    }
+    
+    /* Compact specific sections for mobile */
+    .section h2 {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+    }
+    
+    /* Hide detailed content in certain sections on mobile */
+    .section table tbody tr:nth-child(n+4) {
+      display: none !important;
+    }
+    
+    .section .show-more {
+      display: block !important;
+      text-align: center !important;
+      margin-top: 5px !important;
+    }
+    
+    /* Compact spell lists */
+    .spell-list .spell-item:nth-child(n+3) {
+      display: none !important;
+    }
+    
+    /* Compact equipment lists */
+    .equipment-list .equipment-item:nth-child(n+3) {
+      display: none !important;
+    }
+    
+    /* Compact weapon lists */
+    .weapon-list .weapon-item:nth-child(n+3) {
+      display: none !important;
+    }
+    
+    th, td {
+      padding: 4px 6px !important;
     }
     
     /* No text color overrides - let theme colors work naturally */
@@ -4395,7 +4712,10 @@ button[onclick*="home"] {
       -khtml-user-drag: none !important;
       -moz-user-drag: none !important;
       -o-user-drag: none !important;
-      user-drag: none !important;
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+      user-select: none !important;
     }
     
     /* Re-enable specific hover effects that should work on mobile portrait */
@@ -4477,6 +4797,44 @@ button[onclick*="home"] {
       -ms-animation: none !important;
       -o-transition: none !important;
       -o-animation: none !important;
+    }
+    
+    /* Touch improvements for portrait mode */
+    input[type="checkbox"] {
+      -webkit-tap-highlight-color: transparent !important;
+      touch-action: manipulation !important;
+      min-width: 18px !important;
+      min-height: 18px !important;
+    }
+    
+    button {
+      -webkit-tap-highlight-color: transparent !important;
+      touch-action: manipulation !important;
+      min-height: 36px !important; /* Reduced for better fit */
+    }
+    
+    .section {
+      -webkit-tap-highlight-color: transparent !important;
+      touch-action: manipulation !important;
+    }
+    
+    /* Ensure proper spacing and fit */
+    .character-sheet {
+      padding: 5px !important;
+    }
+    
+    .page {
+      margin: 2px !important;
+      padding: 5px !important;
+    }
+    
+    /* Compact spacing for better fit */
+    .skill-row {
+      margin-bottom: 4px !important;
+    }
+    
+    .spell-detail-row {
+      margin-bottom: 6px !important;
     }
   }
   
@@ -7197,6 +7555,9 @@ window.onload = function() {
   // Initialize web app features first
   initializeWebApp();
   
+  // Add popout buttons for mobile portrait mode
+  addPopoutButtons();
+  
   // Initialize character system
   loadCharacterList();
   
@@ -8734,6 +9095,116 @@ function closePopup(id) {
     popup.style.display = 'none';
     backdrop.style.display = 'none';
   }, 300); // Match the CSS transition duration
+}
+
+// ========== POPOUT FUNCTIONS FOR MOBILE ==========
+function showPopout(contentId, title) {
+  // Create popout if it doesn't exist
+  let popout = document.getElementById('mobilePopout');
+  if (!popout) {
+    popout = document.createElement('div');
+    popout.id = 'mobilePopout';
+    popout.className = 'popout-content';
+    document.body.appendChild(popout);
+  }
+  
+  // Create backdrop if it doesn't exist
+  let backdrop = document.getElementById('mobilePopoutBackdrop');
+  if (!backdrop) {
+    backdrop = document.createElement('div');
+    backdrop.id = 'mobilePopoutBackdrop';
+    backdrop.className = 'popout-backdrop';
+    backdrop.onclick = () => closePopout();
+    document.body.appendChild(backdrop);
+  }
+  
+  // Get content to show
+  const content = document.getElementById(contentId);
+  if (!content) {
+    console.error('Content not found:', contentId);
+    return;
+  }
+  
+  // Clone and show content
+  const clonedContent = content.cloneNode(true);
+  clonedContent.style.display = 'block';
+  clonedContent.style.width = '100%';
+  
+  // Add close button
+  const closeBtn = document.createElement('button');
+  closeBtn.innerHTML = '✕ Close';
+  closeBtn.className = 'popout-btn';
+  closeBtn.style.float = 'right';
+  closeBtn.style.marginBottom = '10px';
+  closeBtn.onclick = () => closePopout();
+  
+  // Set popout content
+  popout.innerHTML = '';
+  if (title) {
+    const titleEl = document.createElement('h3');
+    titleEl.textContent = title;
+    titleEl.style.marginTop = '0';
+    popout.appendChild(titleEl);
+  }
+  popout.appendChild(closeBtn);
+  popout.appendChild(clonedContent);
+  
+  // Show popout
+  backdrop.classList.add('show');
+  popout.classList.add('show');
+}
+
+function closePopout() {
+  const popout = document.getElementById('mobilePopout');
+  const backdrop = document.getElementById('mobilePopoutBackdrop');
+  
+  if (popout) popout.classList.remove('show');
+  if (backdrop) backdrop.classList.remove('show');
+}
+
+// Add popout buttons to sections on mobile
+function addPopoutButtons() {
+  // Remove existing popout buttons first
+  document.querySelectorAll('.popout-btn, .show-more').forEach(btn => btn.remove());
+  
+  // Only add on mobile portrait
+  if (window.innerWidth <= 768 && window.innerHeight > window.innerWidth) {
+    // Add popout buttons to detailed sections
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => {
+      const h2 = section.querySelector('h2');
+      if (h2 && !section.querySelector('.popout-btn')) {
+        const popoutBtn = document.createElement('button');
+        popoutBtn.className = 'popout-btn show-details';
+        popoutBtn.innerHTML = '📋 Details';
+        popoutBtn.onclick = () => {
+          const sectionId = section.id || 'section_' + Math.random().toString(36).substr(2, 9);
+          if (!section.id) section.id = sectionId;
+          showPopout(sectionId, h2.textContent);
+        };
+        h2.appendChild(popoutBtn);
+      }
+      
+      // Add "Show More" buttons for tables with hidden rows
+      const table = section.querySelector('table tbody');
+      if (table && table.children.length > 3) {
+        const showMoreBtn = document.createElement('button');
+        showMoreBtn.className = 'popout-btn show-more';
+        showMoreBtn.innerHTML = 'Show All (' + table.children.length + ')';
+        showMoreBtn.onclick = () => {
+          const sectionId = section.id || 'section_' + Math.random().toString(36).substr(2, 9);
+          if (!section.id) section.id = sectionId;
+          showPopout(sectionId, h2 ? h2.textContent : 'Details');
+        };
+        section.appendChild(showMoreBtn);
+      }
+    });
+  }
+}
+
+// Handle viewport changes to update popout buttons
+function handleViewportChange() {
+  addPopoutButtons();
 }
 
 function closeAllPopups() {
