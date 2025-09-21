@@ -15,13 +15,8 @@
 <meta name="msapplication-TileColor" content="#4a90e2">
 <meta name="msapplication-tap-highlight" content="no">
 
-<!-- iOS PWA Icons -->
-<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiM0YTkwZTIiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+">
-<link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiByeD0iMjIiIGZpbGw9IiM0YTkwZTIiLz4KPHN2ZyB4PSI0NSIgeT0iNDUiIHdpZHRoPSI5MCIgaGVpZ2h0PSI5MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+">
-
 <!-- PWA Manifest -->
 <link rel="manifest" href="data:application/json,{
-  <link rel="manifest" href="data:application/json,
   &quot;name&quot;: &quot;D&D Character Sheet&quot;,
   &quot;short_name&quot;: &quot;D&D Sheet&quot;,
   &quot;description&quot;: &quot;Professional D&D 5e Character Sheet with auto-save and mobile support&quot;,
@@ -713,7 +708,6 @@ button[onclick*="home"] {
     font-size: 0.9rem;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
   }
   
   /* Main Grid Layout */
@@ -1131,6 +1125,22 @@ button[onclick*="home"] {
       gap: 8px !important;
     }
     
+    /* Disable ALL hover effects on mobile */
+    *:hover {
+      transform: none !important;
+      box-shadow: inherit !important;
+      background: inherit !important;
+      border-color: inherit !important;
+    }
+    
+    /* Re-enable specific hover effects that should work on mobile */
+    button:hover {
+      opacity: 0.8;
+    }
+    
+    input:hover, textarea:hover, select:hover {
+      border-color: var(--accent) !important;
+    }
     
     /* Improved touch scrolling for mobile */
     body {
@@ -3020,49 +3030,6 @@ button[onclick*="home"] {
       padding: 6px 4px;
     }
     
-    /* Mobile popout content styling */
-    .popout-content {
-      width: 95vw !important;
-      max-width: 95vw !important;
-      max-height: 80vh !important;
-      padding: 10px !important;
-      font-size: 0.85em !important;
-    }
-    
-    .popout-content table {
-      font-size: 0.8em !important;
-    }
-    
-    .popout-content .section {
-      margin-bottom: 10px !important;
-      padding: 8px !important;
-    }
-    
-    /* Optimize existing popups for mobile portrait */
-    .popup {
-      font-size: 0.9em !important;
-      line-height: 1.4 !important;
-    }
-    
-    .popup h3 {
-      font-size: 1.1em !important;
-      margin-bottom: 10px !important;
-    }
-    
-    .popup button {
-      font-size: 0.8em !important;
-      padding: 6px 12px !important;
-      margin: 2px !important;
-    }
-    
-    .popup input,
-    .popup textarea,
-    .popup select {
-      font-size: 0.9em !important;
-      padding: 6px 8px !important;
-      margin: 2px 0 !important;
-    }
-    
     /* Prevent blue text on mobile inputs */
     input[type="text"], 
     input[type="number"], 
@@ -3131,23 +3098,21 @@ button[onclick*="home"] {
   }
 
   @media (max-width: 768px) {
-    /* Only apply single column for landscape mode */
-    @media (orientation: landscape) {
-      .section div[style*="grid-template-columns"] {
-        grid-template-columns: 1fr !important;
-      }
 
-      .background-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .background-textareas {
-        grid-template-columns: 1fr;
-      }
-      
-      .flex-wrap .section {
-        flex: 1 1 100%;
-      }
+     .section div[style*="grid-template-columns"] {
+      grid-template-columns: 1fr !important;
+    }
+
+    .background-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .background-textareas {
+      grid-template-columns: 1fr;
+    }
+    
+    .flex-wrap .section {
+      flex: 1 1 100%;
     }
     
     .horizontal-sections {
@@ -4260,7 +4225,7 @@ button[onclick*="home"] {
   }
   
   @media (max-width: 768px) and (orientation: portrait) {
-    /* Mobile portrait mode - optimized 2-column layout */
+    /* Mobile portrait mode - single column layout without scaling */
     body {
       transform: none;
       width: 100%;
@@ -4271,341 +4236,44 @@ button[onclick*="home"] {
       overflow-x: hidden;
     }
     
-    /* Universal 2-column layout for all pages */
-    .page {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-      padding: 5px !important;
-    }
-    
-    /* Optimized 2-column layout for mobile portrait */
+    /* Single column layout for mobile portrait */
     .background-grid {
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px;
-      padding: 5px;
+      grid-template-columns: 1fr !important;
+      gap: 10px;
     }
     
     .background-textareas {
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px;
+      grid-template-columns: 1fr !important;
+      gap: 10px;
     }
     
     .horizontal-sections {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px;
-      margin-bottom: 10px;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 10px;
     }
     
-    /* All sections in 2-column layout */
     .section {
       width: 100% !important;
       max-width: 100% !important;
-      margin-bottom: 8px;
-      padding: 8px;
-      font-size: 0.9em;
-      min-height: fit-content;
+      margin-bottom: 10px;
     }
     
-    .section h2 {
-      font-size: 1.1em !important;
-      margin-bottom: 8px !important;
-    }
-    
-    .section h3 {
-      font-size: 1em !important;
-      margin-bottom: 6px !important;
-    }
-    
-    /* Popout button styling for space-saving */
-    .popout-btn {
-      background: var(--accent) !important;
-      color: black !important;
-      border: none !important;
-      padding: 4px 8px !important;
-      border-radius: 4px !important;
-      font-size: 0.7rem !important;
-      cursor: pointer !important;
-      margin: 2px !important;
-      display: inline-block !important;
-    }
-    
-    .popout-btn:hover {
-      background: var(--accent-hover) !important;
-      transform: translateY(-1px) !important;
-    }
-    
-    /* Compact table styling for mobile */
-    .section table {
-      font-size: 0.8em !important;
-      width: 100% !important;
-    }
-    
-    .section table th,
-    .section table td {
-      padding: 4px 2px !important;
-      white-space: nowrap !important;
-    }
-    
-    /* Compact form elements */
-    .section input[type="text"],
-    .section input[type="number"],
-    .section select {
-      font-size: 0.8em !important;
-      padding: 3px 5px !important;
-      margin: 1px 0 !important;
-    }
-    
-    /* Compact buttons */
-    .section button {
-      font-size: 0.7rem !important;
-      padding: 3px 6px !important;
-      margin: 1px !important;
-    }
-    
-    /* Fix input fields in 2-column layout - prevent white outline */
-    .section input,
-    .section textarea,
-    .section select,
-    .horizontal-sections input,
-    .horizontal-sections textarea,
-    .horizontal-sections select {
-      outline: none !important;
-      -webkit-tap-highlight-color: transparent !important;
-      -webkit-appearance: none !important;
-      -moz-appearance: none !important;
-      appearance: none !important;
-    }
-    
-    .section input:focus,
-    .section textarea:focus,
-    .section select:focus,
-    .horizontal-sections input:focus,
-    .horizontal-sections textarea:focus,
-    .horizontal-sections select:focus {
-      outline: none !important;
-      border-color: var(--accent) !important;
-      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2) !important;
-      transform: translateY(-1px) !important;
-    }
-    
-    /* Optimize sections for 2-column layout on mobile */
+    /* Fix weapons and equipment sections on mobile */
     .horizontal-sections .section {
-      width: 100% !important;
+      flex: 1 1 100% !important;
       min-width: unset !important;
-      max-width: 100% !important;
-      padding: 6px;
+      width: 100% !important;
     }
     
     .horizontal-sections .section h2 {
-      font-size: 1em !important;
-      margin-bottom: 6px !important;
-    }
-    
-    .horizontal-sections .section h3 {
-      font-size: 0.9em !important;
-      margin-bottom: 4px !important;
+      font-size: 1.2em !important;
+      margin-bottom: 10px !important;
     }
     
     .horizontal-sections .section button {
       font-size: 0.7rem !important;
-      padding: 3px 6px !important;
-      margin: 2px;
-    }
-    
-    /* Better input sizing for 2-column layout */
-    .section input,
-    .section textarea,
-    .section select {
-      font-size: 0.85em !important;
-      padding: 4px 6px !important;
-      margin: 2px 0 !important;
-    }
-    
-    /* Ensure all grid layouts work in 2-column mode */
-    .character-info-section > div {
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-    }
-    
-    .notes-grid {
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-    }
-    
-    .favorites-grid {
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-    }
-    
-    /* Force all sections with grid layouts to use 2 columns */
-    .section div[style*="grid-template-columns"] {
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-    }
-    
-    /* Special handling for single-column content that should span both columns */
-    .section.full-width {
-      grid-column: 1 / -1 !important;
-    }
-    
-    /* Compact health section for mobile */
-    .health-container {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-    }
-    
-    /* Compact ability scores */
-    .ability-row {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 4px !important;
-    }
-    
-    /* Compact spell slots */
-    .spell-slots-container {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-    }
-    
-    /* Compact equipment and inventory */
-    .equipment-grid,
-    .inventory-grid {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-    }
-    
-    /* Ensure all flex layouts work in 2-column mode */
-    .flex-wrap {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-    }
-    
-    /* Force all horizontal sections to use 2-column grid */
-    .horizontal-sections {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-      margin-bottom: 10px !important;
-    }
-    
-    /* Ensure character info sections work in 2-column mode */
-    .character-info-section {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-    }
-    
-    /* Force all divs with inline grid styles to use 2-column */
-    div[style*="grid-template-columns"] {
-      grid-template-columns: 1fr 1fr !important;
-      gap: 8px !important;
-    }
-    
-    /* Special handling for single-column content that should span both columns */
-    .full-width-mobile {
-      grid-column: 1 / -1 !important;
-    }
-    
-    /* Compact table styling for 2-column layout */
-    table {
-      font-size: 0.8em !important;
-    }
-    
-    /* Popout content styling */
-    .popout-content {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--popup-bg);
-      border: 2px solid var(--accent-border);
-      border-radius: 8px;
-      padding: 15px;
-      max-width: 90vw;
-      max-height: 80vh;
-      overflow-y: auto;
-      z-index: 1000;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-    
-    .popout-content.show {
-      display: block !important;
-    }
-    
-    .popout-backdrop {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 999;
-    }
-    
-    .popout-backdrop.show {
-      display: block !important;
-    }
-    
-    /* Compact text areas for mobile */
-    .section textarea {
-      min-height: 60px !important;
-      max-height: 120px !important;
-      resize: vertical !important;
-    }
-    
-    /* Hide less important content on mobile to save space */
-    .section .optional-content {
-      display: none !important;
-    }
-    
-    /* Show popout buttons for detailed content */
-    .section .show-details {
-      display: inline-block !important;
-    }
-    
-    /* Compact specific sections for mobile */
-    .section h2 {
-      display: flex !important;
-      justify-content: space-between !important;
-      align-items: center !important;
-    }
-    
-    /* Hide detailed content in certain sections on mobile */
-    .section table tbody tr:nth-child(n+4) {
-      display: none !important;
-    }
-    
-    .section .show-more {
-      display: block !important;
-      text-align: center !important;
-      margin-top: 5px !important;
-    }
-    
-    /* Compact spell lists */
-    .spell-list .spell-item:nth-child(n+3) {
-      display: none !important;
-    }
-    
-    /* Compact equipment lists */
-    .equipment-list .equipment-item:nth-child(n+3) {
-      display: none !important;
-    }
-    
-    /* Compact weapon lists */
-    .weapon-list .weapon-item:nth-child(n+3) {
-      display: none !important;
-    }
-    
-    th, td {
-      padding: 4px 6px !important;
+      padding: 4px 8px !important;
     }
     
     /* No text color overrides - let theme colors work naturally */
@@ -4643,198 +4311,6 @@ button[onclick*="home"] {
       font-size: 0.9em;
       padding: 8px 10px;
       min-height: 18px;
-    }
-    
-    /* Disable hover effects on specific elements that cause white-out */
-    .section:hover,
-    .home-card:hover,
-    .tip-category:hover,
-    .feature-item:hover,
-    .character-manager-grid > div:hover {
-      transform: none !important;
-      box-shadow: inherit !important;
-      background: inherit !important;
-      border-color: inherit !important;
-    }
-    
-    /* Disable active/tap effects on specific elements */
-    .section:active,
-    .home-card:active,
-    .tip-category:active,
-    .feature-item:active,
-    .character-manager-grid > div:active {
-      transform: none !important;
-      box-shadow: inherit !important;
-      background: inherit !important;
-      border-color: inherit !important;
-      opacity: inherit !important;
-    }
-    
-    /* Disable tap highlights on mobile */
-    .section,
-    .home-card,
-    .tip-category,
-    .feature-item,
-    .character-manager-grid > div {
-      -webkit-tap-highlight-color: transparent !important;
-      -webkit-touch-callout: none !important;
-    }
-    
-    /* Disable resize functionality on mobile portrait */
-    .section {
-      resize: none !important;
-    }
-    
-    textarea {
-      resize: none !important;
-    }
-    
-    .basic-textarea {
-      resize: none !important;
-    }
-    
-    .resizable {
-      resize: none !important;
-    }
-    
-    /* Disable resize handles */
-    .section::-webkit-resizer {
-      display: none !important;
-    }
-    
-    textarea::-webkit-resizer {
-      display: none !important;
-    }
-    
-    /* Disable drag-related effects on sections only */
-    .section {
-      -webkit-user-drag: none !important;
-      -khtml-user-drag: none !important;
-      -moz-user-drag: none !important;
-      -o-user-drag: none !important;
-      -webkit-user-select: none !important;
-      -moz-user-select: none !important;
-      -ms-user-select: none !important;
-      user-select: none !important;
-    }
-    
-    /* Re-enable specific hover effects that should work on mobile portrait */
-    button:hover {
-      opacity: 0.8;
-    }
-    
-    input:hover, textarea:hover, select:hover {
-      border-color: var(--accent) !important;
-    }
-    
-    /* Apply same focus effect as landscape mode to portrait mode */
-    input:focus,
-    textarea:focus,
-    select:focus {
-      outline: none !important;
-      border-color: var(--accent) !important;
-      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2) !important;
-      transform: translateY(-1px) !important;
-    }
-    
-    /* Remove white outline but keep normal styling */
-    input,
-    textarea,
-    select {
-      -webkit-tap-highlight-color: transparent !important;
-      -webkit-appearance: none !important;
-      -moz-appearance: none !important;
-      appearance: none !important;
-    }
-    
-    /* Remove all hover effects on mobile portrait */
-    .section:hover,
-    .home-card:hover,
-    .tip-category:hover,
-    .feature-item:hover,
-    .character-manager-grid > div:hover,
-    .create-btn:hover,
-    .load-btn:hover,
-    .delete-btn:hover,
-    .submit-btn:hover,
-    .step-number:hover,
-    .feature-badge:hover {
-      transform: none !important;
-      box-shadow: inherit !important;
-      background: inherit !important;
-      border-color: inherit !important;
-      opacity: inherit !important;
-    }
-    
-    /* Remove all active effects on mobile portrait */
-    .section:active,
-    .home-card:active,
-    .tip-category:active,
-    .feature-item:active,
-    .character-manager-grid > div:active,
-    .create-btn:active,
-    .load-btn:active,
-    .delete-btn:active,
-    .submit-btn:active,
-    .step-number:active,
-    .feature-badge:active {
-      transform: none !important;
-      box-shadow: inherit !important;
-      background: inherit !important;
-      border-color: inherit !important;
-      opacity: inherit !important;
-    }
-    
-    /* Disable all transitions and animations on mobile portrait */
-    * {
-      transition: none !important;
-      animation: none !important;
-      -webkit-transition: none !important;
-      -webkit-animation: none !important;
-      -moz-transition: none !important;
-      -moz-animation: none !important;
-      -ms-transition: none !important;
-      -ms-animation: none !important;
-      -o-transition: none !important;
-      -o-animation: none !important;
-    }
-    
-    /* Touch improvements for portrait mode */
-    input[type="checkbox"] {
-      -webkit-tap-highlight-color: transparent !important;
-      touch-action: manipulation !important;
-      min-width: 18px !important;
-      min-height: 18px !important;
-    }
-    
-    button {
-      -webkit-tap-highlight-color: transparent !important;
-      touch-action: manipulation !important;
-      min-height: 36px !important; /* Reduced for better fit */
-    }
-    
-    .section {
-      -webkit-tap-highlight-color: transparent !important;
-      touch-action: manipulation !important;
-    }
-    
-    /* Ensure proper spacing and fit */
-    .character-sheet {
-      padding: 5px !important;
-    }
-    
-    .page {
-      margin: 2px !important;
-      padding: 5px !important;
-    }
-    
-    /* Compact spacing for better fit */
-    .skill-row {
-      margin-bottom: 4px !important;
-    }
-    
-    .spell-detail-row {
-      margin-bottom: 6px !important;
     }
   }
   
@@ -4901,109 +4377,6 @@ button[onclick*="home"] {
 
   </style>
   
-  <!-- Toast Notification Styles -->
-  <style>
-    .toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    
-    .toast {
-      background: var(--card-bg);
-      border: 1px solid var(--accent-border);
-      border-radius: 8px;
-      padding: 15px 20px;
-      min-width: 300px;
-      max-width: 400px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      transform: translateX(100%);
-      opacity: 0;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .toast.show {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    
-    .toast.success {
-      border-left: 4px solid #2ecc71;
-    }
-    
-    .toast.error {
-      border-left: 4px solid #e74c3c;
-    }
-    
-    .toast.warning {
-      border-left: 4px solid #f39c12;
-    }
-    
-    .toast.info {
-      border-left: 4px solid #3498db;
-    }
-    
-    .toast-icon {
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-    
-    .toast-content {
-      flex: 1;
-    }
-    
-    .toast-title {
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: var(--text);
-    }
-    
-    .toast-message {
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-    
-    .toast-close {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-size: 18px;
-      padding: 0;
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-    }
-    
-    .toast-close:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-    
-    @media (max-width: 768px) {
-      .toast-container {
-        top: 10px;
-        right: 10px;
-        left: 10px;
-      }
-      
-      .toast {
-        min-width: auto;
-        max-width: none;
-      }
-    }
-  </style>
-  
   <!-- Immediate accent color loading to prevent flash -->
   <script>
     // Load saved accent color immediately to prevent flash
@@ -5024,9 +4397,6 @@ button[onclick*="home"] {
   </script>
 </head>
 <body>
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
-
 <!-- Warning Banner -->
 <div style="text-align:center; background:#222; color:#ccc; padding:8px; border-bottom: var(--border);">
 ⚠️ This sheet autosaves character data to your browser. Use Export to back up your character.
@@ -5054,7 +4424,7 @@ button[onclick*="home"] {
   <button id="saveLayoutBtn" style="background: var(--accent); color: black;">Save Layout</button>
 
   <!-- Save Data -->
-  <button id="saveDataBtn" onclick="autosave(); showToast('Character data saved!', 'success', 'Saved', 2000);" style="background: var(--accent); color: black;" aria-label="Save character data" title="Save character data (Ctrl+S)">Save Data</button>
+  <button id="saveDataBtn" onclick="autosave(); alert('Character data saved!');" style="background: var(--accent); color: black;">Save Data</button>
 
   <!-- Settings Dropdown -->
   <div style="position: relative; display: inline-block;">
@@ -5103,14 +4473,6 @@ button[onclick*="home"] {
           Import Character
           <input onchange="importData(event)" style="display: none;" type="file"/>
         </label>
-      </div>
-
-      <!-- GitHub Backup -->
-      <div style="border-top: 1px solid #444; margin: 10px 0; padding-top: 10px;">
-        <div style="font-weight: bold; margin-bottom: 8px; color: var(--text-light); font-size: 0.9rem;">GitHub Backup</div>
-        <button onclick="setGithubToken()" style="width: 100%; margin-bottom: 5px; background: #28a745; color: white; font-size: 0.8rem; padding: 6px;">Set GitHub Token</button>
-        <button onclick="backupToCloud()" style="width: 100%; margin-bottom: 5px; background: #007bff; color: white; font-size: 0.8rem; padding: 6px;">Backup to Cloud</button>
-        <button onclick="restoreFromCloud()" style="width: 100%; background: #6c757d; color: white; font-size: 0.8rem; padding: 6px;">Restore from Cloud</button>
       </div>
 
     </div>
@@ -5362,7 +4724,7 @@ button[onclick*="home"] {
   <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;">
     <div>
       <label>Name</label>
-      <input id="char_name" oninput="autosave()" placeholder="Character Name" aria-label="Character Name" title="Enter your character's name"/>
+      <input id="char_name" oninput="autosave()" placeholder="Character Name"/>
     </div>
     <div>
       <label>Race</label>
@@ -5378,7 +4740,7 @@ button[onclick*="home"] {
     </div>
     <div>
       <label>Level</label>
-      <input id="char_level" oninput="autosave(); validateInput(this, 'level', 'Level')" type="number" min="1" placeholder="Level" aria-label="Character Level" title="Enter character level (1-20)"/>
+      <input id="char_level" oninput="autosave()" type="number" min="1" placeholder="Level"/>
     </div>
   </div>
 </div>
@@ -5391,61 +4753,61 @@ button[onclick*="home"] {
           <div class="ability-row">
             <div class="ability-col">
               <label>STR</label>
-              <input id="str" maxlength="3" oninput="autosave(); updateAbilityBonus('Strength', this, document.getElementById('str_bonus'))" onblur="validateInput(this, 'ability', 'Strength')" onkeypress="if(event.key==='Enter') validateInput(this, 'ability', 'Strength')"/>
+              <input id="str" oninput="autosave()"/>
             </div>
             <div class="ability-col">
               <label>Bonus</label>
-              <input id="str_bonus" maxlength="3" onclick="handleBonusClick('Strength', this)" oninput="autosave(); handleBonusInput('Strength', this, document.getElementById('str'))" onblur="validateInput(this, 'simple', 'Strength Bonus')" onkeypress="if(event.key==='Enter') validateInput(this, 'simple', 'Strength Bonus')"/>
+              <input id="str_bonus" oninput="autosave()"/>
             </div>
           </div>
           <div class="ability-row">
             <div class="ability-col">
               <label>DEX</label>
-              <input id="dex" maxlength="3" oninput="autosave(); updateAbilityBonus('Dexterity', this, document.getElementById('dex_bonus'))" onblur="validateInput(this, 'ability', 'Dexterity')" onkeypress="if(event.key==='Enter') validateInput(this, 'ability', 'Dexterity')"/>
+              <input id="dex" oninput="autosave()"/>
             </div>
             <div class="ability-col">
               <label>Bonus</label>
-              <input id="dex_bonus" maxlength="3" onclick="handleBonusClick('Dexterity', this)" oninput="autosave(); handleBonusInput('Dexterity', this, document.getElementById('dex'))" onblur="validateInput(this, 'simple', 'Dexterity Bonus')" onkeypress="if(event.key==='Enter') validateInput(this, 'simple', 'Dexterity Bonus')"/>
+              <input id="dex_bonus" oninput="autosave()"/>
             </div>
           </div>
           <div class="ability-row">
             <div class="ability-col">
               <label>CON</label>
-              <input id="con" maxlength="3" oninput="autosave(); updateAbilityBonus('Constitution', this, document.getElementById('con_bonus'))" onblur="validateInput(this, 'ability', 'Constitution')" onkeypress="if(event.key==='Enter') validateInput(this, 'ability', 'Constitution')"/>
+              <input id="con" oninput="autosave()"/>
             </div>
             <div class="ability-col">
               <label>Bonus</label>
-              <input id="con_bonus" maxlength="3" onclick="handleBonusClick('Constitution', this)" oninput="autosave(); handleBonusInput('Constitution', this, document.getElementById('con'))" onblur="validateInput(this, 'simple', 'Constitution Bonus')" onkeypress="if(event.key==='Enter') validateInput(this, 'simple', 'Constitution Bonus')"/>
+              <input id="con_bonus" oninput="autosave()"/>
             </div>
           </div>
           <div class="ability-row">
             <div class="ability-col">
               <label>INT</label>
-              <input id="int" maxlength="3" oninput="autosave(); updateAbilityBonus('Intelligence', this, document.getElementById('int_bonus'))" onblur="validateInput(this, 'ability', 'Intelligence')" onkeypress="if(event.key==='Enter') validateInput(this, 'ability', 'Intelligence')"/>
+              <input id="int" oninput="autosave()"/>
             </div>
             <div class="ability-col">
               <label>Bonus</label>
-              <input id="int_bonus" maxlength="3" onclick="handleBonusClick('Intelligence', this)" oninput="autosave(); handleBonusInput('Intelligence', this, document.getElementById('int'))" onblur="validateInput(this, 'simple', 'Intelligence Bonus')" onkeypress="if(event.key==='Enter') validateInput(this, 'simple', 'Intelligence Bonus')"/>
+              <input id="int_bonus" oninput="autosave()"/>
             </div>
           </div>
           <div class="ability-row">
             <div class="ability-col">
               <label>WIS</label>
-              <input id="wis" maxlength="3" oninput="autosave(); updateAbilityBonus('Wisdom', this, document.getElementById('wis_bonus'))" onblur="validateInput(this, 'ability', 'Wisdom')" onkeypress="if(event.key==='Enter') validateInput(this, 'ability', 'Wisdom')"/>
+              <input id="wis" oninput="autosave()"/>
             </div>
             <div class="ability-col">
               <label>Bonus</label>
-              <input id="wis_bonus" maxlength="3" onclick="handleBonusClick('Wisdom', this)" oninput="autosave(); handleBonusInput('Wisdom', this, document.getElementById('wis'))" onblur="validateInput(this, 'simple', 'Wisdom Bonus')" onkeypress="if(event.key==='Enter') validateInput(this, 'simple', 'Wisdom Bonus')"/>
+              <input id="wis_bonus" oninput="autosave()"/>
             </div>
           </div>
           <div class="ability-row">
             <div class="ability-col">
               <label>CHA</label>
-              <input id="cha" maxlength="3" oninput="autosave(); updateAbilityBonus('Charisma', this, document.getElementById('cha_bonus'))" onblur="validateInput(this, 'simple', 'Charisma')" onkeypress="if(event.key==='Enter') validateInput(this, 'simple', 'Charisma')"/>
+              <input id="cha" oninput="autosave()"/>
             </div>
             <div class="ability-col">
               <label>Bonus</label>
-              <input id="cha_bonus" maxlength="3" onclick="handleBonusClick('Charisma', this)" oninput="autosave(); handleBonusInput('Charisma', this, document.getElementById('cha'))" onblur="validateInput(this, 'simple', 'Charisma Bonus')" onkeypress="if(event.key==='Enter') validateInput(this, 'simple', 'Charisma Bonus')"/>
+              <input id="cha_bonus" oninput="autosave()"/>
             </div>
           </div>
         </div>
@@ -5467,7 +4829,7 @@ button[onclick*="home"] {
           </div>
           <div class="combat-stat-item">
             <label>Prof. Bonus</label>
-            <input id="prof_bonus" maxlength="3" oninput="autosave(); formatBonusInput(this)" onblur="validateInput(this, 'simple', 'Proficiency Bonus')" onkeypress="if(event.key==='Enter') validateInput(this, 'simple', 'Proficiency Bonus')"/>
+            <input id="prof_bonus" oninput="autosave()"/>
           </div>
         </div>
         <!-- Saving Throws - Added inside the same section -->
@@ -6878,425 +6240,6 @@ function makeContainersResizable() {
   });
 }
 
-// ========== TOAST NOTIFICATION SYSTEM ==========
-function showToast(message, type = 'info', title = '', duration = 4000) {
-  const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  
-  const icons = {
-    success: '✅',
-    error: '❌',
-    warning: '⚠️',
-    info: 'ℹ️'
-  };
-  
-  const titles = {
-    success: title || 'Success',
-    error: title || 'Error',
-    warning: title || 'Warning',
-    info: title || 'Info'
-  };
-  
-  toast.innerHTML = `
-    <div class="toast-icon">${icons[type] || icons.info}</div>
-    <div class="toast-content">
-      <div class="toast-title">${titles[type]}</div>
-      <div class="toast-message">${message}</div>
-    </div>
-    <button class="toast-close" onclick="closeToast(this)">×</button>
-  `;
-  
-  container.appendChild(toast);
-  
-  // Trigger animation
-  setTimeout(() => toast.classList.add('show'), 100);
-  
-  // Auto remove
-  if (duration > 0) {
-    setTimeout(() => closeToast(toast.querySelector('.toast-close')), duration);
-  }
-  
-  return toast;
-}
-
-function closeToast(button) {
-  const toast = button.closest('.toast');
-  toast.classList.remove('show');
-  setTimeout(() => toast.remove(), 300);
-}
-
-// ========== INPUT VALIDATION SYSTEM ==========
-function validateAbilityScore(score) {
-  const num = parseInt(score);
-  return !isNaN(num) && num >= 1 && num <= 30;
-}
-
-function validateLevel(level) {
-  const num = parseInt(level);
-  return !isNaN(num) && num >= 1 && num <= 20;
-}
-
-function validateHitPoints(hp) {
-  const num = parseInt(hp);
-  return !isNaN(num) && num >= 0 && num <= 999;
-}
-
-function validateArmorClass(ac) {
-  const num = parseInt(ac);
-  return !isNaN(num) && num >= 0 && num <= 30;
-}
-
-function validateSpeed(speed) {
-  const num = parseInt(speed);
-  return !isNaN(num) && num >= 0 && num <= 200;
-}
-
-function formatBonusInput(input) {
-  let value = input.value;
-  
-  // Remove any existing plus signs
-  value = value.replace(/[+]/g, '');
-  
-  // Add plus sign at the beginning if there's a value
-  if (value && value !== '') {
-    input.value = '+' + value;
-  }
-  
-  // Limit to 3 characters total (including the +)
-  if (input.value.length > 3) {
-    input.value = input.value.substring(0, 3);
-  }
-}
-
-function calculateAbilityBonus(score) {
-  if (!score || isNaN(score)) return 0;
-  const numScore = parseInt(score);
-  if (numScore < 10) return Math.floor((numScore - 10) / 2);
-  return Math.floor((numScore - 10) / 2);
-}
-
-function updateAbilityBonus(abilityName, scoreInput, bonusInput) {
-  const score = scoreInput.value;
-  const calculatedBonus = calculateAbilityBonus(score);
-  
-  // Check if this is a manual override
-  const overrideKey = abilityName.toLowerCase() + '_override';
-  const isOverride = localStorage.getItem(overrideKey) === 'true';
-  
-  if (!isOverride) {
-    // Auto-calculate bonus
-    if (calculatedBonus >= 0) {
-      bonusInput.value = '+' + calculatedBonus;
-    } else {
-      bonusInput.value = calculatedBonus.toString();
-    }
-  }
-}
-
-function handleBonusClick(abilityName, bonusInput) {
-  const overrideKey = abilityName.toLowerCase() + '_override';
-  const cooldownKey = abilityName.toLowerCase() + '_cooldown';
-  
-  // Check if we're in cooldown period for popup
-  const lastPopup = localStorage.getItem(cooldownKey);
-  const now = Date.now();
-  const cooldownTime = 120000; // 120 seconds in milliseconds
-  
-  // Check if already overridden
-  const isOverride = localStorage.getItem(overrideKey) === 'true';
-  
-  if (!isOverride) {
-    // Start override - always allow this
-    localStorage.setItem(overrideKey, 'true');
-    localStorage.setItem(cooldownKey, now.toString());
-    showToast(`Manual override enabled for ${abilityName}. Clear to 0 to reset.`, 'info', 'Override Enabled');
-    bonusInput.focus();
-  } else {
-    // Already overridden - check if we should show popup
-    if (lastPopup && (now - parseInt(lastPopup)) < cooldownTime) {
-      // In cooldown - just focus without popup
-      bonusInput.focus();
-    } else {
-      // Not in cooldown - show popup and update cooldown
-      showToast(`Manual override enabled for ${abilityName}. Clear to 0 to reset.`, 'info', 'Override Enabled');
-      localStorage.setItem(cooldownKey, now.toString());
-      bonusInput.focus();
-    }
-  }
-}
-
-function handleBonusInput(abilityName, bonusInput, scoreInput) {
-  const value = bonusInput.value.trim();
-  
-  // If cleared to empty or 0, reset to auto-calculation
-  if (value === '' || value === '0' || value === '+0') {
-    const overrideKey = abilityName.toLowerCase() + '_override';
-    localStorage.removeItem(overrideKey);
-    updateAbilityBonus(abilityName, scoreInput, bonusInput);
-    showToast(`${abilityName} reset to auto-calculation`, 'info', 'Reset');
-  } else {
-    // Format the input
-    formatBonusInput(bonusInput);
-  }
-}
-
-function validateInput(input, type, fieldName) {
-  let isValid = false;
-  let message = '';
-  
-  // Skip validation if field is empty
-  if (input.value.trim() === '') {
-    input.style.borderColor = '';
-    return true;
-  }
-  
-  switch(type) {
-    case 'ability':
-      // More flexible ability score validation - allow 1-30 or simple numbers
-      const abilityValue = parseInt(input.value);
-      isValid = !isNaN(abilityValue) && abilityValue >= 1 && abilityValue <= 30;
-      message = `${fieldName} must be between 1 and 30`;
-      break;
-    case 'level':
-      isValid = validateLevel(input.value);
-      message = `${fieldName} must be between 1 and 20`;
-      break;
-    case 'hp':
-      isValid = validateHitPoints(input.value);
-      message = `${fieldName} must be between 0 and 999`;
-      break;
-    case 'ac':
-      isValid = validateArmorClass(input.value);
-      message = `${fieldName} must be between 0 and 30`;
-      break;
-    case 'speed':
-      isValid = validateSpeed(input.value);
-      message = `${fieldName} must be between 0 and 200`;
-      break;
-    case 'simple':
-      // For simple 1-2 digit numbers with optional plus
-      const simpleValue = input.value.replace(/[+]/g, ''); // Remove plus signs
-      const num = parseInt(simpleValue);
-      isValid = !isNaN(num) && num >= 0 && num <= 99;
-      message = `${fieldName} must be a simple number (0-99)`;
-      break;
-  }
-  
-  // Only show error if input is actually invalid
-  if (!isValid) {
-    showToast(message, "warning", "Invalid Input");
-    input.style.borderColor = '#e74c3c';
-    setTimeout(() => {
-      input.style.borderColor = '';
-    }, 2000);
-    return false;
-  } else {
-    // Clear any existing error styling when input becomes valid
-    input.style.borderColor = '';
-  }
-  
-  return true;
-}
-
-// ========== CLOUD BACKUP SYSTEM ==========
-let githubToken = localStorage.getItem('githubToken') || '';
-
-function setGithubToken() {
-  const token = prompt('Enter your GitHub Personal Access Token (for backup functionality):');
-  if (token) {
-    githubToken = token;
-    localStorage.setItem('githubToken', token);
-    showToast('GitHub token saved! You can now backup to cloud.', 'success', 'Token Saved');
-  }
-}
-
-async function backupToCloud() {
-  if (!githubToken) {
-    showToast('Please set your GitHub token first', 'warning', 'Token Required');
-    return;
-  }
-  
-  if (!currentCharacter) {
-    showToast('No character loaded to backup', 'warning', 'Backup Failed');
-    return;
-  }
-  
-  try {
-    const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
-    const character = characters.find(char => char.id === currentCharacter);
-    
-    if (!character) {
-      showToast('Character not found', 'error', 'Backup Failed');
-      return;
-    }
-    
-    const backupData = {
-      character: character,
-      timestamp: new Date().toISOString(),
-      version: '1.0'
-    };
-    
-    const gist = {
-      description: `D&D Character Backup - ${character.name}`,
-      public: false,
-      files: {
-        [`${character.name}_backup.json`]: {
-          content: JSON.stringify(backupData, null, 2)
-        }
-      }
-    };
-    
-    const response = await fetch('https://api.github.com/gists', {
-      method: 'POST',
-      headers: {
-        'Authorization': `token ${githubToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(gist)
-    });
-    
-    if (response.ok) {
-      const result = await response.json();
-      showToast(`Character backed up to cloud! Gist ID: ${result.id}`, 'success', 'Backup Complete');
-    } else {
-      throw new Error('Failed to create backup');
-    }
-  } catch (error) {
-    showToast(`Backup failed: ${error.message}`, 'error', 'Backup Failed');
-  }
-}
-
-async function restoreFromCloud() {
-  if (!githubToken) {
-    showToast('Please set your GitHub token first', 'warning', 'Token Required');
-    return;
-  }
-  
-  const gistId = prompt('Enter the Gist ID to restore from:');
-  if (!gistId) return;
-  
-  try {
-    const response = await fetch(`https://api.github.com/gists/${gistId}`, {
-      headers: {
-        'Authorization': `token ${githubToken}`
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch backup');
-    }
-    
-    const gist = await response.json();
-    const files = Object.values(gist.files);
-    
-    if (files.length === 0) {
-      throw new Error('No backup file found');
-    }
-    
-    const backupData = JSON.parse(files[0].content);
-    const character = backupData.character;
-    
-    // Add restored character
-    const characters = JSON.parse(localStorage.getItem('dndCharacters')) || [];
-    character.id = Date.now().toString(); // New ID to avoid conflicts
-    characters.push(character);
-    localStorage.setItem('dndCharacters', JSON.stringify(characters));
-    
-    currentCharacter = character.id;
-    loadCharacterList();
-    loadData();
-    
-    showToast(`Character "${character.name}" restored from cloud!`, 'success', 'Restore Complete');
-  } catch (error) {
-    showToast(`Restore failed: ${error.message}`, 'error', 'Restore Failed');
-  }
-}
-
-// ========== MOBILE UX ENHANCEMENTS ==========
-let touchStartX = 0;
-let touchEndX = 0;
-let currentTabIndex = 0;
-
-const tabs = ['page1', 'page2', 'page3', 'page4', 'page5', 'page6'];
-
-function handleTouchStart(e) {
-  touchStartX = e.changedTouches[0].screenX;
-}
-
-function handleTouchEnd(e) {
-  touchEndX = e.changedTouches[0].screenX;
-  handleSwipe();
-}
-
-function handleSwipe() {
-  const swipeThreshold = 50;
-  const diff = touchStartX - touchEndX;
-  
-  if (Math.abs(diff) > swipeThreshold) {
-    if (diff > 0) {
-      // Swipe left - next tab
-      nextTab();
-    } else {
-      // Swipe right - previous tab
-      previousTab();
-    }
-  }
-}
-
-function nextTab() {
-  currentTabIndex = (currentTabIndex + 1) % tabs.length;
-  switchToTab(tabs[currentTabIndex]);
-}
-
-function previousTab() {
-  currentTabIndex = currentTabIndex === 0 ? tabs.length - 1 : currentTabIndex - 1;
-  switchToTab(tabs[currentTabIndex]);
-}
-
-function switchToTab(tabId) {
-  const tab = document.querySelector(`[data-tab="${tabId}"]`);
-  if (tab) {
-    tab.click();
-    showToast(`Switched to ${tab.textContent}`, 'info', '', 1500);
-  }
-}
-
-// Add keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-  if (e.ctrlKey || e.metaKey) {
-    switch(e.key) {
-      case 's':
-        e.preventDefault();
-        autosave();
-        showToast('Character saved!', 'success', 'Saved', 2000);
-        break;
-      case 'n':
-        e.preventDefault();
-        document.getElementById('newCharName').focus();
-        break;
-      case 'e':
-        e.preventDefault();
-        exportData();
-        break;
-    }
-  }
-  
-  // Tab navigation with arrow keys
-  if (e.altKey) {
-    switch(e.key) {
-      case 'ArrowLeft':
-        e.preventDefault();
-        previousTab();
-        break;
-      case 'ArrowRight':
-        e.preventDefault();
-        nextTab();
-        break;
-    }
-  }
-});
-
 // ========== GLOBAL VARIABLES ==========
 let weaponsData = [];
 let equipmentData = [];
@@ -7555,9 +6498,6 @@ window.onload = function() {
   // Initialize web app features first
   initializeWebApp();
   
-  // Add popout buttons for mobile portrait mode
-  addPopoutButtons();
-  
   // Initialize character system
   loadCharacterList();
   
@@ -7659,7 +6599,7 @@ function showHomePage() {
 function createNewCharacter() {
   const charName = document.getElementById('newCharName').value.trim();
   if (!charName) {
-    showToast("Please enter a character name", "warning", "Required Field");
+    alert("Please enter a character name");
     return;
   }
   
@@ -7755,7 +6695,7 @@ function initiateDelete() {
     localStorage.setItem('dndCharacters', JSON.stringify(updatedChars));
     resetDeleteUI();
     loadCharacterList();
-    showToast(`${charName} deleted permanently`, "success", "Character Deleted");
+    alert(`${charName} deleted permanently`);
     
     if (updatedChars.length > 0) {
       currentCharacter = updatedChars[0].id;
@@ -8437,7 +7377,7 @@ function loadData() {
 // ========== EXISTING FUNCTIONS (UPDATED) ==========
 function exportData() {
   if (!currentCharacter) {
-    showToast("No character loaded to export", "warning", "Export Failed");
+    alert("No character loaded to export");
     return;
   }
   
@@ -8482,10 +7422,10 @@ function importData(event) {
       loadCharacterList();
       loadData();
       
-      showToast(`Character "${charName}" imported successfully!`, "success", "Import Complete");
+      alert(`Character "${charName}" imported successfully!`);
       document.querySelector('.tab[data-tab="page1"]').click();
     } catch (err) {
-      showToast("Error importing file: " + err.message, "error", "Import Failed");
+      alert("Error importing file: " + err.message);
     }
     event.target.value = '';
   };
@@ -8783,7 +7723,7 @@ function addInventoryItem() {
   const containerId = document.getElementById('old_item_container').value;
 
   if (!name) {
-    showToast("Please enter an item name", "warning", "Required Field");
+    alert("Please enter an item name");
     return;
   }
 
@@ -9097,116 +8037,6 @@ function closePopup(id) {
   }, 300); // Match the CSS transition duration
 }
 
-// ========== POPOUT FUNCTIONS FOR MOBILE ==========
-function showPopout(contentId, title) {
-  // Create popout if it doesn't exist
-  let popout = document.getElementById('mobilePopout');
-  if (!popout) {
-    popout = document.createElement('div');
-    popout.id = 'mobilePopout';
-    popout.className = 'popout-content';
-    document.body.appendChild(popout);
-  }
-  
-  // Create backdrop if it doesn't exist
-  let backdrop = document.getElementById('mobilePopoutBackdrop');
-  if (!backdrop) {
-    backdrop = document.createElement('div');
-    backdrop.id = 'mobilePopoutBackdrop';
-    backdrop.className = 'popout-backdrop';
-    backdrop.onclick = () => closePopout();
-    document.body.appendChild(backdrop);
-  }
-  
-  // Get content to show
-  const content = document.getElementById(contentId);
-  if (!content) {
-    console.error('Content not found:', contentId);
-    return;
-  }
-  
-  // Clone and show content
-  const clonedContent = content.cloneNode(true);
-  clonedContent.style.display = 'block';
-  clonedContent.style.width = '100%';
-  
-  // Add close button
-  const closeBtn = document.createElement('button');
-  closeBtn.innerHTML = '✕ Close';
-  closeBtn.className = 'popout-btn';
-  closeBtn.style.float = 'right';
-  closeBtn.style.marginBottom = '10px';
-  closeBtn.onclick = () => closePopout();
-  
-  // Set popout content
-  popout.innerHTML = '';
-  if (title) {
-    const titleEl = document.createElement('h3');
-    titleEl.textContent = title;
-    titleEl.style.marginTop = '0';
-    popout.appendChild(titleEl);
-  }
-  popout.appendChild(closeBtn);
-  popout.appendChild(clonedContent);
-  
-  // Show popout
-  backdrop.classList.add('show');
-  popout.classList.add('show');
-}
-
-function closePopout() {
-  const popout = document.getElementById('mobilePopout');
-  const backdrop = document.getElementById('mobilePopoutBackdrop');
-  
-  if (popout) popout.classList.remove('show');
-  if (backdrop) backdrop.classList.remove('show');
-}
-
-// Add popout buttons to sections on mobile
-function addPopoutButtons() {
-  // Remove existing popout buttons first
-  document.querySelectorAll('.popout-btn, .show-more').forEach(btn => btn.remove());
-  
-  // Only add on mobile portrait
-  if (window.innerWidth <= 768 && window.innerHeight > window.innerWidth) {
-    // Add popout buttons to detailed sections
-    const sections = document.querySelectorAll('.section');
-    sections.forEach(section => {
-      const h2 = section.querySelector('h2');
-      if (h2 && !section.querySelector('.popout-btn')) {
-        const popoutBtn = document.createElement('button');
-        popoutBtn.className = 'popout-btn show-details';
-        popoutBtn.innerHTML = '📋 Details';
-        popoutBtn.onclick = () => {
-          const sectionId = section.id || 'section_' + Math.random().toString(36).substr(2, 9);
-          if (!section.id) section.id = sectionId;
-          showPopout(sectionId, h2.textContent);
-        };
-        h2.appendChild(popoutBtn);
-      }
-      
-      // Add "Show More" buttons for tables with hidden rows
-      const table = section.querySelector('table tbody');
-      if (table && table.children.length > 3) {
-        const showMoreBtn = document.createElement('button');
-        showMoreBtn.className = 'popout-btn show-more';
-        showMoreBtn.innerHTML = 'Show All (' + table.children.length + ')';
-        showMoreBtn.onclick = () => {
-          const sectionId = section.id || 'section_' + Math.random().toString(36).substr(2, 9);
-          if (!section.id) section.id = sectionId;
-          showPopout(sectionId, h2 ? h2.textContent : 'Details');
-        };
-        section.appendChild(showMoreBtn);
-      }
-    });
-  }
-}
-
-// Handle viewport changes to update popout buttons
-function handleViewportChange() {
-  addPopoutButtons();
-}
-
 function closeAllPopups() {
   const backdrop = document.getElementById('popupBackdrop');
   
@@ -9231,10 +8061,6 @@ document.getElementById('popupBackdrop').addEventListener('click', closeAllPopup
 // ========== ENHANCED ANIMATIONS ==========
 // Add smooth hover effects for cards and sections
 document.addEventListener('DOMContentLoaded', function() {
-  // Add touch event listeners for mobile swipe
-  document.body.addEventListener('touchstart', handleTouchStart, false);
-  document.body.addEventListener('touchend', handleTouchEnd, false);
-  
   // Add hover effects to all sections
   const sections = document.querySelectorAll('.section');
   sections.forEach(section => {
@@ -19139,6 +17965,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 </script>
-
 </body>
 </html>
